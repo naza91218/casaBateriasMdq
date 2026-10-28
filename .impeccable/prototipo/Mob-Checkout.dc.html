@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Checkout, mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800;1,900&amp;display=swap">
+<style>
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Black Italic"),local("SportHeadline-BlackItalic");font-weight:900;font-style:italic}
+body{margin:0;background:#F4F4F4}
+*{box-sizing:border-box}
+::selection{background:#FF2610;color:#fff}
+a{color:#D41A00;text-underline-offset:3px}
+.d{font-family:"Sport Headline Web","Montserrat",sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.02em;margin:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 20px;border-radius:10px;background:#FF2610;color:#fff;font:700 19px/1 Montserrat,sans-serif;text-decoration:none;border:0;width:100%}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #0B0B0B;outline-offset:2px}
+.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.box{background:#fff;border-radius:14px;padding:22px 16px}
+.sec-h{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.n{width:34px;height:34px;border-radius:50%;background:#0B0B0B;color:#fff;display:grid;place-items:center;font:800 16px Montserrat,sans-serif;flex:none}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label{font:700 17px/1.2 Montserrat,sans-serif}
+.f .help{font:500 15px/1.4 Montserrat,sans-serif;color:#5C5C5C}
+.f input,.f select{height:56px;border:1.5px solid #D9D9D9;border-radius:10px;padding:0 14px;font:500 17px Montserrat,sans-serif;color:#0B0B0B;background:#fff;width:100%}
+.f input::placeholder{color:#767676}
+.f.err input{border:2px solid #D41A00}
+.f .msg{display:flex;gap:8px;align-items:center;font:600 15px Montserrat,sans-serif;color:#D41A00}
+.opt{display:flex;gap:14px;align-items:flex-start;padding:16px;border:1.5px solid #D9D9D9;border-radius:12px;cursor:pointer;background:#fff;position:relative}
+.opt.sel{border:2px solid #0B0B0B}
+.opt input{position:absolute;opacity:0}
+.dot{width:22px;height:22px;border-radius:50%;border:2px solid #0B0B0B;display:grid;place-items:center;flex:none;margin-top:1px}
+.dot i{width:10px;height:10px;border-radius:50%;background:#FF2610;display:block}
+.row{display:flex;justify-content:space-between;font:500 16px/1.4 Montserrat,sans-serif;padding:6px 0}
+</style>
+</helmet>
+<div style="width: 390px; font-family: Montserrat, sans-serif; color: #0B0B0B; background: #F4F4F4">
+<header style="background: #0B0B0B; color: #FFFFFF; height: 64px; display: flex; align-items: center; gap: 6px; padding: 0 16px 0 8px">
+<a href="Mob-Ficha.dc.html" aria-label="Volver a la batería" style="width: 48px; height: 48px; display: grid; place-items: center; color: #FFFFFF"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
+<img src="/_blob/c328e227e5a40bd9af27e683ef1cac3d" alt="La Casa de las Baterías" style="height: 30px; width: auto">
+<span style="margin-left: auto; display: inline-flex; gap: 6px; align-items: center; font: 600 14px Montserrat, sans-serif"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: #FF4E10"><rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Compra segura</span>
+</header>
+
+<details style="background: #FFFFFF; border-bottom: 1.5px solid #EDEDED">
+<summary style="list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer">
+<img src="/_blob/82262329b14a1cfc8862ce98ff88a322" alt="" style="width: 44px; height: auto">
+<span style="flex: 1; font: 700 15px/1.3 Montserrat, sans-serif">Sermat 12x65 económica<br><span style="font-weight: 500; color: #5C5C5C">Ver detalle</span></span>
+<span style="font: 800 18px Montserrat, sans-serif">[$ total]</span>
+</summary>
+</details>
+
+<main style="padding: 24px 12px 32px">
+<h1 class="d" style="font-size: 44px; padding: 0 4px">Terminá tu compra</h1>
+<p style="margin: 10px 4px 20px; font: 500 16px Montserrat, sans-serif; color: #5C5C5C">Sin crear cuenta. Un par de minutos.</p>
+
+<form aria-label="Datos de la compra" style="display: flex; flex-direction: column; gap: 14px">
+<section class="box" aria-labelledby="m1">
+<h2 id="m1" class="sec-h"><span class="n">1</span><span style="font: 800 21px Montserrat, sans-serif">Tus datos</span></h2>
+<div style="display: flex; flex-direction: column; gap: 20px">
+<div class="f"><label for="n">Nombre y apellido</label><span class="help">Para saber a quién le entregamos.</span><input id="n" value="Laura Pérez" autocomplete="name"></div>
+<div class="f err"><label for="dni">DNI</label><span class="help">Para identificarte cuando vamos a colocarla.</span><input id="dni" value="28.456.71a" inputmode="numeric" aria-invalid="true" aria-describedby="dni-e"><span id="dni-e" class="msg"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>Solo números, sin puntos.</span></div>
+<div class="f"><label for="tel">Teléfono</label><span class="help">Te llamamos para coordinar.</span><input id="tel" placeholder="223 5 123456" inputmode="tel" autocomplete="tel"></div>
+<div class="f"><label for="mail">Mail</label><span class="help">Te mandamos el estado del pedido.</span><input id="mail" placeholder="tu@mail.com" inputmode="email" autocomplete="email"></div>
+</div>
+</section>
+
+<section class="box" aria-labelledby="m2">
+<h2 id="m2" class="sec-h"><span class="n">2</span><span style="font: 800 21px Montserrat, sans-serif">¿Dónde la querés?</span></h2>
+<div style="display: grid; gap: 10px">
+<label class="opt {{selDom}}"><input type="radio" name="ent" checked="{{dom}}" onChange="{{pickDom}}"><span class="dot"><sc-if value="{{dom}}" hint-placeholder-val="{{true}}"><i></i></sc-if></span><span><span style="display: block; font: 700 17px Montserrat, sans-serif">Colocación a domicilio</span><span style="display: block; margin-top: 3px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">La colocamos y medimos el alternador. Incluida.</span></span></label>
+<label class="opt {{selRet}}"><input type="radio" name="ent" checked="{{ret}}" onChange="{{pickRet}}"><span class="dot"><sc-if value="{{ret}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span><span style="display: block; font: 700 17px Montserrat, sans-serif">Retiro en el local</span><span style="display: block; margin-top: 3px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Av. Juan B. Justo 5766</span></span></label>
+</div>
+<sc-if value="{{dom}}" hint-placeholder-val="{{true}}">
+<div style="margin-top: 20px; display: flex; flex-direction: column; gap: 20px">
+<div class="f"><label for="dir">Dirección</label><span class="help">Calle y número, donde va a estar el auto.</span><input id="dir" placeholder="Ej.: Av. Colón 1234" autocomplete="street-address"></div>
+<div class="f"><label for="zona">Zona</label><select id="zona"><option>Elegí tu zona</option><option>[Zona 1]</option><option>[Zona 2]</option></select></div>
+<div class="f"><label for="ref">Referencias <span style="font-weight: 500; color: #5C5C5C">(opcional)</span></label><input id="ref" placeholder="Ej.: portón negro"></div>
+</div>
+</sc-if>
+</section>
+
+<section class="box" aria-labelledby="m3">
+<h2 id="m3" class="sec-h"><span class="n">3</span><span style="font: 800 21px Montserrat, sans-serif">¿Cómo pagás?</span></h2>
+<div style="display: grid; gap: 10px">
+<label class="opt {{selTr}}"><input type="radio" name="pago" checked="{{tr}}" onChange="{{pickTr}}"><span class="dot"><sc-if value="{{tr}}" hint-placeholder-val="{{true}}"><i></i></sc-if></span><span style="flex: 1"><span style="display: flex; justify-content: space-between; gap: 8px; font: 700 17px Montserrat, sans-serif">Transferencia<span style="font: 800 13px Montserrat, sans-serif; background: #FF4E10; padding: 4px 8px; border-radius: 999px">Ahorrás [X %]</span></span><span style="display: block; margin-top: 3px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Tenés 48 h para transferir.</span></span></label>
+<label class="opt {{selMp}}"><input type="radio" name="pago" checked="{{mp}}" onChange="{{pickMp}}"><span class="dot"><sc-if value="{{mp}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span><span style="display: block; font: 700 17px Montserrat, sans-serif">Mercado Pago</span><span style="display: block; margin-top: 3px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Crédito, débito o dinero en cuenta.</span></span></label>
+<sc-if value="{{ret}}" hint-placeholder-val="{{false}}"><label class="opt {{selEf}}"><input type="radio" name="pago" checked="{{ef}}" onChange="{{pickEf}}"><span class="dot"><sc-if value="{{ef}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span><span style="display: block; font: 700 17px Montserrat, sans-serif">Efectivo al retirar</span></span></label></sc-if>
+</div>
+</section>
+
+<section class="box" aria-labelledby="m4">
+<h2 id="m4" style="margin: 0 0 10px; font: 800 19px Montserrat, sans-serif">Resumen</h2>
+<div class="row"><span>Batería</span><span>[$ precio]</span></div>
+<div class="row"><span>Entrega de la usada</span><span>−[$ canje]</span></div>
+<div class="row"><span>{{entregaTxt}}</span><span>Incluida</span></div>
+<sc-if value="{{tr}}" hint-placeholder-val="{{true}}"><div class="row" style="color: #D41A00; font-weight: 700"><span>Descuento transferencia</span><span>−[$ desc.]</span></div></sc-if>
+<div class="row" style="margin-top: 8px; padding-top: 12px; border-top: 1.5px solid #EDEDED; font: 800 22px Montserrat, sans-serif"><span>Total</span><span>[$ total]</span></div>
+</section>
+<p style="margin: 2px 4px 0; font: 500 14px/1.5 Montserrat, sans-serif; color: #5C5C5C">Usamos tus datos solo para esta compra. <a href="#p">Privacidad</a>.</p>
+</form>
+</main>
+<div style="position: sticky; bottom: 0; background: #FFFFFF; box-shadow: 0 -10px 24px -12px rgba(11,11,11,.3); padding: 12px 16px">
+<a class="btn" href="Mob-Pedido.dc.html">Confirmar compra · [$ total]</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2300}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { ent: 'dom', pago: 'tr' };
+}
+renderVals() {
+var self = this, s = this.state;
+var dom = s.ent === 'dom';
+var pago = (!dom || s.pago !== 'ef') ? s.pago : 'tr';
+return {
+dom: dom, ret: !dom, selDom: dom ? 'sel' : '', selRet: dom ? '' : 'sel',
+tr: pago === 'tr', mp: pago === 'mp', ef: pago === 'ef',
+selTr: pago === 'tr' ? 'sel' : '', selMp: pago === 'mp' ? 'sel' : '', selEf: pago === 'ef' ? 'sel' : '',
+entregaTxt: dom ? 'Colocación a domicilio' : 'Retiro en el local',
+pickDom: function () { self.setState({ ent: 'dom', pago: s.pago === 'ef' ? 'tr' : s.pago }); },
+pickRet: function () { self.setState({ ent: 'ret' }); },
+pickTr: function () { self.setState({ pago: 'tr' }); },
+pickMp: function () { self.setState({ pago: 'mp' }); },
+pickEf: function () { self.setState({ pago: 'ef' }); }
+};
+}
+}
+</script>
+</body>
+</html>

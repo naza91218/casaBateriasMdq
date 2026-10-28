@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Checkout · La Casa de las Baterías</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800;1,900&amp;display=swap">
+<style>
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Black Italic"),local("SportHeadline-BlackItalic");font-weight:900;font-style:italic}
+body{margin:0;background:#F4F4F4}
+*{box-sizing:border-box}
+::selection{background:#FF2610;color:#fff}
+a{color:#D41A00;text-underline-offset:3px}a:hover{color:#0B0B0B}
+.d{font-family:"Sport Headline Web","Montserrat",sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.02em;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding:0 48px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:60px;padding:0 28px;border-radius:10px;background:#FF2610;color:#fff;font:700 19px/1 Montserrat,sans-serif;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:background .2s cubic-bezier(.16,1,.3,1)}
+.btn:hover{background:#FF4E10;color:#fff}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #0B0B0B;outline-offset:2px}
+.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.box{background:#fff;border-radius:16px;padding:32px;box-shadow:0 2px 6px rgba(11,11,11,.05)}
+.sec-h{display:flex;align-items:center;gap:14px;margin:0 0 24px}
+.n{width:40px;height:40px;border-radius:50%;background:#0B0B0B;color:#fff;display:grid;place-items:center;font:800 18px Montserrat,sans-serif;flex:none}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f label{font:700 17px/1.2 Montserrat,sans-serif}
+.f .help{font:500 15px/1.4 Montserrat,sans-serif;color:#5C5C5C}
+.f input,.f select{height:56px;border:1.5px solid #D9D9D9;border-radius:10px;padding:0 16px;font:500 17px Montserrat,sans-serif;color:#0B0B0B;background:#fff;width:100%}
+.f input::placeholder{color:#767676}
+.f input:focus,.f select:focus{border:2px solid #0B0B0B;outline:none}
+.f.err input{border:2px solid #D41A00}
+.f .msg{display:flex;gap:8px;align-items:center;font:600 15px Montserrat,sans-serif;color:#D41A00}
+.opt{display:flex;gap:16px;align-items:flex-start;padding:20px;border:1.5px solid #D9D9D9;border-radius:12px;cursor:pointer;background:#fff;transition:border-color .2s,box-shadow .2s;position:relative}
+.opt.sel{border:2px solid #0B0B0B;box-shadow:0 10px 24px -16px rgba(11,11,11,.4)}
+.opt input{position:absolute;opacity:0}
+.dot{width:22px;height:22px;border-radius:50%;border:2px solid #0B0B0B;display:grid;place-items:center;flex:none;margin-top:2px}
+.dot i{width:10px;height:10px;border-radius:50%;background:#FF2610;display:block}
+.row span:last-child{white-space:nowrap}
+.row{display:flex;gap:16px;justify-content:space-between;font:500 17px/1.4 Montserrat,sans-serif;padding:8px 0;font-variant-numeric:tabular-nums}
+@media (max-width:860px){.wrap{padding:0 16px}.stack{grid-template-columns:1fr !important;flex-direction:column !important}}
+</style>
+</helmet>
+<div style="font-family: Montserrat, sans-serif; color: #0B0B0B; background: #F4F4F4; min-height: 100vh">
+
+<header style="background: #0B0B0B; color: #FFFFFF">
+<div class="wrap" style="height: 72px; display: flex; align-items: center; gap: 16px">
+<a href="Main.dc.html" aria-label="La Casa de las Baterías, inicio" style="display: flex; align-items: center; gap: 12px; text-decoration: none"><img src="/_blob/c328e227e5a40bd9af27e683ef1cac3d" alt="" style="height: 36px; width: auto; display: block"><span class="d" style="font-size: 18px; line-height: .95; color: #FFFFFF">La <span style="color: #FF2610">Casa</span> de las<br><span style="color: #FF2610">Baterías</span></span></a>
+<span style="margin-left: auto; display: inline-flex; gap: 8px; align-items: center; font: 600 15px Montserrat, sans-serif"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; color: #FF4E10"><rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Compra segura</span>
+</div>
+</header>
+
+<main class="wrap" style="padding-top: 40px; padding-bottom: 96px">
+<p style="margin: 0 0 16px; font: 600 15px Montserrat, sans-serif"><a href="Web-Ficha.dc.html" style="display: inline-flex; align-items: center; gap: 6px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>Volver a la batería</a></p>
+<h1 class="d" style="font-size: 64px">Terminá tu compra</h1>
+<p style="margin: 12px 0 32px; font: 500 18px Montserrat, sans-serif; color: #5C5C5C">Sin crear cuenta. Te lleva un par de minutos.</p>
+
+<div class="stack" style="display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: start">
+<form aria-label="Datos de la compra" style="display: flex; flex-direction: column; gap: 24px">
+
+<section class="box" aria-labelledby="s1">
+<h2 id="s1" class="sec-h"><span class="n">1</span><span style="font: 800 24px Montserrat, sans-serif">Tus datos</span></h2>
+<div class="stack" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px">
+<div class="f"><label for="c-nom">Nombre y apellido</label><span class="help">Para saber a quién le entregamos.</span><input id="c-nom" value="Laura Pérez" autocomplete="name"></div>
+<div class="f err"><label for="c-dni">DNI</label><span class="help">Para identificarte cuando vamos a colocarla.</span><input id="c-dni" value="28.456.71a" inputmode="numeric" aria-invalid="true" aria-describedby="c-dni-e"><span id="c-dni-e" class="msg"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>El DNI tiene solo números, sin puntos.</span></div>
+<div class="f"><label for="c-tel">Teléfono</label><span class="help">Te llamamos para coordinar la colocación.</span><input id="c-tel" placeholder="223 5 123456" inputmode="tel" autocomplete="tel"></div>
+<div class="f"><label for="c-mail">Mail</label><span class="help">Te mandamos el estado de tu pedido.</span><input id="c-mail" placeholder="tu@mail.com" inputmode="email" autocomplete="email"></div>
+</div>
+</section>
+
+<section class="box" aria-labelledby="s2">
+<h2 id="s2" class="sec-h"><span class="n">2</span><span style="font: 800 24px Montserrat, sans-serif">¿Dónde la querés?</span></h2>
+<div class="stack" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+<label class="opt {{selDom}}"><input type="radio" name="ent" checked="{{dom}}" onChange="{{pickDom}}"><span class="dot"><sc-if value="{{dom}}" hint-placeholder-val="{{true}}"><i></i></sc-if></span><span><span style="display: block; font: 700 18px Montserrat, sans-serif">Colocación a domicilio</span><span style="display: block; margin-top: 4px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Vamos con la camioneta, la colocamos y medimos el alternador. Incluida.</span></span></label>
+<label class="opt {{selRet}}"><input type="radio" name="ent" checked="{{ret}}" onChange="{{pickRet}}"><span class="dot"><sc-if value="{{ret}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span><span style="display: block; font: 700 18px Montserrat, sans-serif">Retiro en el local</span><span style="display: block; margin-top: 4px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Av. Juan B. Justo 5766. [Horarios de atención]</span></span></label>
+</div>
+<sc-if value="{{dom}}" hint-placeholder-val="{{true}}">
+<div class="stack" style="margin-top: 22px; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 22px">
+<div class="f"><label for="c-dir">Dirección</label><span class="help">Calle y número, donde va a estar el auto.</span><input id="c-dir" placeholder="Ej.: Av. Colón 1234" autocomplete="street-address"></div>
+<div class="f"><label for="c-zona">Zona</label><span class="help">Barrio de Mar del Plata.</span><select id="c-zona"><option>Elegí tu zona</option><option>[Zona 1]</option><option>[Zona 2]</option><option>[Zona con costo extra]</option></select></div>
+<div class="f" style="grid-column: 1 / -1"><label for="c-ref">Referencias <span style="font-weight: 500; color: #5C5C5C">(opcional)</span></label><input id="c-ref" placeholder="Ej.: portón negro, estacionado en la vereda"></div>
+</div>
+</sc-if>
+</section>
+
+<section class="box" aria-labelledby="s3">
+<h2 id="s3" class="sec-h"><span class="n">3</span><span style="font: 800 24px Montserrat, sans-serif">¿Cómo pagás?</span></h2>
+<div style="display: grid; gap: 12px">
+<label class="opt {{selTr}}"><input type="radio" name="pago" checked="{{tr}}" onChange="{{pickTr}}"><span class="dot"><sc-if value="{{tr}}" hint-placeholder-val="{{true}}"><i></i></sc-if></span><span style="flex: 1"><span style="display: flex; justify-content: space-between; gap: 12px; font: 700 18px Montserrat, sans-serif">Transferencia<span style="font: 800 15px Montserrat, sans-serif; color: #0B0B0B; background: #FF4E10; padding: 4px 10px; border-radius: 999px">Ahorrás [X %]</span></span><span style="display: block; margin-top: 4px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Te mostramos los datos bancarios al confirmar. Tenés 48 h para transferir.</span></span></label>
+<label class="opt {{selMp}}"><input type="radio" name="pago" checked="{{mp}}" onChange="{{pickMp}}"><span class="dot"><sc-if value="{{mp}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span><span style="display: block; font: 700 18px Montserrat, sans-serif">Mercado Pago</span><span style="display: block; margin-top: 4px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Tarjeta de crédito, débito o dinero en cuenta.</span></span></label>
+<sc-if value="{{ret}}" hint-placeholder-val="{{false}}"><label class="opt {{selEf}}"><input type="radio" name="pago" checked="{{ef}}" onChange="{{pickEf}}"><span class="dot"><sc-if value="{{ef}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span><span style="display: block; font: 700 18px Montserrat, sans-serif">Efectivo al retirar</span><span style="display: block; margin-top: 4px; font: 500 15px/1.45 Montserrat, sans-serif; color: #5C5C5C">Pagás en el local cuando la venís a buscar.</span></span></label></sc-if>
+</div>
+</section>
+</form>
+
+<aside aria-labelledby="res" class="box" style="position: sticky; top: 24px">
+<h2 id="res" style="margin: 0 0 18px; font: 800 22px Montserrat, sans-serif">Tu compra</h2>
+<div style="display: flex; gap: 14px; align-items: center; padding-bottom: 18px; border-bottom: 1.5px solid #EDEDED">
+<div style="width: 76px; height: 76px; border-radius: 10px; background: #F4F4F4; display: grid; place-items: center; flex: none"><img src="/_blob/82262329b14a1cfc8862ce98ff88a322" alt="" style="width: 64px; height: auto"></div>
+<div><div style="font: 800 17px/1.3 Montserrat, sans-serif">Sermat 12x65 económica</div><div style="font: 500 15px/1.4 Montserrat, sans-serif; color: #5C5C5C">Con entrega de la usada · para VW Gol Trend 2015</div></div>
+</div>
+<div style="padding: 12px 0; border-bottom: 1.5px solid #EDEDED">
+<div class="row"><span>Batería</span><span>[$ precio]</span></div>
+<div class="row"><span>Entrega de la usada</span><span>−[$ canje]</span></div>
+<div class="row"><span>{{entregaTxt}}</span><span>Incluida</span></div>
+<sc-if value="{{tr}}" hint-placeholder-val="{{true}}"><div class="row" style="color: #D41A00; font-weight: 700"><span>Descuento por transferencia</span><span>−[$ descuento]</span></div></sc-if>
+</div>
+<div class="row" style="padding-top: 16px; font: 800 24px Montserrat, sans-serif"><span>Total</span><span>[$ total]</span></div>
+<a class="btn" href="Web-Pedido.dc.html" style="width: 100%; margin-top: 18px">Confirmar compra</a>
+<p style="margin: 14px 0 0; font: 500 14px/1.5 Montserrat, sans-serif; color: #5C5C5C">Usamos tus datos solo para esta compra. <a href="Main.dc.html">Política de privacidad</a>.</p>
+</aside>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1730}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { ent: 'dom', pago: 'tr' };
+}
+renderVals() {
+var self = this, s = this.state;
+var dom = s.ent === 'dom';
+var pago = (!dom || s.pago !== 'ef') ? s.pago : 'tr';
+return {
+dom: dom, ret: !dom, selDom: dom ? 'sel' : '', selRet: dom ? '' : 'sel',
+tr: pago === 'tr', mp: pago === 'mp', ef: pago === 'ef',
+selTr: pago === 'tr' ? 'sel' : '', selMp: pago === 'mp' ? 'sel' : '', selEf: pago === 'ef' ? 'sel' : '',
+entregaTxt: dom ? 'Colocación a domicilio' : 'Retiro en el local',
+pickDom: function () { self.setState({ ent: 'dom', pago: s.pago === 'ef' ? 'tr' : s.pago }); },
+pickRet: function () { self.setState({ ent: 'ret' }); },
+pickTr: function () { self.setState({ pago: 'tr' }); },
+pickMp: function () { self.setState({ pago: 'mp' }); },
+pickEf: function () { self.setState({ pago: 'ef' }); },
+confirmar: function () {}
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ficha de producto, mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800;1,900&amp;display=swap">
+<style>
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Black Italic"),local("SportHeadline-BlackItalic");font-weight:900;font-style:italic}
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Bold Italic"),local("SportHeadline-BoldItalic");font-weight:700;font-style:italic}
+body{margin:0;background:#fff}
+*{box-sizing:border-box}
+::selection{background:#FF2610;color:#fff}
+a{color:#D41A00;text-underline-offset:3px}
+.d{font-family:"Sport Headline Web","Montserrat",sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.02em;margin:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 22px;border-radius:10px;background:#FF2610;color:#fff;font:700 19px/1 Montserrat,sans-serif;text-decoration:none;border:0}
+a:focus-visible,button:focus-visible{outline:3px solid #0B0B0B;outline-offset:2px}
+.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.opt{display:flex;align-items:center;gap:14px;padding:16px;border:1.5px solid #D9D9D9;border-radius:12px;cursor:pointer;position:relative}
+.opt.sel{border:2px solid #0B0B0B}
+.opt input{position:absolute;opacity:0}
+.dot{width:22px;height:22px;border-radius:50%;border:2px solid #0B0B0B;display:grid;place-items:center;flex:none}
+.dot i{width:10px;height:10px;border-radius:50%;background:#FF2610;display:block}
+.chip{display:inline-flex;align-items:center;height:34px;padding:0 12px;border-radius:999px;font:600 14px/1 Montserrat,sans-serif;background:#F4F4F4}
+.spec div{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1.5px solid #EDEDED}
+.spec dt{font:500 15px Montserrat,sans-serif;color:#5C5C5C}
+.spec dd{margin:0;font:700 16px Montserrat,sans-serif;text-align:right}
+</style>
+</helmet>
+<div style="width: 390px; font-family: Montserrat, sans-serif; color: #0B0B0B; background: #FFFFFF">
+<header style="background: #0B0B0B; color: #FFFFFF; height: 64px; display: flex; align-items: center; gap: 6px; padding: 0 8px">
+<a href="Mob-Auto.dc.html" aria-label="Volver a las baterías para tu auto" style="width: 48px; height: 48px; display: grid; place-items: center; color: #FFFFFF"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
+<img src="/_blob/c328e227e5a40bd9af27e683ef1cac3d" alt="La Casa de las Baterías" style="height: 32px; width: auto">
+<a href="Mob-Checkout.dc.html" aria-label="Carrito, vacío" style="margin-left: auto; width: 48px; height: 48px; display: grid; place-items: center; color: #FFFFFF"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg></a>
+</header>
+
+<div style="background: #F4F4F4; aspect-ratio: 1 / 1; display: grid; place-items: center; position: relative">
+<img src="/_blob/82262329b14a1cfc8862ce98ff88a322" alt="Batería Sermat 12/65, vista de tres cuartos" style="width: 84%; height: auto">
+<span class="d" style="position: absolute; left: 16px; top: 16px; background: #0B0B0B; color: #FFFFFF; padding: 7px 12px; font-size: 17px; transform: skewX(-10deg)">12 meses de garantía</span>
+<div aria-label="Foto 1 de 4" style="position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px"><span style="width: 22px; height: 6px; border-radius: 3px; background: #0B0B0B"></span><span style="width: 6px; height: 6px; border-radius: 3px; background: #C9C9C9"></span><span style="width: 6px; height: 6px; border-radius: 3px; background: #C9C9C9"></span><span style="width: 6px; height: 6px; border-radius: 3px; background: #C9C9C9"></span></div>
+</div>
+
+<main style="padding: 24px 16px 40px">
+<h1 class="d" style="font-size: 48px"><span style="color: #FF2610">Sermat</span> 12x65 económica</h1>
+<p style="margin: 12px 0 0; font: 500 16px/1.5 Montserrat, sans-serif; color: #5C5C5C">Libre mantenimiento, de calcio. Le sirve a tu <strong style="color: #0B0B0B">VW Gol Trend 2015</strong>.</p>
+<div style="margin-top: 20px; padding: 18px 0; border-top: 1.5px solid #D9D9D9; border-bottom: 1.5px solid #D9D9D9">
+<div style="font: 800 36px/1 Montserrat, sans-serif">[$ precio]</div>
+<div style="margin-top: 8px; font: 700 16px Montserrat, sans-serif; color: #D41A00">[$ precio] pagando por transferencia</div>
+</div>
+
+<fieldset style="border: 0; padding: 0; margin: 24px 0 0">
+<legend style="font: 700 17px Montserrat, sans-serif; margin-bottom: 4px">¿Nos dejás tu batería usada?</legend>
+<p style="margin: 0 0 12px; font: 500 15px/1.4 Montserrat, sans-serif; color: #5C5C5C">La reciclamos y te descontamos parte del precio.</p>
+<div style="display: grid; gap: 10px">
+<label class="opt {{selCon}}"><input type="radio" name="canje" checked="{{con}}" onChange="{{pickCon}}"><span class="dot"><sc-if value="{{con}}" hint-placeholder-val="{{true}}"><i></i></sc-if></span><span style="flex: 1; font: 600 16px Montserrat, sans-serif">Sí, con entrega de la usada</span><span style="font: 700 16px Montserrat, sans-serif; color: #D41A00">−[$ canje]</span></label>
+<label class="opt {{selSin}}"><input type="radio" name="canje" checked="{{sin}}" onChange="{{pickSin}}"><span class="dot"><sc-if value="{{sin}}" hint-placeholder-val="{{false}}"><i></i></sc-if></span><span style="flex: 1; font: 600 16px Montserrat, sans-serif">No, me la quedo</span></label>
+</div>
+</fieldset>
+
+<ul style="list-style: none; margin: 24px 0 0; padding: 18px; background: #0B0B0B; color: #FFFFFF; border-radius: 14px; display: grid; gap: 12px; font: 600 15px/1.4 Montserrat, sans-serif">
+<li style="display: flex; gap: 12px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #FF4E10"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>Colocación a domicilio incluida</li>
+<li style="display: flex; gap: 12px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #FF4E10"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>Medimos el alternador</li>
+<li style="display: flex; gap: 12px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #FF4E10"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>12 meses de garantía</li>
+</ul>
+
+<section aria-labelledby="ms" style="margin-top: 36px">
+<h2 id="ms" class="d" style="font-size: 30px; margin-bottom: 8px">Especificaciones</h2>
+<dl class="spec" style="margin: 0">
+<div><dt>Medida</dt><dd>12x65</dd></div>
+<div><dt>Arranque (CA)</dt><dd>550 A</dd></div>
+<div><dt>Tecnología</dt><dd>Calcio, libre mantenimiento</dd></div>
+<div><dt>Borne positivo</dt><dd>[a confirmar]</dd></div>
+<div><dt>Garantía</dt><dd>12 meses</dd></div>
+</dl>
+</section>
+<section aria-labelledby="mc" style="margin-top: 32px">
+<h2 id="mc" class="d" style="font-size: 30px; margin-bottom: 14px">Autos compatibles</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><span class="chip" style="background: #0B0B0B; color: #FFFFFF">VW Gol Trend 2008–2023</span><span class="chip">VW Suran</span><span class="chip">VW Fox</span><span class="chip">Chevrolet Onix</span><span class="chip">Fiat Palio</span></div>
+<p style="margin: 12px 0 0; font: 500 13px Montserrat, sans-serif; color: #5C5C5C">[Lista de ejemplo]</p>
+</section>
+<p style="margin: 28px 0 0; font: 600 16px/1.4 Montserrat, sans-serif">¿Dudas? <a href="#wa">Consultanos por WhatsApp</a></p>
+</main>
+<footer style="background: #0B0B0B; color: #FFFFFF; padding: 40px 16px 40px"><p style="margin: 0 0 16px; font: 500 15px/1.7 Montserrat, sans-serif; color: #D9D9D9">Av. Juan B. Justo 5766, Mar del Plata<br>[Horarios de atención] · WhatsApp [número]</p><nav aria-label="Legales" style="display: flex; flex-direction: column; font: 500 16px/2 Montserrat, sans-serif"><a href="#t" style="color: #FFFFFF">Términos y condiciones</a><a href="#t" style="color: #FFFFFF">Privacidad</a></nav><a href="#t" style="margin-top: 14px; display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 10px; box-shadow: inset 0 0 0 2px #FFFFFF; color: #FFFFFF; text-decoration: none; font: 700 17px Montserrat, sans-serif">Botón de arrepentimiento</a></footer>
+
+<div style="position: sticky; bottom: 0; background: #FFFFFF; box-shadow: 0 -10px 24px -12px rgba(11,11,11,.3); padding: 12px 16px; display: flex; align-items: center; gap: 14px">
+<div style="flex: 1; min-width: 0"><div style="font: 800 20px Montserrat, sans-serif">[$ precio]</div><div style="font: 600 13px Montserrat, sans-serif; color: #5C5C5C">Colocación incluida</div></div>
+<a class="btn" href="Mob-Checkout.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>Comprar</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2070}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { canje: 'con' };
+}
+renderVals() {
+var self = this;
+var con = this.state.canje === 'con';
+return {
+con: con, sin: !con, selCon: con ? 'sel' : '', selSin: con ? '' : 'sel',
+pickCon: function () { self.setState({ canje: 'con' }); },
+pickSin: function () { self.setState({ canje: 'sin' }); }
+};
+}
+}
+</script>
+</body>
+</html>

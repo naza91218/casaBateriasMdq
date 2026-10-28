@@ -1,0 +1,552 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T02:05:31+00:00",
+  "title": "Design System: La Casa de las Baterías",
+  "extensions": {
+    "colorMeta": {
+      "rojo": {
+        "role": "primary",
+        "displayName": "Rojo Casa",
+        "canonical": "#FF2610",
+        "tonalRamp": [
+          "#4C0700",
+          "#870C00",
+          "#C11200",
+          "#FB1700",
+          "#FF4937",
+          "#FF7E71",
+          "#FFB3AB",
+          "#FFE8E6"
+        ]
+      },
+      "naranja": {
+        "role": "primary",
+        "displayName": "Naranja Carga",
+        "canonical": "#FF4E10",
+        "tonalRamp": [
+          "#4C1400",
+          "#872300",
+          "#C13200",
+          "#FB4100",
+          "#FF6B37",
+          "#FF9671",
+          "#FFC1AB",
+          "#FFECE6"
+        ]
+      },
+      "rojo-texto": {
+        "role": "primary",
+        "displayName": "Rojo Texto",
+        "canonical": "#D41A00",
+        "tonalRamp": [
+          "#4C0900",
+          "#871100",
+          "#C11800",
+          "#FB1F00",
+          "#FF4F37",
+          "#FF8271",
+          "#FFB5AB",
+          "#FFE9E6"
+        ]
+      },
+      "rojo-rayo": {
+        "role": "primary",
+        "displayName": "Rojo Rayo",
+        "canonical": "#A81000",
+        "tonalRamp": [
+          "#4C0700",
+          "#870D00",
+          "#C11200",
+          "#FB1800",
+          "#FF4A37",
+          "#FF7E71",
+          "#FFB3AB",
+          "#FFE8E6"
+        ]
+      },
+      "rojo-velo": {
+        "role": "primary",
+        "displayName": "Velo Rojo",
+        "canonical": "#FFF1EE",
+        "tonalRamp": [
+          "#4C0D00",
+          "#871800",
+          "#C12200",
+          "#FB2C00",
+          "#FF5A37",
+          "#FF8A71",
+          "#FFBAAB",
+          "#FFEAE6"
+        ]
+      },
+      "negro": {
+        "role": "neutral",
+        "displayName": "Negro Losa",
+        "canonical": "#0B0B0B",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "blanco": {
+        "role": "neutral",
+        "displayName": "Blanco",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-900": {
+        "role": "neutral",
+        "displayName": "Grafito",
+        "canonical": "#1C1C1C",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-800": {
+        "role": "neutral",
+        "displayName": "Separador oscuro",
+        "canonical": "#333333",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-600": {
+        "role": "neutral",
+        "displayName": "Gris Texto",
+        "canonical": "#5C5C5C",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-400": {
+        "role": "neutral",
+        "displayName": "Gris Tenue",
+        "canonical": "#A6A6A6",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-placeholder": {
+        "role": "neutral",
+        "displayName": "Gris Placeholder",
+        "canonical": "#767676",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-300": {
+        "role": "neutral",
+        "displayName": "Gris Borde",
+        "canonical": "#D9D9D9",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-200": {
+        "role": "neutral",
+        "displayName": "Gris Celda",
+        "canonical": "#EDEDED",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "gris-100": {
+        "role": "neutral",
+        "displayName": "Gris Fondo",
+        "canonical": "#F4F4F4",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7E7E7E",
+          "#9B9B9B",
+          "#B8B8B8",
+          "#D5D5D5",
+          "#F2F2F2"
+        ]
+      },
+      "verde-ok": {
+        "role": "status",
+        "displayName": "Verde OK",
+        "canonical": "#187A33",
+        "tonalRamp": [
+          "#0D401B",
+          "#16712F",
+          "#20A143",
+          "#29D258",
+          "#58DE7D",
+          "#88E8A3",
+          "#B9F1C8",
+          "#EAFBEE"
+        ]
+      },
+      "amarillo-aviso": {
+        "role": "status",
+        "displayName": "Amarillo Aviso",
+        "canonical": "#B87900",
+        "tonalRamp": [
+          "#4C3200",
+          "#875900",
+          "#C17F00",
+          "#FBA500",
+          "#FFBA37",
+          "#FFCE71",
+          "#FFE2AB",
+          "#FFF6E6"
+        ]
+      },
+      "whatsapp": {
+        "role": "status",
+        "displayName": "Verde WhatsApp",
+        "canonical": "#25D366",
+        "tonalRamp": [
+          "#0B411F",
+          "#147337",
+          "#1DA44F",
+          "#26D667",
+          "#55E189",
+          "#86EAAB",
+          "#B8F2CE",
+          "#E9FBF0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Slogan del hero y grandes titulares de sección; 96 px web, 44 px mobile."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de sección, nombres de gama y de marcas; 56 px en mobile."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Títulos de tarjetas, filas y buscador."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Párrafos y descripciones; nunca menos de 17 px."
+      },
+      "body-lg": {
+        "displayName": "Body grande",
+        "purpose": "Bajadas de hero y de sección."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rótulos de campos, chips y botones."
+      },
+      "price": {
+        "displayName": "Precio",
+        "purpose": "Precios con números tabulares."
+      }
+    },
+    "gradients": [
+      {
+        "name": "degrade-marca",
+        "value": "linear-gradient(90deg,#FF2610,#FF4E10)",
+        "purpose": "Superficies de marca; en campos de sección siempre con el patrón de rayos."
+      },
+      {
+        "name": "patron-rayos",
+        "value": "SVG pattern 96x96: dos rayos redondeados rotados 14deg, escala 1.6-1.7, fill #A81000 con fill-opacity .22",
+        "purpose": "Textura sobre todo campo en degradé."
+      },
+      {
+        "name": "velo-hero",
+        "value": "radial-gradient(ellipse 46% 70% at 50% 46%, #FFFFFF 55%, rgba(255,255,255,0) 100%)",
+        "purpose": "Despeja el centro del hero sobre las fotos grises."
+      },
+      {
+        "name": "tramo-actual",
+        "value": "repeating-linear-gradient(-45deg,#FF2610 0 8px,#FFB3A8 8px 16px)",
+        "purpose": "Tramo en curso de la línea de tiempo del pedido."
+      }
+    ],
+    "shadows": [
+      {
+        "name": "buscador",
+        "value": "0 24px 48px -24px rgba(11,11,11,.35), 0 2px 6px rgba(11,11,11,.06)",
+        "purpose": "Tarjeta del buscador sobre el hero."
+      },
+      {
+        "name": "hover-tarjeta",
+        "value": "0 22px 40px -22px rgba(11,11,11,.35)",
+        "purpose": "Tarjeta de producto en hover, con ascenso de 2 px."
+      },
+      {
+        "name": "seleccionado",
+        "value": "0 10px 24px -16px rgba(11,11,11,.4)",
+        "purpose": "Opción elegida."
+      },
+      {
+        "name": "caja-checkout",
+        "value": "0 2px 6px rgba(11,11,11,.05)",
+        "purpose": "Bloques del checkout."
+      },
+      {
+        "name": "flotante",
+        "value": "0 12px 28px -10px rgba(0,0,0,.45)",
+        "purpose": "Botón de WhatsApp."
+      },
+      {
+        "name": "barra-fija-mobile",
+        "value": "0 -10px 24px -12px rgba(11,11,11,.3)",
+        "purpose": "Barra de compra fija al pie en mobile."
+      },
+      {
+        "name": "foco",
+        "value": "outline: 3px solid #0B0B0B; outline-offset: 2px (blanco sobre fondos oscuros)",
+        "purpose": "Foco visible de enlaces, botones y selects."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-salida",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Curva de las transiciones de estado."
+      },
+      {
+        "name": "estado-rapido",
+        "value": "200ms",
+        "purpose": "Hover de botones y bordes de opciones."
+      },
+      {
+        "name": "hover-tarjeta",
+        "value": "250ms",
+        "purpose": "Sombra y ascenso de tarjetas."
+      },
+      {
+        "name": "carga-celda",
+        "value": "450ms",
+        "purpose": "Llenado de celdas de la batería del buscador."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "860px"
+      }
+    ],
+    "rasterProvenance": [
+      {
+        "file": "cb-color.png, cb-white.png, cb-tile.png",
+        "source": "Isotipo CB extraído de los PNG del usuario",
+        "aiGenerated": false,
+        "copy": ".impeccable/refs/"
+      },
+      {
+        "file": "hero-left.png, hero-right.png",
+        "source": "Recortes en gris del banner 2 del usuario (baterías con trama de puntos)",
+        "aiGenerated": false,
+        "copy": ".impeccable/refs/"
+      },
+      {
+        "file": "Foto de producto Sermat 12/65",
+        "source": "Provista por el usuario",
+        "aiGenerated": false,
+        "copy": "blob de la mesa de diseño"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La única acción roja de cada vista; con ícono de rayo en el buscador.",
+      "html": "<button class=\"ds-btn-primary\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\"></path></svg>Ver baterías</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 28px;border-radius:10px;background:#FF2610;color:#fff;font:700 19px/1 Montserrat,sans-serif;border:0;cursor:pointer;transition:background .2s cubic-bezier(.16,1,.3,1),transform .2s cubic-bezier(.16,1,.3,1)}.ds-btn-primary:hover{background:#FF4E10}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:3px solid #0B0B0B;outline-offset:2px}.ds-ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}"
+    },
+    {
+      "name": "Botón claro",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "Acción sobre losa negra; en hover se invierte.",
+      "html": "<div class=\"ds-dark\"><button class=\"ds-btn-light\">Buscar mi batería</button></div>",
+      "css": ".ds-dark{background:#0B0B0B;padding:24px;display:inline-block}.ds-btn-light{height:56px;padding:0 28px;border-radius:10px;background:#fff;color:#0B0B0B;font:700 19px/1 Montserrat,sans-serif;border:0;cursor:pointer;transition:background .2s cubic-bezier(.16,1,.3,1),color .2s cubic-bezier(.16,1,.3,1)}.ds-btn-light:hover{background:#0B0B0B;color:#fff;box-shadow:inset 0 0 0 2px #fff}.ds-btn-light:focus-visible{outline:3px solid #fff;outline-offset:2px}"
+    },
+    {
+      "name": "Botón fantasma",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria sobre negro (Consultanos, Botón de arrepentimiento).",
+      "html": "<div class=\"ds-dark\"><button class=\"ds-btn-ghost\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"></path></svg>Consultanos</button></div>",
+      "css": ".ds-dark{background:#0B0B0B;padding:24px;display:inline-block}.ds-btn-ghost{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 18px;border-radius:10px;background:transparent;color:#fff;box-shadow:inset 0 0 0 2px #fff;border:0;font:700 16px/1 Montserrat,sans-serif;cursor:pointer;transition:background .2s cubic-bezier(.16,1,.3,1)}.ds-btn-ghost:hover{background:#fff;color:#0B0B0B}.ds-btn-ghost:focus-visible{outline:3px solid #fff;outline-offset:2px}.ds-ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}"
+    },
+    {
+      "name": "Campo con rótulo y ayuda",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de 56 px con rótulo arriba y ayuda que explica para qué se pide el dato.",
+      "html": "<div class=\"ds-f\"><label for=\"ds-tel\">Teléfono</label><input id=\"ds-tel\" placeholder=\"223 000 0000\"><span class=\"ds-help\">Te escribimos por WhatsApp para coordinar la colocación.</span></div>",
+      "css": ".ds-f{display:flex;flex-direction:column;gap:6px;max-width:420px;font-family:Montserrat,sans-serif}.ds-f label{font:700 17px/1.2 Montserrat,sans-serif;color:#0B0B0B}.ds-f input{height:56px;border:1.5px solid #D9D9D9;border-radius:10px;padding:0 16px;font:500 17px Montserrat,sans-serif;color:#0B0B0B;background:#fff}.ds-f input::placeholder{color:#767676}.ds-f input:focus{border:2px solid #0B0B0B;outline:none}.ds-help{font:500 15px/1.4 Montserrat,sans-serif;color:#5C5C5C}"
+    },
+    {
+      "name": "Navegación",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Encabezado negro de 80 px con logotipo en Sport Headline y enlaces Montserrat que pasan a naranja.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-logo\">La <b>Casa</b> de las<br><b>Baterías</b></span><nav><a href=\"#\">Baterías</a><a href=\"#\">Quiénes somos</a><a href=\"#\">Contacto</a></nav></header>",
+      "css": ".ds-nav{background:#0B0B0B;color:#fff;height:80px;display:flex;align-items:center;gap:32px;padding:0 32px}.ds-logo{font-family:\"Sport Headline Web\",Montserrat,sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;font-size:19px;line-height:.95}.ds-logo b{color:#FF2610;font-weight:900}.ds-nav nav{display:flex;gap:28px}.ds-nav a{color:#fff;text-decoration:none;font:600 16px Montserrat,sans-serif}.ds-nav a:hover{color:#FF4E10}.ds-nav a:focus-visible{outline:3px solid #fff;outline-offset:2px}"
+    },
+    {
+      "name": "Etiqueta en paralelogramo",
+      "kind": "custom",
+      "refersTo": "tag-paralelogramo",
+      "description": "Firma de la marca: losa negra sesgada con ícono en cuadrado blanco, sobre la banda en degradé.",
+      "html": "<div class=\"ds-band\"><span class=\"ds-tag\"><span class=\"ds-sq\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"></path><path d=\"m9 12 2 2 4-4\"></path></svg></span><span>Baterías con garantía</span></span></div>",
+      "css": ".ds-band{background:linear-gradient(90deg,#FF2610,#FF4E10);padding:26px;display:flex;justify-content:center}.ds-tag{display:inline-flex;align-items:center;gap:14px;background:#0B0B0B;color:#fff;padding:8px 26px 8px 8px;transform:skewX(-12deg);font:700 19px/1.1 Montserrat,sans-serif}.ds-tag>*{transform:skewX(12deg)}.ds-sq{width:44px;height:44px;border-radius:9px;background:#fff;color:#FF2610;display:grid;place-items:center}.ds-ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}"
+    },
+    {
+      "name": "Batería del buscador",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Indicador de progreso del buscador: tres celdas que se llenan con el degradé al elegir marca, modelo y año.",
+      "html": "<div class=\"ds-batt\" role=\"img\" aria-label=\"Progreso de la búsqueda: 2 de 3\"><span class=\"ds-cell on\"></span><span class=\"ds-cell on\"></span><span class=\"ds-cell\"></span></div>",
+      "css": ".ds-batt{display:flex;gap:3px;width:92px;height:34px;padding:3px;border:2.5px solid #0B0B0B;border-radius:7px;position:relative;margin:8px}.ds-batt::after{content:\"\";position:absolute;right:-8px;top:8px;width:5px;height:12px;border-radius:0 3px 3px 0;background:#0B0B0B}.ds-cell{flex:1;border-radius:3px;background:#EDEDED;transition:background .45s cubic-bezier(.16,1,.3,1)}.ds-cell.on,.ds-batt:hover .ds-cell{background:linear-gradient(90deg,#FF2610,#FF4E10)}"
+    },
+    {
+      "name": "Opción seleccionable",
+      "kind": "card",
+      "refersTo": "option-card",
+      "description": "Tarjeta de elección (envío, pago, canje) con radio circular y punto rojo.",
+      "html": "<label class=\"ds-opt sel\"><span class=\"ds-dot\"><i></i></span><span><b>Colocación a domicilio</b><br>Vamos con la camioneta. Incluida en el precio.</span></label>",
+      "css": ".ds-opt{display:flex;gap:16px;align-items:flex-start;padding:20px;border:1.5px solid #D9D9D9;border-radius:12px;background:#fff;cursor:pointer;max-width:420px;font:500 17px/1.45 Montserrat,sans-serif;color:#0B0B0B;transition:border-color .2s,box-shadow .2s}.ds-opt b{font-weight:700}.ds-opt.sel{border:2px solid #0B0B0B;box-shadow:0 10px 24px -16px rgba(11,11,11,.4)}.ds-dot{width:22px;height:22px;border-radius:50%;border:2px solid #0B0B0B;display:grid;place-items:center;flex:none;margin-top:2px}.ds-dot i{width:10px;height:10px;border-radius:50%;background:#FF2610;display:block}"
+    },
+    {
+      "name": "Estados de pedido",
+      "kind": "chip",
+      "refersTo": "status-pagado",
+      "description": "Píldoras de estado del panel.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-st ds-pend\">Pendiente de pago</span><span class=\"ds-st ds-pag\">Pagado</span><span class=\"ds-st ds-cam\">En camino</span><span class=\"ds-st ds-ret\">Listo para retirar</span><span class=\"ds-st ds-ent\">Entregado</span></div>",
+      "css": ".ds-row{display:flex;gap:8px;flex-wrap:wrap}.ds-st{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;font:700 13px/1 Montserrat,sans-serif;white-space:nowrap}.ds-pend{background:#B87900;color:#0B0B0B}.ds-pag{background:#187A33;color:#fff}.ds-cam{background:#0B0B0B;color:#fff}.ds-ret{background:#FF4E10;color:#0B0B0B}.ds-ent{box-shadow:inset 0 0 0 1.5px #187A33;color:#187A33}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El mostrador con banner",
+    "overview": "La tienda es el mundo de los banners impresos de la marca puesto a atender: campos en degradé rojo a naranja con rayos redondeados, losas negras, etiquetas en paralelogramo y titulares en itálica deportiva en mayúsculas. Esa voz de cartel es para lo que se lee de lejos (titulares, propuestas, marcas); todo lo que se toca o se lee de cerca va en Montserrat, en minúscula de oración, grande y con mucho contraste, porque el comprador incluye gente grande que usa poco internet.\n\nLa densidad es baja y el ritmo es de bloques: secciones blancas, negras y en degradé que se alternan a ancho completo, cada una con un solo mensaje. El blanco es el fondo de trabajo (buscador, fichas, checkout, panel); el negro y el degradé son los fondos de impacto. Las fotos son del usuario: baterías en gris con trama de puntos a los costados del hero y la foto de producto Sermat.\n\n**Procedencia de los rasters (ninguno generado por IA):** isotipo CB extraído de los PNG del usuario (cb-color.png, cb-white.png, cb-tile.png); recortes en gris del banner 2 del usuario para los costados del hero (hero-left.png, hero-right.png); foto de producto Sermat provista por el usuario. Copias del isotipo y de los recortes en `.impeccable/refs/` (la foto Sermat vive como blob de la mesa de diseño); originales en `D:\\diseños\\la casa de las baterias`.\n\nLo operable es plano y generoso: campos y botones de 56 px, radios de 10 px, foco con contorno negro de 3 px. La profundidad es suave y escasa; la marca se expresa con color y forma, no con efectos.",
+    "keyCharacteristics": [
+      "Rojo #FF2610 y naranja #FF4E10 de la marca, siempre en pareja dentro del degradé de 90°; negro casi puro y blanco.",
+      "Sport Headline itálica negra en mayúsculas para titulares cortos; Montserrat para el resto.",
+      "Etiquetas en paralelogramo (sesgo de -12° en web, -10° en mobile) con ícono en cuadrado blanco redondeado.",
+      "Patrón de rayos redondeados en rojo oscuro translúcido sobre todo campo en degradé.",
+      "Íconos de línea estilo Lucide en SVG en línea, trazo 2.",
+      "Objetivos táctiles de 48 px o más y texto de 15 px como mínimo (cuerpo de 17 px)."
+    ],
+    "rules": [
+      {
+        "name": "The Degradé Con Rayos Rule",
+        "body": "El degradé `linear-gradient(90deg, rojo, naranja)` solo cubre superficies de marca (banda de propuestas, sección de historia, etiquetas de marcas, celdas llenas y barras de progreso) y, cuando es un campo de sección, siempre lleva encima el patrón de rayos. Botones y campos son de color plano.",
+        "section": "colors"
+      },
+      {
+        "name": "The Rojo Chico Rule",
+        "body": "El rojo de marca sobre blanco no se usa para texto chico; para enlaces y textos de menos de 19 px en negrita va el rojo-texto.",
+        "section": "colors"
+      },
+      {
+        "name": "The Una Acción Roja Rule",
+        "body": "Cada vista tiene un solo botón rojo principal; las demás acciones son blancas, negras o fantasma.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cartel o Mostrador Rule",
+        "body": "Sport Headline solo para titulares cortos, nombres de marcas y etiquetas de cartel; nunca para párrafos, campos, botones ni el panel. Lo que se opera va en Montserrat, en minúscula de oración.",
+        "section": "typography"
+      },
+      {
+        "name": "The Diecisiete Rule",
+        "body": "El texto de lectura no baja de 17 px; 15 px es el piso para ayudas, estados y rótulos; 13 a 14 px solo para encabezados de tabla del panel y la línea legal.",
+        "section": "typography"
+      },
+      {
+        "name": "The Solo Flota Lo Que Importa Rule",
+        "body": "En reposo, solo el buscador y el botón de WhatsApp tienen sombra; todo lo demás gana sombra por estado (hover o selección).",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** poner el patrón de rayos redondeados (relleno rojo-rayo al 22 %, módulo de 96 px) sobre todo campo de sección en degradé.",
+      "**Do** usar Sport Headline itálica en mayúsculas solo para titulares cortos y nombres de marcas, y destacar en rojo la palabra que carga el mensaje.",
+      "**Do** mantener campos y botones en 56 px de alto y todo objetivo táctil en 48 px o más.",
+      "**Do** acompañar cada dato que se pide con una ayuda en 15 px que explique para qué se usa.",
+      "**Do** usar números tabulares en precios, medidas, totales y tablas.",
+      "**Do** dejar siempre una salida a WhatsApp: botón flotante (salvo en checkout) o enlace bajo el buscador y los estados vacíos.",
+      "**Do** usar solo rasters del usuario o derivados de sus archivos; si falta una foto, un marcador negro con ícono y texto entre corchetes."
+    ],
+    "donts": [
+      "**Don't** poner el degradé en botones ni en campos; lo operable es de color plano.",
+      "**Don't** usar el rojo de marca para texto chico sobre blanco; va el rojo-texto.",
+      "**Don't** usar Sport Headline en párrafos, formularios, botones o el panel.",
+      "**Don't** poner más de un botón rojo principal por vista.",
+      "**Don't** abrir la portada con carrusel de ofertas o grilla de productos; el buscador por auto ocupa el centro.",
+      "**Don't** usar emojis ni íconos de fuentes; los íconos son SVG de línea en línea.",
+      "**Don't** inventar fotos de productos, del local o del equipo, ni precios o testimonios."
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pedido recibido, mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800;1,900&amp;display=swap">
+<style>
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Black Italic"),local("SportHeadline-BlackItalic");font-weight:900;font-style:italic}
+body{margin:0;background:#fff}
+*{box-sizing:border-box}
+::selection{background:#FF2610;color:#fff}
+a{color:#D41A00}
+.d{font-family:"Sport Headline Web","Montserrat",sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.02em;margin:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 20px;border-radius:10px;background:#25D366;color:#0B0B0B;font:700 18px/1 Montserrat,sans-serif;text-decoration:none;border:0;width:100%}
+a:focus-visible,button:focus-visible{outline:3px solid #0B0B0B;outline-offset:2px}
+.dark button:focus-visible{outline-color:#fff}
+.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.cp{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 12px;border-radius:8px;border:1.5px solid #5C5C5C;background:transparent;color:#fff;font:600 14px Montserrat,sans-serif;flex:none}
+.bk{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #2A2A2A}
+.bk dt{font:500 14px Montserrat,sans-serif;color:#A6A6A6}
+.bk dd{margin:3px 0 0;font:700 17px Montserrat,sans-serif;word-break:break-all}
+.tl li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding-bottom:16px;position:relative}
+.tl .p{width:20px;height:20px;border-radius:50%;border:2px solid #C9C9C9;background:#fff;margin-top:1px;position:relative;z-index:1}
+.tl .p.on{border:0;background:linear-gradient(90deg,#FF2610,#FF4E10)}
+.tl .p.now{border:3px solid #FF2610}
+</style>
+</helmet>
+<div style="width: 390px; font-family: Montserrat, sans-serif; color: #0B0B0B; background: #FFFFFF">
+<header style="background: #0B0B0B; height: 64px; display: flex; align-items: center; padding: 0 16px"><a href="Mob-Inicio.dc.html" aria-label="La Casa de las Baterías, inicio"><img src="/_blob/c328e227e5a40bd9af27e683ef1cac3d" alt="" style="height: 32px; width: auto; display: block"></a></header>
+<main style="padding: 32px 16px 48px">
+<h1 class="d" style="font-size: 52px">¡Listo, <span style="color: #FF2610">Laura</span>!</h1>
+<div style="margin-top: 10px; font: 700 17px Montserrat, sans-serif">Pedido #1048</div>
+<p style="margin: 12px 0 0; font: 500 17px/1.5 Montserrat, sans-serif; color: #5C5C5C">Recibimos tu pedido. Te mandamos todo a <strong style="color: #0B0B0B">laura@mail.com</strong>.</p>
+
+<ol class="tl" aria-label="Estado del pedido" style="list-style: none; margin: 28px 0 0; padding: 0; position: relative">
+<li><span class="p on"></span><span style="font: 700 16px Montserrat, sans-serif">Recibido</span></li>
+<li aria-current="step"><span class="p now"></span><span style="font: 800 16px Montserrat, sans-serif; color: #D41A00">Esperando tu transferencia</span></li>
+<li><span class="p"></span><span style="font: 600 16px Montserrat, sans-serif; color: #5C5C5C">En camino</span></li>
+<li style="padding-bottom: 0"><span class="p"></span><span style="font: 600 16px Montserrat, sans-serif; color: #5C5C5C">Colocada</span></li>
+</ol>
+
+<section class="dark" aria-labelledby="bk" style="margin-top: 28px; background: #0B0B0B; color: #FFFFFF; border-radius: 14px; padding: 22px 18px">
+<h2 id="bk" style="margin: 0; font: 800 21px Montserrat, sans-serif">Transferí <span style="color: #FF4E10">[$ total]</span></h2>
+<p style="margin: 8px 0 4px; display: flex; gap: 8px; align-items: center; font: 600 15px/1.4 Montserrat, sans-serif; color: #D9D9D9"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: #FF4E10"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>Tenés 48 h. Si no, se cancela solo.</p>
+<dl style="margin: 0">
+<div class="bk"><div><dt>Alias</dt><dd>[alias.del.negocio]</dd></div><button class="cp" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 16px; height: 16px"><rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Copiar</button></div>
+<div class="bk" style="flex-direction: column; align-items: flex-start; gap: 10px"><div><dt>CBU</dt><dd style="font-size: 18px; font-variant-numeric: tabular-nums; word-break: normal; letter-spacing: .02em">[0000 0000 0000 0000 000000]</dd></div><button class="cp" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 16px; height: 16px"><rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Copiar</button></div>
+<div class="bk"><div><dt>Titular</dt><dd>[Razón social]</dd></div></div>
+<div class="bk" style="border-bottom: 0"><div><dt>Monto exacto</dt><dd style="color: #FF4E10">[$ total]</dd></div><button class="cp" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 16px; height: 16px"><rect width="14" height="14" x="8" y="8" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Copiar</button></div>
+</dl>
+</section>
+
+<section aria-labelledby="rs" style="margin-top: 20px; border: 1.5px solid #D9D9D9; border-radius: 14px; padding: 20px 18px">
+<h2 id="rs" style="margin: 0 0 14px; font: 800 19px Montserrat, sans-serif">Tu pedido</h2>
+<div style="display: flex; gap: 12px; align-items: center"><img src="/_blob/82262329b14a1cfc8862ce98ff88a322" alt="" style="width: 56px; height: auto"><div><div style="font: 800 16px Montserrat, sans-serif">Sermat 12x65 económica</div><div style="font: 500 14px Montserrat, sans-serif; color: #5C5C5C">Con entrega de la usada</div></div></div>
+<p style="margin: 16px 0 0; padding-top: 14px; border-top: 1.5px solid #EDEDED; font: 500 15px/1.5 Montserrat, sans-serif"><strong>Colocación a domicilio</strong><br><span style="color: #5C5C5C">Av. Colón 1234 · [Zona]</span></p>
+</section>
+<a class="btn" href="#wa" style="margin-top: 20px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>Escribinos por WhatsApp</a>
+</main>
+<footer style="background: #0B0B0B; color: #FFFFFF; padding: 40px 16px 40px"><p style="margin: 0 0 16px; font: 500 15px/1.7 Montserrat, sans-serif; color: #D9D9D9">Av. Juan B. Justo 5766, Mar del Plata<br>[Horarios de atención] · WhatsApp [número]</p><nav aria-label="Legales" style="display: flex; flex-direction: column; font: 500 16px/2 Montserrat, sans-serif"><a href="#t" style="color: #FFFFFF">Términos y condiciones</a><a href="#t" style="color: #FFFFFF">Privacidad</a></nav><a href="#t" style="margin-top: 14px; display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 10px; box-shadow: inset 0 0 0 2px #FFFFFF; color: #FFFFFF; text-decoration: none; font: 700 17px Montserrat, sans-serif">Botón de arrepentimiento</a></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

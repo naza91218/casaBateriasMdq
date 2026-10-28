@@ -1,0 +1,28 @@
+# Dependencias y builds
+node_modules/
+.next/
+out/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Material de diseño y presentaciones (queda fuera del repo)
+propuesta-deck/
+prototipo-deck/
+.impeccable/refs/
+.impeccable/review/
+*.pdf
+
+# Claude Code: configuración local
+.claude/settings.local.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+.impeccable/hook.cache.json

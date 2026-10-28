@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Inicio mobile · La Casa de las Baterías</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800;1,900&amp;display=swap">
+<style>
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Black Italic"),local("SportHeadline-BlackItalic");font-weight:900;font-style:italic}
+@font-face{font-family:"Sport Headline Web";src:local("Sport Headline Bold Italic"),local("SportHeadline-BoldItalic");font-weight:700;font-style:italic}
+body{margin:0;background:#fff}
+*{box-sizing:border-box}
+::selection{background:#FF2610;color:#fff}
+a{color:#D41A00;text-underline-offset:3px}
+.d{font-family:"Sport Headline Web","Montserrat",sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.02em;margin:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 20px;border-radius:10px;background:#FF2610;color:#fff;font:700 19px/1 Montserrat,sans-serif;text-decoration:none;border:0;cursor:pointer;width:100%}
+.btn.off{background:#D9D9D9;color:#5C5C5C}
+.btn.light{background:#fff;color:#0B0B0B}
+a:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid #0B0B0B;outline-offset:2px}
+.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tag{display:flex;align-items:center;gap:12px;background:#0B0B0B;color:#fff;padding:7px 20px 7px 7px;transform:skewX(-10deg);font:700 17px/1.1 Montserrat,sans-serif}
+.tag>*{transform:skewX(10deg)}
+.sq{width:38px;height:38px;border-radius:8px;background:#fff;color:#FF2610;display:grid;place-items:center;flex:none}
+.grad{background:linear-gradient(90deg,#FF2610,#FF4E10)}
+.pat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label{font:700 16px/1.2 Montserrat,sans-serif}
+.f select{height:56px;border:1.5px solid #D9D9D9;border-radius:10px;padding:0 14px;font:600 17px Montserrat,sans-serif;color:#0B0B0B;background:#fff;width:100%}
+.f select:disabled{background:#F4F4F4;color:#5C5C5C}
+.batt{display:flex;gap:3px;width:84px;height:32px;padding:3px;border:2.5px solid #0B0B0B;border-radius:7px;position:relative;flex:none}
+.batt::after{content:"";position:absolute;right:-8px;top:7px;width:5px;height:12px;border-radius:0 3px 3px 0;background:#0B0B0B}
+.cell{flex:1;border-radius:3px;background:#EDEDED;transition:background .45s cubic-bezier(.16,1,.3,1)}
+.cell.on{background:linear-gradient(90deg,#FF2610,#FF4E10)}
+.p{font:500 17px/1.55 Montserrat,sans-serif;color:#5C5C5C;margin:0}
+.steps-v{position:relative}
+.steps-v::before{content:"";position:absolute;left:19px;top:20px;bottom:20px;width:2px;background:#0B0B0B}
+.num{position:relative;width:40px;height:40px;border-radius:50%;background:#0B0B0B;color:#fff;display:grid;place-items:center;font:800 18px Montserrat,sans-serif;box-shadow:0 0 0 6px #fff}
+.waf{position:fixed;right:16px;bottom:16px;width:60px;height:60px;border-radius:50%;background:#25D366;color:#0B0B0B;display:grid;place-items:center;box-shadow:0 12px 28px -10px rgba(0,0,0,.45);z-index:5}
+</style>
+</helmet>
+<div style="width: 390px; font-family: Montserrat, sans-serif; color: #0B0B0B; background: #FFFFFF">
+
+<header style="background: #0B0B0B; color: #FFFFFF; height: 64px; display: flex; align-items: center; gap: 10px; padding: 0 8px 0 16px">
+<a href="Mob-Inicio.dc.html" aria-label="La Casa de las Baterías, inicio" style="display: flex; align-items: center; gap: 10px; text-decoration: none"><img src="/_blob/c328e227e5a40bd9af27e683ef1cac3d" alt="" style="height: 34px; width: auto"><span class="d" style="font-size: 16px; line-height: .95; color: #FFFFFF">La <span style="color: #FF2610">Casa</span> de las<br><span style="color: #FF2610">Baterías</span></span></a>
+<a href="Mob-Checkout.dc.html" aria-label="Carrito, vacío" style="margin-left: auto; width: 48px; height: 48px; display: grid; place-items: center; color: #FFFFFF"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg></a>
+<button type="button" aria-label="Abrir menú" style="width: 48px; height: 48px; display: grid; place-items: center; color: #FFFFFF; background: transparent; border: 0"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+</header>
+
+<section aria-labelledby="mh" style="padding: 22px 16px 28px; text-align: center; position: relative; overflow: hidden">
+<img src="/_blob/bfb128579d83ed13515b1f13fed424a5" alt="" style="position: absolute; left: -120px; top: -10px; height: 300px; width: auto; opacity: .35">
+<img src="/_blob/f80aa712ab9876c66e5bd501cd23e227" alt="" style="position: absolute; right: -150px; top: -10px; height: 300px; width: auto; opacity: .35">
+<h1 id="mh" class="d" style="position: relative; font-size: 42px; line-height: .92"><span style="color: #FF2610">45 años</span><br>cargando<br>confianza</h1>
+<p class="p" style="position: relative; margin-top: 10px">Encontrá la batería justa para tu auto. Te la colocamos en Mar del Plata.</p>
+
+<form aria-label="Buscador por auto" style="position: relative; margin-top: 18px; background: #FFFFFF; border-radius: 16px; box-shadow: 0 20px 40px -20px rgba(11,11,11,.4), 0 2px 6px rgba(11,11,11,.06); padding: 16px; text-align: left; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 14px">
+<div class="batt" role="img" aria-label="Progreso de la búsqueda"><span class="cell {{c1}}"></span><span class="cell {{c2}}"></span><span class="cell {{c3}}"></span></div>
+<div style="margin-left: 6px"><div style="font: 800 18px/1.2 Montserrat, sans-serif">Buscá tu batería</div><div aria-live="polite" style="font: 500 14px/1.4 Montserrat, sans-serif; color: #5C5C5C">{{estado}}</div></div>
+</div>
+<div class="f"><label for="m-marca">Marca</label><select id="m-marca" value="{{marca}}" onChange="{{onMarca}}"><option value="">Elegí la marca</option><sc-for list="{{marcas}}" as="o" hint-placeholder-count="7"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div class="f"><label for="m-modelo">Modelo</label><select id="m-modelo" value="{{modelo}}" onChange="{{onModelo}}" disabled="{{noMarca}}"><option value="">Elegí</option><sc-for list="{{modelos}}" as="o" hint-placeholder-count="4"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="f"><label for="m-anio">Año</label><select id="m-anio" value="{{anio}}" onChange="{{onAnio}}" disabled="{{noModelo}}"><option value="">Elegí</option><sc-for list="{{anios}}" as="o" hint-placeholder-count="10"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+</div>
+<a class="btn" href="Mob-Auto.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>Ver baterías para mi auto</a>
+<p style="margin: 0; text-align: center; font: 600 15px/1.4 Montserrat, sans-serif">¿No encontrás tu auto? <a href="#wa">Escribinos</a></p>
+</form>
+</section>
+
+<div class="grad" style="position: relative; overflow: hidden; padding: 22px 16px">
+<svg class="pat" aria-hidden="true"><defs><pattern id="mp1" width="80" height="80" patternUnits="userSpaceOnUse"><path transform="translate(6 4) scale(1.4) rotate(14 12 12)" d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" fill="#A81000" fill-opacity=".22"></path><path transform="translate(46 44) scale(1.4) rotate(14 12 12)" d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" fill="#A81000" fill-opacity=".22"></path></pattern></defs><rect width="100%" height="100%" fill="url(#mp1)"></rect></svg>
+<ul style="position: relative; list-style: none; margin: 0; padding: 0 8px; display: flex; flex-direction: column; gap: 12px">
+<li class="tag"><span class="sq"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></span><span>Baterías con garantía</span></li>
+<li class="tag"><span class="sq"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#74ACDF"></circle><rect x="2" y="9" width="20" height="6" fill="#FFFFFF"></rect><circle cx="12" cy="12" r="1.8" fill="#F6B40E"></circle><circle cx="12" cy="12" r="10" fill="none" stroke="#0B0B0B" stroke-width="1.5"></circle></svg></span><span>Marcas nacionales</span></li>
+<li class="tag"><span class="sq"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg></span><span>Con o sin colocación</span></li>
+</ul>
+</div>
+
+<section aria-labelledby="mp-t" style="padding: 64px 16px 56px">
+<h2 id="mp-t" class="d" style="font-size: 48px">Así de fácil</h2>
+<ol class="steps-v" style="list-style: none; margin: 28px 0 0; padding: 0; display: flex; flex-direction: column; gap: 28px">
+<li style="display: grid; grid-template-columns: 40px 1fr; gap: 16px"><span class="num">1</span><div style="padding-top: 7px"><h3 style="margin: 0 0 4px; font: 700 20px Montserrat, sans-serif">Buscás tu auto</h3><p class="p">Marca, modelo y año. No hace falta saber la medida.</p></div></li>
+<li style="display: grid; grid-template-columns: 40px 1fr; gap: 16px"><span class="num">2</span><div style="padding-top: 7px"><h3 style="margin: 0 0 4px; font: 700 20px Montserrat, sans-serif">Elegís la batería</h3><p class="p">Solo las que le sirven: económica o reforzada.</p></div></li>
+<li style="display: grid; grid-template-columns: 40px 1fr; gap: 16px"><span class="num">3</span><div style="padding-top: 7px"><h3 style="margin: 0 0 4px; font: 700 20px Montserrat, sans-serif">Pagás como quieras</h3><p class="p">Mercado Pago, transferencia con descuento o efectivo al retirar.</p></div></li>
+<li style="display: grid; grid-template-columns: 40px 1fr; gap: 16px"><span class="num">4</span><div style="padding-top: 7px"><h3 style="margin: 0 0 4px; font: 700 20px Montserrat, sans-serif">Te la colocamos</h3><p class="p">Vamos con la camioneta y medimos el alternador.</p></div></li>
+</ol>
+</section>
+
+<section aria-labelledby="mg-t" style="padding: 0 16px 64px">
+<h2 id="mg-t" class="d" style="font-size: 44px">¿Económica o <span style="color: #FF2610">reforzada</span>?</h2>
+<p class="p" style="margin-top: 12px">Las dos traen garantía y colocación. Cambia cuánto le vas a exigir.</p>
+<article style="margin-top: 24px; border: 2px solid #0B0B0B; border-radius: 16px; padding: 24px 20px">
+<h3 style="margin: 0 0 10px"><span class="d" style="display: block; font-size: 38px">Económica</span><span style="display: block; margin-top: 8px; font: 800 20px/1.25 Montserrat, sans-serif">Para el uso de todos los días</span></h3>
+<p class="p">Autos chicos y medianos en ciudad, con pocos accesorios eléctricos. El mejor precio, con la misma garantía.</p>
+</article>
+<article style="margin-top: 14px; background: #0B0B0B; color: #FFFFFF; border-radius: 16px; padding: 24px 20px">
+<h3 style="margin: 0 0 10px"><span class="d" style="display: block; font-size: 38px; color: #FF4E10">Reforzada</span><span style="display: block; margin-top: 8px; font: 800 20px/1.25 Montserrat, sans-serif">Para exigirle más</span></h3>
+<p class="p" style="color: #D9D9D9">Frío, viajes, muchos arranques, GNC, audio o alarma. Camionetas y utilitarios.</p>
+</article>
+</section>
+
+<section aria-labelledby="mm-t" style="background: #0B0B0B; color: #FFFFFF; padding: 64px 16px 0; overflow: hidden">
+<h2 id="mm-t" class="d" style="font-size: 54px">Marcas<br><span style="color: #FF2610">nacionales</span></h2>
+<p class="p" style="margin-top: 14px; color: #D9D9D9">Fabricantes argentinos. Garantía sin vueltas.</p>
+<ul style="list-style: none; margin: 28px 0 0; padding: 0 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+<li class="d grad" style="font-size: 30px; text-align: center; padding: 12px 0; transform: skewX(-10deg)">Sermat</li>
+<li class="d grad" style="font-size: 30px; text-align: center; padding: 12px 0; transform: skewX(-10deg)">Edna</li>
+<li class="d grad" style="font-size: 30px; text-align: center; padding: 12px 0; transform: skewX(-10deg)">Herbo</li>
+<li class="d grad" style="font-size: 30px; text-align: center; padding: 12px 0; transform: skewX(-10deg)">Volta</li>
+</ul>
+<img src="/_blob/82262329b14a1cfc8862ce98ff88a322" alt="Batería Sermat 12/65" style="display: block; width: 320px; height: auto; margin: 24px auto -40px; transform: rotate(-6deg)">
+</section>
+
+<section aria-labelledby="ms-t" style="background: #0B0B0B; color: #FFFFFF">
+<div style="position: relative; overflow: hidden; color: #FFFFFF; padding: 72px 16px 40px">
+<h2 id="ms-t" class="d" style="position: relative; font-size: 54px">Te la colocamos<br><span style="color: #FF2610">en tu casa</span></h2>
+<p style="position: relative; margin: 16px 0 24px; font: 700 19px/1.5 Montserrat, sans-serif">Comprás online y vamos con la camioneta. La colocación está incluida.</p>
+<a class="btn light" href="Mob-Auto.dc.html" style="position: relative">Buscar mi batería</a>
+</div>
+<div style="padding: 8px 16px 48px">
+<div style="display: grid; grid-template-columns: 48px 1fr; gap: 16px; padding: 22px 0; border-bottom: 1.5px solid #333333"><span class="sq" style="background: #1C1C1C; color: #FF2610; width: 48px; height: 48px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg></span><div><h3 style="margin: 0 0 4px; font: 800 20px Montserrat, sans-serif">Colocación incluida</h3><p class="p" style="color: #B2B2B2">En tu casa o en el trabajo. O la retirás en el local.</p></div></div>
+<div style="display: grid; grid-template-columns: 48px 1fr; gap: 16px; padding: 22px 0; border-bottom: 1.5px solid #333333"><span class="sq" style="background: #1C1C1C; color: #FF2610; width: 48px; height: 48px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg></span><div><h3 style="margin: 0 0 4px; font: 800 20px Montserrat, sans-serif">Medición del alternador</h3><p class="p" style="color: #B2B2B2">Revisamos que tu auto cargue bien la batería nueva.</p></div></div>
+<div style="display: grid; grid-template-columns: 48px 1fr; gap: 16px; padding: 22px 0"><span class="sq" style="background: #1C1C1C; color: #FF2610; width: 48px; height: 48px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></span><div><h3 style="margin: 0 0 4px; font: 800 20px Montserrat, sans-serif">12 meses de garantía</h3><p class="p" style="color: #B2B2B2">Y sabés dónde encontrarnos.</p></div></div>
+</div>
+</section>
+
+<section class="grad" aria-labelledby="mhi-t" style="position: relative; overflow: hidden; color: #FFFFFF; padding: 64px 16px">
+<svg class="pat" aria-hidden="true"><defs><pattern id="mp3" width="80" height="80" patternUnits="userSpaceOnUse"><path transform="translate(8 6) scale(1.6) rotate(14 12 12)" d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" fill="#A81000" fill-opacity=".22"></path><path transform="translate(46 46) scale(1.6) rotate(14 12 12)" d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" fill="#A81000" fill-opacity=".22"></path></pattern></defs><rect width="100%" height="100%" fill="url(#mp3)"></rect></svg>
+<div style="position: relative">
+<h2 id="mhi-t" class="d" style="font-size: 62px"><span style="color: #0B0B0B">45 años</span><br>en el mercado</h2>
+<p class="d" style="background: #0B0B0B; display: inline-block; margin: 20px 0 0; font-size: 22px; font-weight: 700; padding: 8px 16px; transform: skewX(-10deg)">Brindando el mejor servicio</p>
+<figure style="margin: 28px 0 0; aspect-ratio: 4 / 3; border-radius: 14px; background: #0B0B0B; display: grid; place-items: center; color: #A6A6A6; text-align: center"><figcaption style="font: 600 15px Montserrat, sans-serif">[Foto del local o del equipo]</figcaption></figure>
+<p class="p" style="margin-top: 20px; color: #0B0B0B">[Historia del local, texto a cargar por Juan.]</p>
+<p style="margin: 18px 0 24px; display: flex; gap: 10px; align-items: center; font: 700 17px Montserrat, sans-serif; color: #0B0B0B"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B0B0B"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>Av. Juan B. Justo 5766</p>
+<a class="btn" href="Mob-Inicio.dc.html" style="background: #0B0B0B">Conocé nuestra historia</a>
+</div>
+</section>
+
+<section aria-labelledby="mpa-t" style="padding: 56px 16px">
+<h2 id="mpa-t" style="margin: 0 0 20px; font: 800 26px/1.2 Montserrat, sans-serif">Pagás como te quede cómodo</h2>
+<div style="display: flex; gap: 14px; padding: 16px 0; border-top: 2px solid #0B0B0B"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 28px; height: 28px; color: #FF2610"><rect width="20" height="14" x="2" y="5" rx="2"></rect><path d="M2 10h20"></path></svg><div><h3 style="margin: 0; font: 700 19px Montserrat, sans-serif">Mercado Pago</h3><p class="p">Crédito, débito o dinero en cuenta.</p></div></div>
+<div style="display: flex; gap: 14px; padding: 16px 0; border-top: 1.5px solid #D9D9D9"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 28px; height: 28px; color: #FF2610"><path d="M3 22h18"></path><path d="M6 18v-7"></path><path d="M10 18v-7"></path><path d="M14 18v-7"></path><path d="M18 18v-7"></path><path d="M12 2 21 7H3z"></path></svg><div><h3 style="margin: 0; font: 700 19px Montserrat, sans-serif">Transferencia</h3><p class="p">Con <strong style="color: #D41A00">[X %] de descuento</strong>.</p></div></div>
+<div style="display: flex; gap: 14px; padding: 16px 0; border-top: 1.5px solid #D9D9D9"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 28px; height: 28px; color: #FF2610"><rect width="20" height="12" x="2" y="6" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg><div><h3 style="margin: 0; font: 700 19px Montserrat, sans-serif">Efectivo</h3><p class="p">Al retirar en el local.</p></div></div>
+</section>
+
+<footer style="background: #0B0B0B; color: #FFFFFF; padding: 48px 16px 88px">
+<div style="display: flex; align-items: center; gap: 10px"><img src="/_blob/c328e227e5a40bd9af27e683ef1cac3d" alt="" style="height: 40px; width: auto"><span class="d" style="font-size: 19px; line-height: .95">La <span style="color: #FF2610">Casa</span> de las<br><span style="color: #FF2610">Baterías</span></span></div>
+<p style="margin: 18px 0 24px; font: 500 16px/1.7 Montserrat, sans-serif; color: #D9D9D9">Av. Juan B. Justo 5766, Mar del Plata<br>[Horarios de atención]<br>WhatsApp [número]</p>
+<nav aria-label="Legales" style="display: flex; flex-direction: column; gap: 4px; font: 500 16px/2 Montserrat, sans-serif"><a href="#t" style="color: #FFFFFF">Términos y condiciones</a><a href="#t" style="color: #FFFFFF">Privacidad</a><a href="#t" style="color: #FFFFFF">Cambios y garantía</a></nav>
+<a href="#t" style="margin-top: 18px; display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 10px; box-shadow: inset 0 0 0 2px #FFFFFF; color: #FFFFFF; text-decoration: none; font: 700 17px Montserrat, sans-serif">Botón de arrepentimiento</a>
+<p style="margin: 24px 0 0; font: 500 13px/1.5 Montserrat, sans-serif; color: #A6A6A6">© La Casa de las Baterías · [Razón social] · CUIT [número]</p>
+</footer>
+<a class="waf" href="#wa" aria-label="Escribinos por WhatsApp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 28px; height: 28px"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":5500}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { marca: '', modelo: '', anio: '' };
+}
+renderVals() {
+var M = { 'Chevrolet': ['Onix', 'Corsa', 'Cruze', 'S10'], 'Fiat': ['Cronos', 'Palio', 'Toro', 'Uno'], 'Ford': ['Ka', 'Fiesta', 'Focus', 'Ranger'], 'Peugeot': ['208', '207', '308', 'Partner'], 'Renault': ['Sandero', 'Kangoo', 'Clio', 'Duster'], 'Toyota': ['Etios', 'Corolla', 'Hilux', 'Yaris'], 'Volkswagen': ['Gol Trend', 'Suran', 'Amarok', 'Vento'] };
+var s = this.state, self = this;
+var anios = [];
+for (var y = 2024; y >= 2005; y--) { anios.push({ v: String(y) }); }
+var listo = !!(s.marca && s.modelo && s.anio);
+var estado = !s.marca ? 'Paso 1 de 3: la marca' : !s.modelo ? 'Paso 2 de 3: el modelo' : !s.anio ? 'Paso 3 de 3: el año' : 'Listo: ' + s.marca + ' ' + s.modelo + ' ' + s.anio;
+return {
+marca: s.marca, modelo: s.modelo, anio: s.anio,
+marcas: Object.keys(M).map(function (m) { return { v: m }; }),
+modelos: s.marca ? M[s.marca].map(function (m) { return { v: m }; }) : [],
+anios: anios, noMarca: !s.marca, noModelo: !s.modelo,
+listo: listo, noListo: !listo, estado: estado,
+c1: s.marca ? 'on' : '', c2: s.modelo ? 'on' : '', c3: s.anio ? 'on' : '',
+onMarca: function (e) { self.setState({ marca: e.target.value, modelo: '', anio: '' }); },
+onModelo: function (e) { self.setState({ modelo: e.target.value, anio: '' }); },
+onAnio: function (e) { self.setState({ anio: e.target.value }); }
+};
+}
+}
+</script>
+</body>
+</html>
