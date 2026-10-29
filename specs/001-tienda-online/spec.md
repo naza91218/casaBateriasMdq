@@ -604,8 +604,11 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 - **Plazo de 48 h:** se aplica también a "pagar en el local".
 - **Motor:** el buscador ignora el motor salvo que el vehículo lo tenga cargado; si un modelo
   necesita medidas distintas por motor, se cargan como vehículos separados.
-- **Compatibilidades:** la tabla auto → medida sale de catálogos de proveedores y fabricantes; la
-  carga inicial la hace el desarrollador por planilla (P4).
+- **Catálogo y compatibilidades:** los proveedores no entregan catálogo (P4, respondida el
+  29/10/2026). La carga inicial sale de fuentes públicas de las marcas y sus distribuidores
+  (modelos, medida, Ah, CCA y autos compatibles), se arma como planilla con el formato de
+  importación y el administrador la revisa antes de publicarla. Los precios y el stock los pone
+  el administrador; no se copian precios de terceros.
 - **Contenido:** textos, fotos del local y del equipo, horarios, razón social y CUIT los entrega
   el cliente; mientras tanto se usan marcadores sin inventar datos (P5, P6).
 - **Textos legales:** se usan modelos estándar; conviene que los revise un profesional. La
