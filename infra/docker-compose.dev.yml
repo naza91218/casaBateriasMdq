@@ -10,7 +10,7 @@ services:
   db:
     image: postgres:17
     ports:
-      - '5432:5432'
+      - '5433:5432' # 5433 en la PC para no chocar con otro PostgreSQL instalado
     environment:
       POSTGRES_USER: casa
       POSTGRES_PASSWORD: casa

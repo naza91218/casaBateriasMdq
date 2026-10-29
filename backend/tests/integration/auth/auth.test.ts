@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructure/schema.js';
 import { construirServidor } from '../../../src/http/server.js';
@@ -31,8 +31,10 @@ async function ultimoToken(): Promise<string> {
   const filas = await p.ctx.db
     .select()
     .from(outboxMensajes)
-    .where(eq(outboxMensajes.evento, 'enlace_ingreso'));
-  const url = String(filas.at(-1)?.datos.url);
+    .where(eq(outboxMensajes.evento, 'enlace_ingreso'))
+    .orderBy(desc(outboxMensajes.id))
+    .limit(1);
+  const url = String(filas[0]?.datos.url);
   return new URL(url).searchParams.get('token') ?? '';
 }
 

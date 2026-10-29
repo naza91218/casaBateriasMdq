@@ -66,8 +66,8 @@ cerrado y se refina en ese momento.
 - [X] T012 [P] Test unitario de cifrado AES-256-GCM (ida y vuelta, IV distinto por llamada, falla con tag alterado, versión de clave) en `backend/tests/unit/platform/crypto.test.ts`
 - [X] T013 [P] Test unitario del logger: `dni`, `direccion`, `calle`, `telefono`, `email`, `nombre` quedan ocultos en `backend/tests/unit/platform/logger.test.ts`
 - [X] T014 [P] Test de contrato del formato de error (`{ error: { codigo, mensaje, campos } }`, 400 en validación, 404, 409, 429) en `backend/tests/contract/http/errores.test.ts`
-- [ ] T015 [P] _(escrito; falta correrlo con PostgreSQL)_ Test de integración del outbox: un mensaje con la misma clave `(evento, pedido_id, destinatario)` se encola una sola vez; reintento con espera exponencial 1, 5, 15, 60 min hasta 8 intentos en `backend/tests/integration/notificaciones/outbox.test.ts`
-- [ ] T016 [P] _(escrito; falta correrlo con PostgreSQL)_ Test de integración de auth: enlace de 15 min y un solo uso, sesión de 30 días, cookie `httpOnly`/`Secure`/`SameSite=Lax`, respuesta idéntica para mail no autorizado (US3-01, US3-02) en `backend/tests/integration/auth/auth.test.ts`
+- [X] T015 [P] Test de integración del outbox: un mensaje con la misma clave `(evento, pedido_id, destinatario)` se encola una sola vez; reintento con espera exponencial 1, 5, 15, 60 min hasta 8 intentos en `backend/tests/integration/notificaciones/outbox.test.ts`
+- [X] T016 [P] Test de integración de auth: enlace de 15 min y un solo uso, sesión de 30 días, cookie `httpOnly`/`Secure`/`SameSite=Lax`, respuesta idéntica para mail no autorizado (US3-01, US3-02) en `backend/tests/integration/auth/auth.test.ts`
 
 ### Implementación de fundaciones
 
@@ -98,7 +98,7 @@ cerrado y se refina en ese momento.
 - [X] T041 [P] Crear los contratos Zod comunes (error, paginación, `Dinero` serializado como entero, WhatsApp `{ url, mensaje }`) en `shared/src/contratos/comunes.ts`
 - [X] T042 Crear el seed base: zona "Mar del Plata"; configuración inicial; un usuario del panel con `MAIL_ADMIN` en `backend/db/seed/base.ts` (marcas y medidas se siembran en T057, después de crear sus tablas en T046)
 
-**Checkpoint** _(pendiente: requiere Docker/PostgreSQL para correr T015, T016 y aplicar la migración)_: la API arranca, `GET /api/v1/salud` responde 200, el ingreso al panel funciona con el enlace en Mailpit, el worker envía mails del outbox
+**Checkpoint** ✅ (verificado 2026-10-29): la API arranca, `GET /api/v1/salud` responde 200, el ingreso al panel funciona con el enlace en Mailpit, el worker envía mails del outbox
 
 ---
 

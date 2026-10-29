@@ -47,7 +47,8 @@ export async function construirServidor(
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024, files: 10 } });
   await app.register(rateLimit, {
     global: false,
-    ...(opciones.sinLimites ? { max: Number.MAX_SAFE_INTEGER } : {}),
+    // En tests se saltean todos los límites, incluidos los de cada ruta.
+    ...(opciones.sinLimites ? { allowList: () => true } : {}),
   });
 
   if (!ctx.config.esProduccion) {

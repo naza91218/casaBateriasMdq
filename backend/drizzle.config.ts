@@ -6,7 +6,7 @@ export default defineConfig({
   out: './db/migrations',
   casing: 'snake_case',
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? 'postgres://casa:casa@localhost:5432/casa_dev',
+    url: process.env.DATABASE_URL ?? 'postgres://casa:casa@localhost:5433/casa_dev',
   },
   strict: true,
   verbose: true,

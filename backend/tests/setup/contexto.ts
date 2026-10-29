@@ -8,7 +8,7 @@ import { migrar } from '../../src/platform/migrar.js';
 import { RelojFalso } from '../../src/shared-kernel/reloj.js';
 
 export const URL_BASE_PRUEBA =
-  process.env.TEST_DATABASE_URL ?? 'postgres://casa:casa@localhost:5432/casa_test';
+  process.env.TEST_DATABASE_URL ?? 'postgres://casa:casa@localhost:5433/casa_test';
 
 export function configDePrueba(extra: Record<string, string> = {}): Config {
   return cargarConfig({
