@@ -19,6 +19,22 @@
 - **Administrador:** la persona a cargo de la tienda (hoy Juan, nieto del dueño). Gestiona
   pedidos, precios, stock y fotos, y sale a colocar las baterías.
 
+## Clarifications
+
+### Session 2026-10-29
+
+- Q: ¿Cómo funciona el canje de la batería usada? → A: No se cotiza ni descuenta en la tienda
+  online. Hay un formulario de consulta de canje que guarda la consulta en el panel y abre
+  WhatsApp con el resumen; el valor se define en el local. Solo para Mar del Plata.
+- Q: ¿Cuánto tiempo se reserva el stock de un pedido con Mercado Pago sin pagar? → A: Mercado
+  Pago se usa solo con medios de acreditación instantánea (tarjeta y dinero en cuenta; sin
+  Rapipago/Pago Fácil). Si el pago no se completa, la reserva vence a los 30 minutos. La
+  transferencia mantiene 48 h.
+- Q: ¿Cuánto tiempo se guarda la batería de un pedido a pagar en efectivo en el local? → A: No
+  vence; el administrador lo cancela a mano si el comprador no viene.
+- Q: ¿El pago en efectivo en el local tiene el mismo descuento que la transferencia? → A: Sí, el
+  mismo porcentaje configurable ("precio por transferencia o efectivo").
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Encontrar la batería para mi auto (Priority: P1)
@@ -57,7 +73,7 @@ cierre por WhatsApp.
 8. **Given** un producto pausado, **When** alguien entra a su dirección, **Then** ve la página de
    "no encontrado" y el producto no figura en listados.
 9. **Given** un descuento por transferencia del 10 %, **When** el comprador ve una ficha de
-   $100.000, **Then** ve "$100.000" y "$90.000 por transferencia".
+   $100.000, **Then** ve "$100.000" y "$90.000 por transferencia o efectivo".
 10. **Given** un celular de 375 px de ancho, **When** se usa el buscador, **Then** los tres
     selectores y el botón se ven sin desplazamiento horizontal y cada área táctil mide 48 px o más.
 
@@ -218,7 +234,7 @@ precio y una foto desde el celular y verificar el cambio en la tienda pública.
 7. **Given** una planilla de compatibilidades (marca, modelo, años, medida), **When** se importa,
    **Then** los autos aparecen en el buscador con su medida.
 8. **Given** el descuento por transferencia en 10 %, **When** el administrador lo cambia a 12 %,
-   **Then** las fichas y el checkout muestran el nuevo precio por transferencia.
+   **Then** las fichas y el checkout muestran el nuevo precio por transferencia o efectivo.
 
 ---
 
@@ -323,7 +339,7 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 - **Precio que cambia durante el checkout:** el pedido se crea con el precio vigente al confirmar
   y el comprador lo ve antes de pagar.
 - **Pago de Mercado Pago que llega después del vencimiento:** si se aprueba un pago de un pedido
-  ya cancelado por las 48 h, el pedido no se reactiva solo: queda una alerta para el administrador
+  ya cancelado por vencimiento, el pedido no se reactiva solo: queda una alerta para el administrador
   para reponer stock o devolver el dinero.
 - **Transferencia que llega tarde:** el comprador transfiere después de la cancelación; el
   administrador ve el pedido cancelado y decide desde el panel (no hay reactivación automática).
@@ -355,12 +371,18 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   y Edna (R-CAT-02).
 - **FR-003**: Las medidas MUST incluir inicialmente 12x65, 12x75, 12x90, 12x110 y 12x160
   (R-CAT-03).
-- **FR-004**: Cada producto MUST poder tener un precio con entrega de la batería usada, y el
-  comprador MUST poder elegir en la ficha si entrega la usada o no (R-CAT-04).
+- **FR-004**: El canje de la batería usada MUST NOT tener precio ni descuento en la tienda
+  online. La ficha y el checkout MUST ofrecer "Consultá por el canje de tu batería usada", que
+  abre un formulario corto (nombre, teléfono, marca/medida de la usada si la sabe, auto,
+  localidad). Al enviarlo, la consulta MUST guardarse en el panel y abrirse WhatsApp con el
+  resumen precargado. El valor del canje se define en el local y solo aplica a Mar del Plata
+  (reemplaza a R-CAT-04).
+- **FR-004b**: El panel MUST listar las consultas de canje (más nuevas primero, con estado
+  pendiente/atendida) y permitir descargarlas como planilla.
 - **FR-005**: El catálogo MUST filtrar por marca, medida y gama de forma combinable, y los filtros
   MUST quedar en la dirección de la página para poder compartirlos (R-CAT-05).
 - **FR-006**: La ficha MUST mostrar fotos, especificaciones, precio de lista, precio por
-  transferencia, autos compatibles y el servicio incluido: colocación, medición del alternador y
+  transferencia o efectivo, autos compatibles y el servicio incluido: colocación, medición del alternador y
   12 meses de garantía (R-CAT-06).
 - **FR-007**: La tienda MUST explicar la diferencia entre económica y reforzada en el listado y en
   la ficha (R-CAT-07).
@@ -393,7 +415,7 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   R-ENT-02).
 - **FR-018**: El carrito MUST admitir más de una batería y conservarse en el dispositivo si el
   comprador sale y vuelve (R-PED-06).
-- **FR-019**: Todos los importes (subtotal, canje, descuento, costo de zona, total) MUST
+- **FR-019**: Todos los importes (subtotal, descuento, costo de zona, total) MUST
   calcularse en la tienda con los precios vigentes; lo que envía el navegador MUST limitarse a
   productos, cantidades y opciones (R-PED-03).
 - **FR-020**: Al confirmar, la tienda MUST crear el pedido y descontar el stock en una sola
@@ -407,8 +429,8 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 
 - **FR-022**: Los medios de pago MUST ser Mercado Pago, transferencia con descuento y efectivo al
   retirar; el efectivo MUST ofrecerse solo con retiro en el local (R-PAG-01).
-- **FR-023**: El precio publicado MUST ser el de lista; la transferencia MUST aplicar el
-  porcentaje de descuento configurado (R-PAG-02).
+- **FR-023**: El precio publicado MUST ser el de lista; la transferencia y el efectivo en el
+  local MUST aplicar el mismo porcentaje de descuento configurado (R-PAG-02).
 - **FR-024**: Un pedido con Mercado Pago MUST pasar a pagado solo cuando la tienda verifica con
   Mercado Pago que el pago está aprobado y el monto coincide; el regreso del comprador desde
   Mercado Pago MUST NOT cambiar el estado (R-PAG-03, R-PAG-04).
@@ -438,9 +460,14 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   para retirar → entregado.
 - **FR-033**: Todo cambio de estado MUST registrar estado anterior, nuevo, quién lo hizo y cuándo,
   y todo intento de transición inválida MUST rechazarse y quedar registrado (R-PED-08).
-- **FR-034**: Un pedido pendiente de pago o a pagar en el local sin pago a las 48 h MUST
-  cancelarse automáticamente y devolver su stock; el control MUST correr al menos cada hora
-  (R-PED-09, R-OPS-01).
+- **FR-034**: Un pedido sin pago MUST cancelarse automáticamente y devolver su stock al vencer
+  su plazo: 30 minutos con Mercado Pago y 48 h con transferencia. El control MUST correr al
+  menos cada 5 minutos (R-PED-09, R-OPS-01). Los pedidos a pagar en el local MUST NOT vencer
+  solos: el administrador los cancela a mano, y el panel MUST mostrar hace cuántos días esperan,
+  destacando los de más de 48 h.
+- **FR-034b**: El cobro con Mercado Pago MUST ofrecer solo medios de acreditación instantánea
+  (tarjetas y dinero en cuenta), excluir medios en efectivo (Rapipago, Pago Fácil) y vencer el
+  link de pago junto con la reserva.
 - **FR-035**: Cancelar un pedido MUST devolver su stock una sola vez, aunque la cancelación se
   intente varias veces (R-PED-10).
 
@@ -575,15 +602,14 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 ### Key Entities *(include if feature involves data)*
 
 - **Producto:** una batería a la venta. Código, marca, medida, amperaje, CCA, gama, precio de
-  lista, precio con canje, stock, estado (a revisar, activo, pausado, archivado), fotos
+  lista, stock, estado (a revisar, activo, pausado, archivado), fotos
   ordenadas, fuente de los datos.
 - **Marca:** lista cerrada de fabricantes (Sermat, Herbo, Volta, Edna).
 - **Medida:** formato de batería (12x65…); es el puente entre autos y productos.
 - **Vehículo:** marca, modelo, rango de años y motor opcional; se asocia a una o más medidas.
 - **Pedido:** número correlativo, código privado de seguimiento, estado, forma de entrega, zona,
-  medio de pago, subtotal, canje, descuento, costo de zona, total, vencimiento, fecha.
-- **Ítem del pedido:** producto, cantidad, precio unitario al momento de la compra y si entrega
-  la usada.
+  medio de pago, subtotal, descuento, costo de zona, total, vencimiento, fecha.
+- **Ítem del pedido:** producto, cantidad y precio unitario al momento de la compra.
 - **Datos del comprador:** nombre, DNI (protegido), teléfono, mail, dirección y referencias;
   anonimizables.
 - **Pago:** medio, identificador externo, estado, monto, fecha y, si es manual, quién lo
@@ -593,7 +619,9 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   pedido cancelado).
 - **Zona de colocación:** nombre, costo extra, activa.
 - **Solicitud de arrepentimiento:** pedido, nombre, mail, código, fecha.
-- **Configuración:** porcentaje de descuento por transferencia, datos bancarios, horarios,
+- **Consulta de canje:** nombre, teléfono, batería usada (marca/medida, opcional), auto,
+  localidad, producto desde el que consultó (opcional), estado (pendiente/atendida), fecha.
+- **Configuración:** porcentaje de descuento por transferencia o efectivo, datos bancarios, horarios,
   WhatsApp, horas de vencimiento.
 - **Usuario del panel:** mail autorizado y, a futuro, rol.
 
@@ -608,8 +636,8 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   dos pedidos por la misma última unidad.
 - **SC-004**: El 100 % de los pedidos marcados como pagados tiene un pago verificado con Mercado
   Pago o una confirmación manual registrada con quién y cuándo.
-- **SC-005**: El 100 % de los pedidos impagos se cancela entre las 48 y las 49 h, con el stock
-  devuelto.
+- **SC-005**: El 100 % de los pedidos impagos se cancela dentro de los 5 minutos posteriores a
+  su vencimiento (30 minutos con Mercado Pago, 48 h con transferencia), con el stock devuelto.
 - **SC-006**: El administrador gestiona un pedido completo y edita un producto sin ayuda en menos
   de 10 minutos, desde el celular.
 - **SC-007**: Cada cambio de estado genera exactamente un mail al comprador, y los mails obtienen
@@ -631,14 +659,15 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   cuentas de cliente, turnos de colocación, cupones, envíos fuera de Mar del Plata, reseñas,
   comparador, blog, recordatorios automáticos, WhatsApp automático, reportes de ventas, roles con
   permisos distintos, facturación electrónica y las funciones de "Preparada para crecer".
-- **Canje de la usada:** se asume que existe (el prototipo aprobado lo incluye) con un precio con
-  canje por producto. Si el cliente decide que no, se oculta la opción sin cambiar el resto
-  (pregunta P1).
+- **Canje de la usada:** resuelto en Clarifications (P1): se consulta por formulario y WhatsApp y
+  se valúa en el local. El prototipo muestra un precio con canje en la ficha; esa parte se
+  reemplaza por el botón de consulta.
 - **Zonas:** se asume una zona por defecto ("Mar del Plata") sin costo extra; las demás las carga
   el administrador (P8).
 - **Descuento por transferencia:** configurable; valor inicial 10 % hasta que el cliente lo
-  confirme (P9). No aplica al efectivo salvo que el cliente lo pida.
-- **Plazo de 48 h:** se aplica también a "pagar en el local".
+  confirme (P9). Aplica igual al efectivo en el local (ver Clarifications).
+- **Plazos de reserva:** resueltos en Clarifications (Mercado Pago 30 min, transferencia 48 h,
+  pago en el local sin vencimiento).
 - **Motor:** el buscador ignora el motor salvo que el vehículo lo tenga cargado; si un modelo
   necesita medidas distintas por motor, se cargan como vehículos separados.
 - **Catálogo y compatibilidades:** los proveedores no entregan catálogo (P4, respondida el
