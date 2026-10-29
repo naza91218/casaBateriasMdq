@@ -62,43 +62,43 @@ cerrado y se refina en ese momento.
 
 ### Tests de fundaciones
 
-- [ ] T011 [P] Test unitario de `Dinero` (suma, resta, porcentaje con redondeo a centavo, nunca negativo) en `backend/tests/unit/shared-kernel/dinero.test.ts`
-- [ ] T012 [P] Test unitario de cifrado AES-256-GCM (ida y vuelta, IV distinto por llamada, falla con tag alterado, versión de clave) en `backend/tests/unit/platform/crypto.test.ts`
-- [ ] T013 [P] Test unitario del logger: `dni`, `direccion`, `calle`, `telefono`, `email`, `nombre` quedan ocultos en `backend/tests/unit/platform/logger.test.ts`
-- [ ] T014 [P] Test de contrato del formato de error (`{ error: { codigo, mensaje, campos } }`, 400 en validación, 404, 409, 429) en `backend/tests/contract/http/errores.test.ts`
-- [ ] T015 [P] Test de integración del outbox: un mensaje con la misma clave `(evento, pedido_id, destinatario)` se encola una sola vez; reintento con espera exponencial 1, 5, 15, 60 min hasta 8 intentos en `backend/tests/integration/notificaciones/outbox.test.ts`
-- [ ] T016 [P] Test de integración de auth: enlace de 15 min y un solo uso, sesión de 30 días, cookie `httpOnly`/`Secure`/`SameSite=Lax`, respuesta idéntica para mail no autorizado (US3-01, US3-02) en `backend/tests/integration/auth/auth.test.ts`
+- [X] T011 [P] Test unitario de `Dinero` (suma, resta, porcentaje con redondeo a centavo, nunca negativo) en `backend/tests/unit/shared-kernel/dinero.test.ts`
+- [X] T012 [P] Test unitario de cifrado AES-256-GCM (ida y vuelta, IV distinto por llamada, falla con tag alterado, versión de clave) en `backend/tests/unit/platform/crypto.test.ts`
+- [X] T013 [P] Test unitario del logger: `dni`, `direccion`, `calle`, `telefono`, `email`, `nombre` quedan ocultos en `backend/tests/unit/platform/logger.test.ts`
+- [X] T014 [P] Test de contrato del formato de error (`{ error: { codigo, mensaje, campos } }`, 400 en validación, 404, 409, 429) en `backend/tests/contract/http/errores.test.ts`
+- [ ] T015 [P] _(escrito; falta correrlo con PostgreSQL)_ Test de integración del outbox: un mensaje con la misma clave `(evento, pedido_id, destinatario)` se encola una sola vez; reintento con espera exponencial 1, 5, 15, 60 min hasta 8 intentos en `backend/tests/integration/notificaciones/outbox.test.ts`
+- [ ] T016 [P] _(escrito; falta correrlo con PostgreSQL)_ Test de integración de auth: enlace de 15 min y un solo uso, sesión de 30 días, cookie `httpOnly`/`Secure`/`SameSite=Lax`, respuesta idéntica para mail no autorizado (US3-01, US3-02) en `backend/tests/integration/auth/auth.test.ts`
 
 ### Implementación de fundaciones
 
-- [ ] T017 Implementar la configuración validada con Zod (falla al arrancar si falta una variable) en `backend/src/platform/config.ts`
-- [ ] T018 [P] Implementar el value object `Dinero` en centavos enteros (`bigint`) en `backend/src/shared-kernel/dinero.ts`
-- [ ] T019 [P] Implementar el puerto `Reloj` (real y falso para tests) en `backend/src/shared-kernel/reloj.ts`
-- [ ] T020 [P] Implementar errores de dominio (`ErrorDeDominio` con `codigo` y `mensaje` en voseo) y `Result` en `backend/src/shared-kernel/errores.ts`
-- [ ] T021 [P] Implementar cifrado AES-256-GCM con IV aleatorio y versión de clave en `backend/src/platform/crypto.ts`
-- [ ] T022 [P] Implementar el logger pino con `redact` de datos personales en `backend/src/platform/logger.ts`
-- [ ] T023 Implementar el cliente de base (driver `postgres` + Drizzle), el helper de transacciones y el agregador de esquemas en `backend/src/platform/db.ts` y `backend/src/platform/schema.ts`
-- [ ] T024 Configurar `backend/drizzle.config.ts` apuntando a `backend/db/migrations/` y a los esquemas de cada módulo
-- [ ] T025 Crear el esquema de configuración: tabla `configuracion` de fila única (`CHECK (id = 1)`, `descuento_pct numeric(5,2)` entre 0 y 50 con inicial 10, datos bancarios, `whatsapp`, `horarios jsonb`, datos del comercio, `google_resenas_url`, `horas_venc_transferencia` 48, `minutos_venc_mercadopago` 30) en `backend/src/modules/configuracion/infrastructure/schema.ts`
-- [ ] T026 [P] Crear el esquema de entregas: `zonas_colocacion` (`nombre` UNIQUE, `costo_extra bigint` default 0, `activa`) en `backend/src/modules/entregas/infrastructure/schema.ts`
-- [ ] T027 [P] Crear el esquema de auth: `usuarios_panel` (`email citext` UNIQUE, `rol` 'admin', `activo`), `enlaces_ingreso` (`token_hash` PK SHA-256, `vence_en` +15 min, `usado_en`), `sesiones` (`id_hash` PK, `vence_en` +30 días, `revocada_en`) en `backend/src/modules/auth/infrastructure/schema.ts`
-- [ ] T028 [P] Crear el esquema de notificaciones: `outbox_mensajes` (`evento`, `pedido_id` null, `destinatario` enum `comprador`/`admin`, `datos jsonb` sin DNI, `estado` enum `pendiente`/`enviado`/`fallido`, `intentos` máx. 8, `proximo_intento_en`, `ultimo_error`, `enviado_en`, UNIQUE `(evento, pedido_id, destinatario)`) en `backend/src/modules/notificaciones/infrastructure/schema.ts`
-- [ ] T029 Generar la primera migración con drizzle-kit en `backend/db/migrations/` (incluye extensión `citext`)
-- [ ] T030 Implementar el servidor Fastify con type provider Zod, prefijo `/api/v1`, cookies, rate limit, multipart, Swagger solo fuera de producción y `GET /salud` (verifica la base) en `backend/src/http/server.ts`
-- [ ] T031 Implementar el manejador global de errores (mapea `ErrorDeDominio` y Zod al formato del contrato, sin datos personales en la respuesta ni en el log) en `backend/src/http/plugins/errores.ts`
-- [ ] T032 [P] Integrar Sentry con `beforeSend` que elimina cuerpos de request y cookies en `backend/src/platform/sentry.ts`
-- [ ] T033 Definir los puertos `Mailer`, `Almacenamiento`, `PasarelaPago`, `Revalidador` en `backend/src/shared-kernel/puertos.ts`
-- [ ] T034 [P] Implementar `MailerDev` (SMTP a Mailpit) y `MailerResend` en `backend/src/adapters/mailer.ts`
-- [ ] T035 Implementar el servicio de outbox (`encolar` dentro de la transacción del llamador; `tomarPendientes` con `FOR UPDATE SKIP LOCKED`; `marcarEnviado`/`marcarFallido` con espera exponencial) en `backend/src/modules/notificaciones/application/outbox.ts`
-- [ ] T036 Implementar el worker con bucles separados (outbox cada 10 s, vencimientos cada 1 min) y apagado ordenado en `backend/src/worker/main.ts`
-- [ ] T037 Implementar el módulo auth: pedir enlace (rate limit por IP y mail, respuesta 202 siempre igual), verificar enlace (crea sesión y cookie, redirige a `/panel` o a `/panel/ingresar?error=enlace_vencido`), sesión actual y salir en `backend/src/modules/auth/application/` y `backend/src/modules/auth/http/rutas.ts`
-- [ ] T038 Implementar el plugin `requiereSesion` para todas las rutas `/admin` (401 sin sesión) que expone `request.usuario` en `backend/src/http/plugins/sesion.ts`
-- [ ] T039 Implementar el módulo configuración: servicio de lectura y `GET /configuracion/publica` (descuento, WhatsApp, horarios, datos del comercio, zonas activas, URL de reseñas) en `backend/src/modules/configuracion/`
-- [ ] T040 Crear el composition root que arma servicios con sus adaptadores según el entorno en `backend/src/composition-root.ts` y la entrada `backend/src/main.ts`
-- [ ] T041 [P] Crear los contratos Zod comunes (error, paginación, `Dinero` serializado como entero, WhatsApp `{ url, mensaje }`) en `shared/src/contratos/comunes.ts`
-- [ ] T042 Crear el seed base: zona "Mar del Plata"; configuración inicial; un usuario del panel con `MAIL_ADMIN` en `backend/db/seed/base.ts` (marcas y medidas se siembran en T057, después de crear sus tablas en T046)
+- [X] T017 Implementar la configuración validada con Zod (falla al arrancar si falta una variable) en `backend/src/platform/config.ts`
+- [X] T018 [P] Implementar el value object `Dinero` en centavos enteros (`bigint`) en `backend/src/shared-kernel/dinero.ts`
+- [X] T019 [P] Implementar el puerto `Reloj` (real y falso para tests) en `backend/src/shared-kernel/reloj.ts`
+- [X] T020 [P] Implementar errores de dominio (`ErrorDeDominio` con `codigo` y `mensaje` en voseo) y `Result` en `backend/src/shared-kernel/errores.ts`
+- [X] T021 [P] Implementar cifrado AES-256-GCM con IV aleatorio y versión de clave en `backend/src/platform/crypto.ts`
+- [X] T022 [P] Implementar el logger pino con `redact` de datos personales en `backend/src/platform/logger.ts`
+- [X] T023 Implementar el cliente de base (driver `postgres` + Drizzle), el helper de transacciones y el agregador de esquemas en `backend/src/platform/db.ts` y `backend/src/platform/schema.ts`
+- [X] T024 Configurar `backend/drizzle.config.ts` apuntando a `backend/db/migrations/` y a los esquemas de cada módulo
+- [X] T025 Crear el esquema de configuración: tabla `configuracion` de fila única (`CHECK (id = 1)`, `descuento_pct numeric(5,2)` entre 0 y 50 con inicial 10, datos bancarios, `whatsapp`, `horarios jsonb`, datos del comercio, `google_resenas_url`, `horas_venc_transferencia` 48, `minutos_venc_mercadopago` 30) en `backend/src/modules/configuracion/infrastructure/schema.ts`
+- [X] T026 [P] Crear el esquema de entregas: `zonas_colocacion` (`nombre` UNIQUE, `costo_extra bigint` default 0, `activa`) en `backend/src/modules/entregas/infrastructure/schema.ts`
+- [X] T027 [P] Crear el esquema de auth: `usuarios_panel` (`email citext` UNIQUE, `rol` 'admin', `activo`), `enlaces_ingreso` (`token_hash` PK SHA-256, `vence_en` +15 min, `usado_en`), `sesiones` (`id_hash` PK, `vence_en` +30 días, `revocada_en`) en `backend/src/modules/auth/infrastructure/schema.ts`
+- [X] T028 [P] Crear el esquema de notificaciones: `outbox_mensajes` (`evento`, `pedido_id` null, `destinatario` enum `comprador`/`admin`, `datos jsonb` sin DNI, `estado` enum `pendiente`/`enviado`/`fallido`, `intentos` máx. 8, `proximo_intento_en`, `ultimo_error`, `enviado_en`, UNIQUE `(evento, pedido_id, destinatario)`) en `backend/src/modules/notificaciones/infrastructure/schema.ts`
+- [X] T029 Generar la primera migración con drizzle-kit en `backend/db/migrations/` (incluye extensión `citext`)
+- [X] T030 Implementar el servidor Fastify con type provider Zod, prefijo `/api/v1`, cookies, rate limit, multipart, Swagger solo fuera de producción y `GET /salud` (verifica la base) en `backend/src/http/server.ts`
+- [X] T031 Implementar el manejador global de errores (mapea `ErrorDeDominio` y Zod al formato del contrato, sin datos personales en la respuesta ni en el log) en `backend/src/http/plugins/errores.ts`
+- [X] T032 [P] Integrar Sentry con `beforeSend` que elimina cuerpos de request y cookies en `backend/src/platform/sentry.ts`
+- [X] T033 Definir los puertos `Mailer`, `Almacenamiento`, `PasarelaPago`, `Revalidador` en `backend/src/shared-kernel/puertos.ts`
+- [X] T034 [P] Implementar `MailerDev` (SMTP a Mailpit) y `MailerResend` en `backend/src/adapters/mailer.ts`
+- [X] T035 Implementar el servicio de outbox (`encolar` dentro de la transacción del llamador; `tomarPendientes` con `FOR UPDATE SKIP LOCKED`; `marcarEnviado`/`marcarFallido` con espera exponencial) en `backend/src/modules/notificaciones/application/outbox.ts`
+- [X] T036 Implementar el worker con bucles separados (outbox cada 10 s, vencimientos cada 1 min) y apagado ordenado en `backend/src/worker/main.ts`
+- [X] T037 Implementar el módulo auth: pedir enlace (rate limit por IP y mail, respuesta 202 siempre igual), verificar enlace (crea sesión y cookie, redirige a `/panel` o a `/panel/ingresar?error=enlace_vencido`), sesión actual y salir en `backend/src/modules/auth/application/` y `backend/src/modules/auth/http/rutas.ts`
+- [X] T038 Implementar el plugin `requiereSesion` para todas las rutas `/admin` (401 sin sesión) que expone `request.usuario` en `backend/src/http/plugins/sesion.ts`
+- [X] T039 Implementar el módulo configuración: servicio de lectura y `GET /configuracion/publica` (descuento, WhatsApp, horarios, datos del comercio, zonas activas, URL de reseñas) en `backend/src/modules/configuracion/`
+- [X] T040 Crear el composition root que arma servicios con sus adaptadores según el entorno en `backend/src/composition-root.ts` y la entrada `backend/src/main.ts`
+- [X] T041 [P] Crear los contratos Zod comunes (error, paginación, `Dinero` serializado como entero, WhatsApp `{ url, mensaje }`) en `shared/src/contratos/comunes.ts`
+- [X] T042 Crear el seed base: zona "Mar del Plata"; configuración inicial; un usuario del panel con `MAIL_ADMIN` en `backend/db/seed/base.ts` (marcas y medidas se siembran en T057, después de crear sus tablas en T046)
 
-**Checkpoint**: la API arranca, `GET /api/v1/salud` responde 200, el ingreso al panel funciona con el enlace en Mailpit, el worker envía mails del outbox
+**Checkpoint** _(pendiente: requiere Docker/PostgreSQL para correr T015, T016 y aplicar la migración)_: la API arranca, `GET /api/v1/salud` responde 200, el ingreso al panel funciona con el enlace en Mailpit, el worker envía mails del outbox
 
 ---
 

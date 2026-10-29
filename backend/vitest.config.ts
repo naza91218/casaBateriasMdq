@@ -11,10 +11,10 @@ export default defineConfig({
           name: 'integration',
           include: ['tests/integration/**/*.test.ts'],
           environment: 'node',
-          setupFiles: ['tests/setup/integracion.ts'],
           // Cada archivo usa la base de pruebas recreada; en serie para no pisarse.
           fileParallelism: false,
           testTimeout: 20000,
+          hookTimeout: 60000,
         },
       },
       {
@@ -22,9 +22,9 @@ export default defineConfig({
           name: 'contract',
           include: ['tests/contract/**/*.test.ts'],
           environment: 'node',
-          setupFiles: ['tests/setup/integracion.ts'],
           fileParallelism: false,
           testTimeout: 20000,
+          hookTimeout: 60000,
         },
       },
     ],
