@@ -110,26 +110,26 @@ cerrado y se refina en ese momento.
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T043 [P] [US1] Tests de integración del buscador: US1-01 (dos baterías, económica primero), US1-02 (año fuera de rango no figura), US1-03 (auto no cargado → `auto_no_cargado` + WhatsApp con marca, modelo y año), US1-04 (sin stock → `sin_stock` + WhatsApp) en `backend/tests/integration/compatibilidad/buscador.test.ts`
-- [ ] T044 [P] [US1] Tests de integración del catálogo: US1-06 (filtro marca + gama combinable), US1-07 (stock 0 → `disponible: false` + WhatsApp con el producto), US1-08 (pausado → 404 y fuera de listados), US1-09 (precio de lista y precio por transferencia o efectivo con 10 %) en `backend/tests/integration/catalogo/catalogo.test.ts`
-- [ ] T045 [P] [US1] Tests de contrato de `GET /catalogo/*` y `GET /vehiculos/*` contra los esquemas de `shared/` (sin campos de más) en `backend/tests/contract/catalogo/rutas.test.ts`
+- [X] T043 [P] [US1] Tests de integración del buscador: US1-01 (dos baterías, económica primero), US1-02 (año fuera de rango no figura), US1-03 (auto no cargado → `auto_no_cargado` + WhatsApp con marca, modelo y año), US1-04 (sin stock → `sin_stock` + WhatsApp) en `backend/tests/integration/compatibilidad/buscador.test.ts`
+- [X] T044 [P] [US1] Tests de integración del catálogo: US1-06 (filtro marca + gama combinable), US1-07 (stock 0 → `disponible: false` + WhatsApp con el producto), US1-08 (pausado → 404 y fuera de listados), US1-09 (precio de lista y precio por transferencia o efectivo con 10 %) en `backend/tests/integration/catalogo/catalogo.test.ts`
+- [X] T045 [P] [US1] Tests de contrato de `GET /catalogo/*` y `GET /vehiculos/*` contra los esquemas de `shared/` (sin campos de más) en `backend/tests/contract/catalogo/rutas.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T046 [P] [US1] Crear el esquema de catálogo: `marcas` (`nombre` y `slug` UNIQUE, `activa`), `medidas` (`codigo` PK formato `12x65`, `orden`), `productos` (`sku` UNIQUE, `slug` UNIQUE, `marca_id`, `medida`, `amperaje_ah` > 0, `cca` null permitido, `gama` enum `economica`/`reforzada`, `precio_lista bigint`, `stock int CHECK (stock >= 0)`, `estado` enum `a_revisar`/`activo`/`pausado`/`archivado` default `a_revisar`, `fuente`; índices `(estado, medida)` y `(estado, marca_id, gama)`), `producto_fotos` (`clave`, `orden`, `origen` enum `marca`/`propia`, ON DELETE CASCADE) en `backend/src/modules/catalogo/infrastructure/schema.ts`
-- [ ] T047 [P] [US1] Crear el esquema de compatibilidad: `vehiculos` (`marca`, `marca_slug`, `modelo`, `modelo_slug`, `anio_desde`, `anio_hasta` con `CHECK (anio_hasta >= anio_desde)`, `motor` null = cualquiera, `fuente`, UNIQUE `(marca_slug, modelo_slug, anio_desde, anio_hasta, coalesce(motor, ''))`) y `vehiculo_medidas` (PK `(vehiculo_id, medida)`) en `backend/src/modules/compatibilidad/infrastructure/schema.ts`
-- [ ] T048 [US1] Generar la migración de catálogo y compatibilidad en `backend/db/migrations/`
-- [ ] T049 [P] [US1] Implementar la calculadora pura de precios (precio de lista, descuento % de configuración, redondeo a centavo) en `backend/src/modules/catalogo/domain/precios.ts`
-- [ ] T050 [P] [US1] Implementar el generador de enlaces de WhatsApp con mensaje precargado ("Hola, busco batería para un {marca} {modelo} {año}" y variantes por producto) en `backend/src/shared-kernel/whatsapp.ts`
-- [ ] T051 [US1] Implementar el repositorio de catálogo (listado filtrado de `activo`, ficha por slug, foto principal) en `backend/src/modules/catalogo/infrastructure/repositorio.ts`
-- [ ] T052 [US1] Implementar el servicio de catálogo (`listar`, `obtenerFicha` con precios, servicio incluido, autos compatibles, `disponible`) en `backend/src/modules/catalogo/application/catalogo.ts`
-- [ ] T053 [US1] Implementar el repositorio y servicio de compatibilidad (marcas con datos, modelos, años como unión de rangos, medidas de un vehículo, productos activos con stock agrupados por gama, económica primero) en `backend/src/modules/compatibilidad/application/buscador.ts` y `backend/src/modules/compatibilidad/infrastructure/repositorio.ts`
-- [ ] T054 [P] [US1] Crear los contratos Zod de catálogo y buscador en `shared/src/contratos/catalogo.ts` y `shared/src/contratos/vehiculos.ts`
-- [ ] T055 [US1] Implementar las rutas `GET /catalogo/marcas`, `/catalogo/medidas`, `/catalogo/productos`, `/catalogo/productos/:slug` en `backend/src/modules/catalogo/http/rutas.ts`
-- [ ] T056 [US1] Implementar las rutas `GET /vehiculos/marcas`, `/vehiculos/modelos`, `/vehiculos/anios`, `/vehiculos/compatibles` en `backend/src/modules/compatibilidad/http/rutas.ts`
-- [ ] T057 [US1] Sembrar marcas Sermat, Herbo, Volta, Edna y medidas 12x65, 12x75, 12x90, 12x110, 12x160 en `backend/db/seed/catalogo.ts`, y crear el seed de ejemplo (Gol Trend 2008–2023 → 12x65, Corsa 2009, productos Sermat económica y Herbo reforzada 12x65, uno sin stock, uno pausado) en `backend/db/seed/ejemplo.ts`
+- [X] T046 [P] [US1] Crear el esquema de catálogo: `marcas` (`nombre` y `slug` UNIQUE, `activa`), `medidas` (`codigo` PK formato `12x65`, `orden`), `productos` (`sku` UNIQUE, `slug` UNIQUE, `marca_id`, `medida`, `amperaje_ah` > 0, `cca` null permitido, `gama` enum `economica`/`reforzada`, `precio_lista bigint`, `stock int CHECK (stock >= 0)`, `estado` enum `a_revisar`/`activo`/`pausado`/`archivado` default `a_revisar`, `fuente`; índices `(estado, medida)` y `(estado, marca_id, gama)`), `producto_fotos` (`clave`, `orden`, `origen` enum `marca`/`propia`, ON DELETE CASCADE) en `backend/src/modules/catalogo/infrastructure/schema.ts`
+- [X] T047 [P] [US1] Crear el esquema de compatibilidad: `vehiculos` (`marca`, `marca_slug`, `modelo`, `modelo_slug`, `anio_desde`, `anio_hasta` con `CHECK (anio_hasta >= anio_desde)`, `motor` null = cualquiera, `fuente`, UNIQUE `(marca_slug, modelo_slug, anio_desde, anio_hasta, coalesce(motor, ''))`) y `vehiculo_medidas` (PK `(vehiculo_id, medida)`) en `backend/src/modules/compatibilidad/infrastructure/schema.ts`
+- [X] T048 [US1] Generar la migración de catálogo y compatibilidad en `backend/db/migrations/`
+- [X] T049 [P] [US1] Implementar la calculadora pura de precios (precio de lista, descuento % de configuración, redondeo a centavo) en `backend/src/modules/catalogo/domain/precios.ts`
+- [X] T050 [P] [US1] Implementar el generador de enlaces de WhatsApp con mensaje precargado ("Hola, busco batería para un {marca} {modelo} {año}" y variantes por producto) en `backend/src/shared-kernel/whatsapp.ts`
+- [X] T051 [US1] Implementar el repositorio de catálogo (listado filtrado de `activo`, ficha por slug, foto principal) en `backend/src/modules/catalogo/infrastructure/repositorio.ts`
+- [X] T052 [US1] Implementar el servicio de catálogo (`listar`, `obtenerFicha` con precios, servicio incluido, autos compatibles, `disponible`) en `backend/src/modules/catalogo/application/catalogo.ts`
+- [X] T053 [US1] Implementar el repositorio y servicio de compatibilidad (marcas con datos, modelos, años como unión de rangos, medidas de un vehículo, productos activos con stock agrupados por gama, económica primero) en `backend/src/modules/compatibilidad/application/buscador.ts` y `backend/src/modules/compatibilidad/infrastructure/repositorio.ts`
+- [X] T054 [P] [US1] Crear los contratos Zod de catálogo y buscador en `shared/src/contratos/catalogo.ts` y `shared/src/contratos/vehiculos.ts`
+- [X] T055 [US1] Implementar las rutas `GET /catalogo/marcas`, `/catalogo/medidas`, `/catalogo/productos`, `/catalogo/productos/:slug` en `backend/src/modules/catalogo/http/rutas.ts`
+- [X] T056 [US1] Implementar las rutas `GET /vehiculos/marcas`, `/vehiculos/modelos`, `/vehiculos/anios`, `/vehiculos/compatibles` en `backend/src/modules/compatibilidad/http/rutas.ts`
+- [X] T057 [US1] Sembrar marcas Sermat, Herbo, Volta, Edna y medidas 12x65, 12x75, 12x90, 12x110, 12x160 en `backend/db/seed/catalogo.ts`, y crear el seed de ejemplo (Gol Trend 2008–2023 → 12x65, Corsa 2009, productos Sermat económica y Herbo reforzada 12x65, uno sin stock, uno pausado) en `backend/db/seed/ejemplo.ts`
 
-**Checkpoint**: US1 completa por API; validaciones 1 y 2 de [quickstart.md](quickstart.md) pasan
+**Checkpoint** ✅ (verificado 2026-10-29): US1 completa por API; validaciones 1 y 2 de [quickstart.md](quickstart.md) pasan
 
 ---
 

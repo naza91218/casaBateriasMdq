@@ -1,6 +1,10 @@
 import { MailerDev, MailerResend } from './adapters/mailer.js';
 import { RevalidadorFrontend, revalidadorNulo } from './adapters/revalidador.js';
 import { ServicioAuth } from './modules/auth/application/auth.js';
+import { ServicioCatalogo } from './modules/catalogo/application/catalogo.js';
+import { RepositorioCatalogo } from './modules/catalogo/infrastructure/repositorio.js';
+import { ServicioBuscador } from './modules/compatibilidad/application/buscador.js';
+import { RepositorioCompatibilidad } from './modules/compatibilidad/infrastructure/repositorio.js';
 import { ServicioConfiguracion } from './modules/configuracion/application/configuracion.js';
 import { ServicioZonas } from './modules/entregas/application/zonas.js';
 import { Outbox } from './modules/notificaciones/application/outbox.js';
@@ -29,6 +33,8 @@ export interface Contexto {
     auth: ServicioAuth;
     zonas: ServicioZonas;
     configuracion: ServicioConfiguracion;
+    catalogo: ServicioCatalogo;
+    buscador: ServicioBuscador;
   };
   cerrar(): Promise<void>;
 }
@@ -68,10 +74,21 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
   const outbox = new Outbox(db, reloj);
 
   const zonas = new ServicioZonas(db);
+  const configuracion = new ServicioConfiguracion(db, zonas);
+  const repoCompatibilidad = new RepositorioCompatibilidad(db);
+  const catalogo = new ServicioCatalogo({
+    repo: new RepositorioCatalogo(db),
+    configuracion,
+    urlFoto: (clave) =>
+      config.R2_PUBLIC_URL ? `${config.R2_PUBLIC_URL}/${clave}` : `${config.API_PUBLIC_URL}/uploads/${clave}`,
+    autosDeMedida: (medida) => repoCompatibilidad.vehiculosDeMedida(medida),
+  });
   const servicios = {
     auth: new ServicioAuth(db, outbox, reloj, config.API_PUBLIC_URL),
     zonas,
-    configuracion: new ServicioConfiguracion(db, zonas),
+    configuracion,
+    catalogo,
+    buscador: new ServicioBuscador(repoCompatibilidad, catalogo, configuracion),
   };
 
   return {
