@@ -210,9 +210,14 @@ precio y una foto desde el celular y verificar el cambio en la tienda pública.
    el listado, **Then** la ficha pública muestra $110.000 en menos de 1 minuto.
 4. **Given** un producto activo, **When** el administrador lo pausa, **Then** deja de verse en la
    tienda y no puede comprarse.
-5. **Given** una planilla de compatibilidades (marca, modelo, años, medida), **When** se importa,
+5. **Given** 40 productos importados de las 4 marcas, todos "a revisar", **When** el
+   administrador habilita 25 y elimina 15, **Then** la tienda muestra solo los 25 y los 15
+   eliminados no aparecen en ningún lado.
+6. **Given** un producto archivado que figura en un pedido viejo, **When** se abre ese pedido,
+   **Then** el producto se ve con su nombre y precio de ese momento.
+7. **Given** una planilla de compatibilidades (marca, modelo, años, medida), **When** se importa,
    **Then** los autos aparecen en el buscador con su medida.
-6. **Given** el descuento por transferencia en 10 %, **When** el administrador lo cambia a 12 %,
+8. **Given** el descuento por transferencia en 10 %, **When** el administrador lo cambia a 12 %,
    **Then** las fichas y el checkout muestran el nuevo precio por transferencia.
 
 ---
@@ -471,6 +476,13 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   los horarios, el WhatsApp y las zonas de colocación (R-PAN-10).
 - **FR-048**: El administrador SHOULD poder asignar o quitar autos compatibles a una medida desde
   el panel; si no entra en el plazo, alcanza con la importación por planilla (R-PAN-11).
+- **FR-070**: Los productos importados (planilla o carga inicial desde fuentes públicas, con sus
+  fotos) MUST entrar como "a revisar": no se ven en la tienda hasta que el administrador los
+  habilita. El panel MUST mostrar cuántos quedan por revisar y permitir habilitarlos o
+  eliminarlos de a uno o en lote.
+- **FR-071**: El administrador MUST poder eliminar un producto que no vende. Si el producto no
+  tiene pedidos, se borra; si tiene, se archiva (deja de verse en la tienda y en el panel, pero
+  los pedidos viejos lo conservan).
 - **FR-049**: Todo el panel MUST poder usarse en un celular de 375 px sin hacer zoom (R-PAN-12).
 
 #### Contenido, Google y medición
@@ -539,7 +551,8 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 ### Key Entities *(include if feature involves data)*
 
 - **Producto:** una batería a la venta. Código, marca, medida, amperaje, CCA, gama, precio de
-  lista, precio con canje, stock, activo/pausado, fotos ordenadas.
+  lista, precio con canje, stock, estado (a revisar, activo, pausado, archivado), fotos
+  ordenadas, fuente de los datos.
 - **Marca:** lista cerrada de fabricantes (Sermat, Herbo, Volta, Edna).
 - **Medida:** formato de batería (12x65…); es el puente entre autos y productos.
 - **Vehículo:** marca, modelo, rango de años y motor opcional; se asocia a una o más medidas.
@@ -605,10 +618,12 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 - **Motor:** el buscador ignora el motor salvo que el vehículo lo tenga cargado; si un modelo
   necesita medidas distintas por motor, se cargan como vehículos separados.
 - **Catálogo y compatibilidades:** los proveedores no entregan catálogo (P4, respondida el
-  29/10/2026). La carga inicial sale de fuentes públicas de las marcas y sus distribuidores
-  (modelos, medida, Ah, CCA y autos compatibles), se arma como planilla con el formato de
-  importación y el administrador la revisa antes de publicarla. Los precios y el stock los pone
-  el administrador; no se copian precios de terceros.
+  29/10/2026) y no se sabe con exactitud qué modelos trae el local, solo las marcas. La carga
+  inicial sale de fuentes públicas de las marcas y sus distribuidores (modelos, medida, Ah, CCA,
+  autos compatibles y fotos de producto) y entra "a revisar" (FR-070): el administrador habilita
+  lo que vende y elimina lo que no. Los precios y el stock los pone el administrador; no se copian
+  precios de terceros. Las fotos de las marcas son provisorias: conviene confirmar con el
+  distribuidor que se pueden usar y reemplazarlas por fotos propias cuando las haya.
 - **Contenido:** textos, fotos del local y del equipo, horarios, razón social y CUIT los entrega
   el cliente; mientras tanto se usan marcadores sin inventar datos (P5, P6).
 - **Textos legales:** se usan modelos estándar; conviene que los revise un profesional. La
