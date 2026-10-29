@@ -1,4 +1,12 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  createHmac,
+  hkdfSync,
+  randomBytes,
+  timingSafeEqual,
+} from 'node:crypto';
 
 const ALGORITMO = 'aes-256-gcm';
 const LARGO_IV = 12;
@@ -59,3 +67,21 @@ export function tokenAleatorio(): string {
 export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
+
+/**
+ * Token del enlace privado de seguimiento: HMAC del id del pedido con una clave derivada.
+ * No se guarda en la base y se puede volver a generar para cada mail (FR-021, FR-038).
+ */
+export function crearFirmadorSeguimiento(claveMaestra: Buffer) {
+  const clave = Buffer.from(hkdfSync('sha256', claveMaestra, Buffer.alloc(0), 'seguimiento-pedido', 32));
+  const token = (pedidoId: string) => createHmac('sha256', clave).update(pedidoId).digest('base64url');
+  return {
+    token,
+    verificar(pedidoId: string, candidato: string): boolean {
+      const esperado = Buffer.from(token(pedidoId));
+      const recibido = Buffer.from(candidato);
+      return esperado.length === recibido.length && timingSafeEqual(esperado, recibido);
+    },
+  };
+}
+export type FirmadorSeguimiento = ReturnType<typeof crearFirmadorSeguimiento>;

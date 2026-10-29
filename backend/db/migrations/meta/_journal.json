@@ -15,6 +15,13 @@
       "when": 1793311233152,
       "tag": "0001_catalogo_y_compatibilidad",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793311587770,
+      "tag": "0002_pedidos_y_pagos",
+      "breakpoints": true
     }
   ]
 }

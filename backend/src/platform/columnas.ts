@@ -26,3 +26,10 @@ export const citext = customType<{ data: string }>({
     return 'citext';
   },
 });
+
+/** Datos binarios (DNI cifrado). */
+export const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType() {
+    return 'bytea';
+  },
+});

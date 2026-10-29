@@ -1,4 +1,5 @@
 import type { MensajeMail } from '../../../shared-kernel/puertos.js';
+import { plantillasPedidos } from './pedidos.js';
 
 export type Contenido = Omit<MensajeMail, 'para'>;
 type Plantilla = (datos: Record<string, unknown>) => Contenido;
@@ -11,6 +12,7 @@ const escapar = (v: unknown) =>
  * (React Email) en T117. Ninguna plantilla recibe ni muestra el DNI (FR-038).
  */
 const plantillas: Record<string, Plantilla> = {
+  ...plantillasPedidos,
   enlace_ingreso: (d) => ({
     asunto: 'Tu enlace para entrar al panel',
     texto: `Entrá al panel con este enlace (vence en 15 minutos y sirve una sola vez):\n${String(d.url)}\n\nSi no lo pediste, ignorá este mail.`,

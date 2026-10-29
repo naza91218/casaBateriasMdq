@@ -6,3 +6,7 @@ export * from '../modules/auth/infrastructure/schema.js';
 export * from '../modules/notificaciones/infrastructure/schema.js';
 export * from '../modules/catalogo/infrastructure/schema.js';
 export * from '../modules/compatibilidad/infrastructure/schema.js';
+export * from '../modules/pedidos/infrastructure/schema.js';
+export * from '../modules/clientes/infrastructure/schema.js';
+export * from '../modules/pagos/infrastructure/schema.js';
+export * from '../modules/canje/infrastructure/schema.js';

@@ -10,7 +10,7 @@ export interface TareaPeriodica {
   ejecutar(): Promise<unknown>;
 }
 
-/** Tareas del worker (research R6). Los vencimientos de pedidos se suman en T081. */
+/** Tareas del worker (research R6). */
 export function tareasDelWorker(ctx: Contexto): TareaPeriodica[] {
   const despachar = crearDespachador({
     mailer: ctx.mailer,
@@ -19,6 +19,8 @@ export function tareasDelWorker(ctx: Contexto): TareaPeriodica[] {
   });
   return [
     { nombre: 'outbox', cadaMs: 10_000, ejecutar: () => ctx.outbox.procesarLote(despachar) },
+    // Cancela pedidos impagos vencidos y devuelve stock (FR-034).
+    { nombre: 'vencimientos', cadaMs: MINUTO, ejecutar: () => ctx.servicios.vencimientos.cancelarVencidos() },
   ];
 }
 

@@ -1,5 +1,15 @@
 import { MailerDev, MailerResend } from './adapters/mailer.js';
+import { PasarelaFalsa, PasarelaMercadoPago } from './adapters/mercadopago.js';
 import { RevalidadorFrontend, revalidadorNulo } from './adapters/revalidador.js';
+import { ServicioCanje } from './modules/canje/application/consultas.js';
+import { ServicioStock } from './modules/catalogo/application/stock.js';
+import { ServicioCompradores } from './modules/clientes/application/compradores.js';
+import { ServicioPagosMercadoPago } from './modules/pagos/application/procesar-pago.js';
+import { ServicioEstados } from './modules/pedidos/application/cambiar-estado.js';
+import { ServicioPedidos } from './modules/pedidos/application/crear-pedido.js';
+import { DatosMailPedido } from './modules/pedidos/application/datos-mail.js';
+import { ServicioSeguimiento } from './modules/pedidos/application/seguimiento.js';
+import { ServicioVencimientos } from './modules/pedidos/application/vencimientos.js';
 import { ServicioAuth } from './modules/auth/application/auth.js';
 import { ServicioCatalogo } from './modules/catalogo/application/catalogo.js';
 import { RepositorioCatalogo } from './modules/catalogo/infrastructure/repositorio.js';
@@ -9,10 +19,10 @@ import { ServicioConfiguracion } from './modules/configuracion/application/confi
 import { ServicioZonas } from './modules/entregas/application/zonas.js';
 import { Outbox } from './modules/notificaciones/application/outbox.js';
 import { clavesDeCifrado, type Config } from './platform/config.js';
-import { crearCifrador, type Cifrador } from './platform/crypto.js';
+import { crearCifrador, crearFirmadorSeguimiento, type Cifrador } from './platform/crypto.js';
 import { conectar, type BaseDeDatos, type ConexionDb } from './platform/db.js';
 import { crearLogger, type Logger } from './platform/logger.js';
-import type { Mailer, Revalidador } from './shared-kernel/puertos.js';
+import type { Mailer, PasarelaPago, Revalidador } from './shared-kernel/puertos.js';
 import { relojDelSistema, type Reloj } from './shared-kernel/reloj.js';
 
 /**
@@ -28,6 +38,7 @@ export interface Contexto {
   cifrador: Cifrador;
   mailer: Mailer;
   revalidador: Revalidador;
+  pasarela: PasarelaPago;
   outbox: Outbox;
   servicios: {
     auth: ServicioAuth;
@@ -35,6 +46,14 @@ export interface Contexto {
     configuracion: ServicioConfiguracion;
     catalogo: ServicioCatalogo;
     buscador: ServicioBuscador;
+    stock: ServicioStock;
+    compradores: ServicioCompradores;
+    estados: ServicioEstados;
+    pedidos: ServicioPedidos;
+    seguimiento: ServicioSeguimiento;
+    vencimientos: ServicioVencimientos;
+    pagosMp: ServicioPagosMercadoPago;
+    canje: ServicioCanje;
   };
   cerrar(): Promise<void>;
 }
@@ -44,6 +63,7 @@ export interface Reemplazos {
   reloj?: Reloj;
   mailer?: Mailer;
   revalidador?: Revalidador;
+  pasarela?: PasarelaPago;
   logger?: Logger;
 }
 
@@ -71,7 +91,19 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     (config.NODE_ENV === 'development' || config.NODE_ENV === 'test'
       ? revalidadorNulo
       : new RevalidadorFrontend(config.FRONTEND_URL, config.REVALIDATE_SECRET));
+  if (!config.MP_ACCESS_TOKEN && !reemplazos.pasarela && (config.NODE_ENV === 'staging' || config.NODE_ENV === 'production')) {
+    throw new Error('Falta MP_ACCESS_TOKEN fuera de desarrollo');
+  }
+  // Sin credenciales (desarrollo), los pagos se simulan en memoria.
+  const pasarela =
+    reemplazos.pasarela ??
+    (config.MP_ACCESS_TOKEN
+      ? new PasarelaMercadoPago(config.MP_ACCESS_TOKEN, config.MP_WEBHOOK_SECRET ?? '')
+      : new PasarelaFalsa(config.MP_WEBHOOK_SECRET ?? 'secreto-webhook-de-prueba'));
   const outbox = new Outbox(db, reloj);
+  const claveSeguimiento = clavesDeCifrado(config)[config.DNI_KEY_VERSION];
+  if (!claveSeguimiento) throw new Error('Falta la clave de cifrado actual');
+  const firmador = crearFirmadorSeguimiento(claveSeguimiento);
 
   const zonas = new ServicioZonas(db);
   const configuracion = new ServicioConfiguracion(db, zonas);
@@ -83,12 +115,37 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
       config.R2_PUBLIC_URL ? `${config.R2_PUBLIC_URL}/${clave}` : `${config.API_PUBLIC_URL}/uploads/${clave}`,
     autosDeMedida: (medida) => repoCompatibilidad.vehiculosDeMedida(medida),
   });
+  const stock = new ServicioStock(db);
+  const compradores = new ServicioCompradores(cifrador);
+  const datosMail = new DatosMailPedido(compradores, configuracion, firmador, config.FRONTEND_URL);
+  const estados = new ServicioEstados(db, stock, outbox, datosMail);
+  const pedidos = new ServicioPedidos({
+    db,
+    stock,
+    compradores,
+    configuracion,
+    zonas,
+    outbox,
+    pasarela,
+    datosMail,
+    reloj,
+    logger,
+    urlApi: config.API_PUBLIC_URL,
+  });
   const servicios = {
     auth: new ServicioAuth(db, outbox, reloj, config.API_PUBLIC_URL),
     zonas,
     configuracion,
     catalogo,
     buscador: new ServicioBuscador(repoCompatibilidad, catalogo, configuracion),
+    stock,
+    compradores,
+    estados,
+    pedidos,
+    seguimiento: new ServicioSeguimiento(db, firmador, configuracion, zonas, compradores, pedidos, reloj),
+    vencimientos: new ServicioVencimientos(db, estados, reloj),
+    pagosMp: new ServicioPagosMercadoPago(db, pasarela, estados, outbox),
+    canje: new ServicioCanje(db, configuracion, zonas),
   };
 
   return {
@@ -100,6 +157,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     cifrador,
     mailer,
     revalidador,
+    pasarela,
     outbox,
     servicios,
     cerrar: () => conexion.cerrar(),

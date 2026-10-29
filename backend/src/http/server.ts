@@ -13,7 +13,10 @@ import {
 import { z } from 'zod';
 import type { Contexto } from '../composition-root.js';
 import { rutasAuth } from '../modules/auth/http/rutas.js';
+import { rutasCanje } from '../modules/canje/http/rutas.js';
 import { rutasCatalogo } from '../modules/catalogo/http/rutas.js';
+import { rutasWebhookMercadoPago } from '../modules/pagos/http/webhook.js';
+import { rutasPedidos } from '../modules/pedidos/http/rutas.js';
 import { rutasBuscador } from '../modules/compatibilidad/http/rutas.js';
 import { rutasConfiguracion } from '../modules/configuracion/http/rutas.js';
 import { registrarManejoDeErrores } from './plugins/errores.js';
@@ -84,6 +87,11 @@ export async function construirServidor(
       await api.register(rutasConfiguracion({ configuracion: ctx.servicios.configuracion }));
       await api.register(rutasCatalogo({ catalogo: ctx.servicios.catalogo }));
       await api.register(rutasBuscador({ buscador: ctx.servicios.buscador }));
+      await api.register(
+        rutasPedidos({ pedidos: ctx.servicios.pedidos, seguimiento: ctx.servicios.seguimiento }),
+      );
+      await api.register(rutasCanje({ canje: ctx.servicios.canje }));
+      await api.register(rutasWebhookMercadoPago({ pagos: ctx.servicios.pagosMp }));
       await api.register(
         rutasAuth({
           auth: ctx.servicios.auth,
