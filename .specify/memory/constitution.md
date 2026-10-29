@@ -100,9 +100,9 @@ Razón: lo que se rompe caro es la compra.
 - Hosting: VPS de HostGator, contratado y pagado por el cliente, con PostgreSQL en el mismo
   servidor, detrás de Nginx con HTTPS. Las tareas programadas (vencer pedidos, mails) MUST
   correr en el propio VPS y las copias de la base MUST guardarse fuera de él.
-- Estructura: el repositorio MUST dividirse en `frontend/` (tienda y panel) y `backend/`
-  (dominio, datos, pagos, mails y tareas). El frontend MUST NOT acceder a la base ni a los
-  secretos: todo pasa por el backend.
+- Estructura: el repositorio MUST dividirse en `frontend/` (Next.js: tienda y panel),
+  `backend/` (API REST propia en Node: dominio, datos, pagos, mails y tareas) y `shared/`
+  (contratos Zod). El frontend MUST NOT acceder a la base ni a los secretos: todo pasa por la API.
 - Entornos: MUST existir desarrollo (local), pruebas (staging) y producción, cada uno con su
   base, sus credenciales y Mercado Pago en modo prueba fuera de producción.
 - Fuera del VPS y el dominio, los servicios de terceros MUST mantenerse en planes gratuitos, y

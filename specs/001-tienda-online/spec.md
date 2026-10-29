@@ -250,6 +250,13 @@ evento de compra en la herramienta de analítica.
    **Then** aparece la compra con el total y sin datos personales.
 6. **Given** una visita que llega desde una campaña de Instagram, **When** compra dos páginas
    después, **Then** la venta se atribuye a Instagram.
+7. **Given** la página del Gol Trend, **When** se valida en la prueba de resultados enriquecidos,
+   **Then** las preguntas frecuentes son válidas y la primera responde la medida.
+8. **Given** el archivo de reglas para rastreadores, **When** se consulta, **Then** permite a los
+   buscadores con IA las páginas públicas y bloquea panel, checkout y seguimiento, y el resumen
+   `llms.txt` está publicado.
+9. **Given** un pedido entregado, **When** el comprador recibe el mail, **Then** tiene un enlace
+   para dejar una reseña en Google.
 
 ---
 
@@ -504,6 +511,23 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 - **FR-056**: La tienda MUST medir ver producto, agregar al carrito, iniciar compra y compra (esta
   última solo con pago confirmado) en Google Analytics y Meta, sin enviar datos personales, y
   conservar el origen de campaña hasta la compra (R-SEO-11, R-SEO-12, R-SEO-13).
+
+#### SEO local y GEO (buscadores con IA)
+
+- **FR-072**: Cada página de modelo de auto MUST responder de forma directa qué medida de batería
+  lleva ("¿Qué batería lleva un Volkswagen Gol Trend 2015? 12x65"), con una tabla de medidas y
+  años y una sección de preguntas frecuentes marcada como datos estructurados de preguntas y
+  respuestas.
+- **FR-073**: Los datos estructurados del comercio MUST incluir dirección, teléfono, horarios,
+  coordenadas y zonas atendidas (Mar del Plata y las zonas de colocación activas), y el nombre,
+  la dirección y el teléfono MUST ser idénticos en todas las páginas.
+- **FR-074**: La tienda MUST permitir a los rastreadores de buscadores con IA indexar las páginas
+  públicas, MUST publicar un resumen del negocio y sus páginas clave para modelos de lenguaje
+  (`llms.txt`) y MUST mantener excluidos el panel, el checkout y el seguimiento.
+- **FR-075**: Los datos de confianza (45 años, dirección, garantía de 12 meses, colocación
+  incluida) MUST estar como texto en la página, no solo dentro de imágenes.
+- **FR-076**: El mail de "entregado" MUST incluir un enlace para dejar una reseña en el perfil de
+  Google del local.
 
 #### Legales y datos personales
 
