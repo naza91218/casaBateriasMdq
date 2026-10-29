@@ -39,16 +39,16 @@ cerrado y se refina en ese momento.
 
 **Purpose**: monorepo, herramientas y entorno de desarrollo
 
-- [ ] T001 Crear el monorepo pnpm con `package.json` raíz (scripts `dev`, `test`, `lint`, `typecheck`), `pnpm-workspace.yaml` con `backend`, `shared`, `frontend`, `tools/*`, y `.nvmrc` con Node 24 LTS
-- [ ] T002 Crear `tsconfig.base.json` en la raíz (strict, `noUncheckedIndexedAccess`, ES2023, módulos NodeNext) y `backend/tsconfig.json`, `shared/tsconfig.json` que lo extiendan
-- [ ] T003 [P] Inicializar `backend/package.json` con Fastify 5, Zod 4, `fastify-type-provider-zod`, `@fastify/swagger`, `@fastify/swagger-ui`, `@fastify/cookie`, `@fastify/multipart`, `@fastify/rate-limit`, `drizzle-orm`, `drizzle-kit`, `postgres`, `pino`, `@sentry/node`, `tsx`, `vitest`; scripts `dev`, `worker:dev`, `build`, `db:generate`, `db:migrate`, `db:seed`, `test`
-- [ ] T004 [P] Inicializar `shared/package.json` (paquete `@casa/shared`) con Zod 4 y `shared/src/index.ts`
-- [ ] T005 [P] Configurar ESLint (flat config) y Prettier en `eslint.config.js` y `.prettierrc` en la raíz, con regla que prohíba importar `infrastructure/` desde `domain/`
-- [ ] T006 [P] Crear `infra/docker-compose.dev.yml` con PostgreSQL 17 (puerto 5432, volumen `db-data`, base `casa_dev` y `casa_test`) y Mailpit (puertos 1025 y 8025), comentado para quien no usó Docker
-- [ ] T007 [P] Crear `backend/.env.example` con todas las variables (DATABASE_URL, TEST_DATABASE_URL, API_PUBLIC_URL, FRONTEND_URL, REVALIDATE_SECRET, SESSION_SECRET, DNI_ENCRYPTION_KEY, DNI_KEY_VERSION, MP_ACCESS_TOKEN, MP_WEBHOOK_SECRET, RESEND_API_KEY, MAIL_FROM, MAIL_ADMIN, SMTP_DEV_HOST, R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL, SENTRY_DSN, NODE_ENV)
-- [ ] T008 [P] Configurar Vitest en `backend/vitest.config.ts` con proyectos `unit`, `integration` (setup que recrea `casa_test` por archivo) y `contract`
-- [ ] T009 [P] Crear `.github/workflows/ci.yml`: pnpm install, lint, typecheck y tests con servicio PostgreSQL 17 en cada push y PR
-- [ ] T010 [P] Actualizar `.gitignore` con `.env*` (salvo `.env.example`), `data/import/`, `dist/`, `.turbo/`
+- [X] T001 Crear el monorepo pnpm con `package.json` raíz (scripts `dev`, `test`, `lint`, `typecheck`), `pnpm-workspace.yaml` con `backend`, `shared`, `frontend`, `tools/*`, y `.nvmrc` con Node 24 LTS
+- [X] T002 Crear `tsconfig.base.json` en la raíz (strict, `noUncheckedIndexedAccess`, ES2023, módulos NodeNext) y `backend/tsconfig.json`, `shared/tsconfig.json` que lo extiendan
+- [X] T003 [P] Inicializar `backend/package.json` con Fastify 5, Zod 4, `fastify-type-provider-zod`, `@fastify/swagger`, `@fastify/swagger-ui`, `@fastify/cookie`, `@fastify/multipart`, `@fastify/rate-limit`, `drizzle-orm`, `drizzle-kit`, `postgres`, `pino`, `@sentry/node`, `tsx`, `vitest`; scripts `dev`, `worker:dev`, `build`, `db:generate`, `db:migrate`, `db:seed`, `test`
+- [X] T004 [P] Inicializar `shared/package.json` (paquete `@casa/shared`) con Zod 4 y `shared/src/index.ts`
+- [X] T005 [P] Configurar ESLint (flat config) y Prettier en `eslint.config.js` y `.prettierrc` en la raíz, con regla que prohíba importar `infrastructure/` desde `domain/`
+- [X] T006 [P] Crear `infra/docker-compose.dev.yml` con PostgreSQL 17 (puerto 5432, volumen `db-data`, base `casa_dev` y `casa_test`) y Mailpit (puertos 1025 y 8025), comentado para quien no usó Docker
+- [X] T007 [P] Crear `backend/.env.example` con todas las variables (DATABASE_URL, TEST_DATABASE_URL, API_PUBLIC_URL, FRONTEND_URL, REVALIDATE_SECRET, SESSION_SECRET, DNI_ENCRYPTION_KEY, DNI_KEY_VERSION, MP_ACCESS_TOKEN, MP_WEBHOOK_SECRET, RESEND_API_KEY, MAIL_FROM, MAIL_ADMIN, SMTP_DEV_HOST, R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL, SENTRY_DSN, NODE_ENV)
+- [X] T008 [P] Configurar Vitest en `backend/vitest.config.ts` con proyectos `unit`, `integration` (setup que recrea `casa_test` por archivo) y `contract`
+- [X] T009 [P] Crear `.github/workflows/ci.yml`: pnpm install, lint, typecheck y tests con servicio PostgreSQL 17 en cada push y PR
+- [X] T010 [P] Actualizar `.gitignore` con `.env*` (salvo `.env.example`), `data/import/`, `dist/`, `.turbo/`
 
 **Checkpoint**: `pnpm install`, `pnpm lint` y `pnpm typecheck` pasan; `docker compose -f infra/docker-compose.dev.yml up -d` levanta base y Mailpit
 
@@ -96,7 +96,7 @@ cerrado y se refina en ese momento.
 - [ ] T039 Implementar el módulo configuración: servicio de lectura y `GET /configuracion/publica` (descuento, WhatsApp, horarios, datos del comercio, zonas activas, URL de reseñas) en `backend/src/modules/configuracion/`
 - [ ] T040 Crear el composition root que arma servicios con sus adaptadores según el entorno en `backend/src/composition-root.ts` y la entrada `backend/src/main.ts`
 - [ ] T041 [P] Crear los contratos Zod comunes (error, paginación, `Dinero` serializado como entero, WhatsApp `{ url, mensaje }`) en `shared/src/contratos/comunes.ts`
-- [ ] T042 Crear el seed base: marcas Sermat, Herbo, Volta, Edna; medidas 12x65, 12x75, 12x90, 12x110, 12x160; zona "Mar del Plata"; configuración inicial; un usuario del panel con `MAIL_ADMIN` en `backend/db/seed/base.ts`
+- [ ] T042 Crear el seed base: zona "Mar del Plata"; configuración inicial; un usuario del panel con `MAIL_ADMIN` en `backend/db/seed/base.ts` (marcas y medidas se siembran en T057, después de crear sus tablas en T046)
 
 **Checkpoint**: la API arranca, `GET /api/v1/salud` responde 200, el ingreso al panel funciona con el enlace en Mailpit, el worker envía mails del outbox
 
@@ -127,7 +127,7 @@ cerrado y se refina en ese momento.
 - [ ] T054 [P] [US1] Crear los contratos Zod de catálogo y buscador en `shared/src/contratos/catalogo.ts` y `shared/src/contratos/vehiculos.ts`
 - [ ] T055 [US1] Implementar las rutas `GET /catalogo/marcas`, `/catalogo/medidas`, `/catalogo/productos`, `/catalogo/productos/:slug` en `backend/src/modules/catalogo/http/rutas.ts`
 - [ ] T056 [US1] Implementar las rutas `GET /vehiculos/marcas`, `/vehiculos/modelos`, `/vehiculos/anios`, `/vehiculos/compatibles` en `backend/src/modules/compatibilidad/http/rutas.ts`
-- [ ] T057 [US1] Crear el seed de ejemplo (Gol Trend 2008–2023 → 12x65, Corsa 2009, productos Sermat económica y Herbo reforzada 12x65, uno sin stock, uno pausado) en `backend/db/seed/ejemplo.ts`
+- [ ] T057 [US1] Sembrar marcas Sermat, Herbo, Volta, Edna y medidas 12x65, 12x75, 12x90, 12x110, 12x160 en `backend/db/seed/catalogo.ts`, y crear el seed de ejemplo (Gol Trend 2008–2023 → 12x65, Corsa 2009, productos Sermat económica y Herbo reforzada 12x65, uno sin stock, uno pausado) en `backend/db/seed/ejemplo.ts`
 
 **Checkpoint**: US1 completa por API; validaciones 1 y 2 de [quickstart.md](quickstart.md) pasan
 
@@ -295,7 +295,7 @@ cerrado y se refina en ese momento.
 - [ ] T126 [US8] Crear `infra/docker-compose.yml` con `backend`, `worker`, `db` (PostgreSQL 17 con volumen), `frontend` (perfil desactivado hasta la fase 11), límites de memoria y red interna, parametrizado por `.env` de cada entorno
 - [ ] T127 [P] [US8] Crear la configuración de Nginx para producción y staging (proxy `/api` al backend, resto al frontend, HTTP → HTTPS, staging con autenticación básica y `X-Robots-Tag: noindex`) en `infra/nginx/`
 - [ ] T128 [US8] Crear `infra/scripts/deploy.sh` (pull de imágenes por etiqueta, migraciones antes de cambiar contenedores, abortar si fallan, rollback a la etiqueta anterior)
-- [ ] T129 [US8] Crear `.github/workflows/deploy-staging.yml` (en `develop`) y `deploy-prod.yml` (en `main`): tests, build y push de imágenes a GHCR, deploy por SSH; si algo falla no se publica (US8-02)
+- [ ] T129 [US8] Crear `.github/workflows/deploy-staging.yml` (en `develop`) y `deploy-prod.yml` (en `main`): tests, build y push de imágenes a GHCR, deploy por SSH; si algo falla no se publica (US8-02). `deploy-prod.yml` MUST exigir aprobación manual y la prueba de punta a punta en staging en verde (T143, constitución VIII); hasta que exista el frontend, el job de producción queda deshabilitado
 - [ ] T130 [P] [US8] Crear `infra/scripts/backup.sh` (pg_dump diario comprimido a R2, retención 30 días) y `infra/scripts/restore.sh`, con el cron del VPS documentado
 - [ ] T131 [US8] Documentar en `infra/README.md`: preparación del VPS (Docker, Nginx, certbot, usuario de deploy), variables por entorno, restauración probada (US8-01, < 2 h), monitor UptimeRobot cada 5 min a `/api/v1/salud` (US8-03), acta de entrega de cuentas y guía de soporte (tienda caída, pago no acreditado, mail no recibido, stock desfasado) (US8-04)
 

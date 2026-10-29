@@ -26,3 +26,9 @@ prototipo-deck/
 .DS_Store
 Thumbs.db
 .impeccable/hook.cache.json
+
+# Desarrollo del sistema
+data/import/
+backend/uploads/
+*.log
+.turbo/
