@@ -4,6 +4,12 @@
 > * **Fecha:** 20/10/2026
 > * **Reemplaza a:** la arquitectura WordPress + WooCommerce de `PROCESO_DE_DESARROLLO.md` (§2–§6). Las preguntas de §10 de ese documento siguen vigentes.
 > * **Desarrollador:** Nazareno (1 persona)
+>
+> **Actualización 29/10/2026:** las secciones §2 a §8 quedaron reemplazadas por
+> [specs/001-tienda-online/plan.md](specs/001-tienda-online/plan.md) y sus anexos (research,
+> data-model, contracts, quickstart). Cambios principales: VPS de HostGator en lugar de Netlify,
+> PostgreSQL en el VPS en lugar de Neon, backend como API propia (Fastify) separado del frontend,
+> Docker y tres entornos. Este documento se conserva por la §1 y el registro de decisiones (§9).
 
 ---
 
@@ -274,3 +280,14 @@ Al final de cada semana: demo a Juan en el deploy de preview.
 | D10 | 20/10/2026 | Compatibilidad por medida (auto → 12x65) | Menos datos que mantener; sumar marcas no rompe el buscador |
 | D11 | 20/10/2026 | Stock descontado al crear el pedido, devuelto al vencer | Promesa "no se vende lo que no hay" |
 | D12 | 20/10/2026 | Login del panel por enlace al mail | Un solo usuario, sin contraseñas que olvidar |
+| D13 | 28/10/2026 | Hosting en VPS de HostGator a cargo del cliente (reemplaza Netlify de D9) | Pedido del usuario y del cliente |
+| D14 | 28/10/2026 | Transferencia y efectivo se confirman a mano en el panel, con usuario y fecha | No hay forma de verificar una transferencia automáticamente |
+| D15 | 28/10/2026 | Una sola spec para todo el sistema con spec-kit | Pedido del usuario: visión completa y un solo `tasks.md` |
+| D16 | 29/10/2026 | PostgreSQL en el VPS (reemplaza Neon de D9) | El VPS ya se paga; un servicio menos |
+| D17 | 29/10/2026 | Repo con `frontend/`, `backend/` (API REST propia en Fastify) y `shared/` | Pedido del usuario; API reutilizable |
+| D18 | 29/10/2026 | Docker y tres entornos (dev, staging, prod) | Entornos iguales, aislados y con rollback |
+| D19 | 29/10/2026 | Catálogo inicial scrapeado de fuentes públicas, todo entra "a revisar" | Los proveedores no pasan catálogo |
+| D20 | 29/10/2026 | Canje solo por consulta (formulario + WhatsApp), valuado en el local | Definido en el clarify |
+| D21 | 29/10/2026 | Reserva: MP 30 min (solo medios instantáneos), transferencia 48 h, efectivo sin vencimiento | Definido en el clarify |
+| D22 | 29/10/2026 | Enlace mágico propio en el backend en lugar de Auth.js | Con la API separada, el login vive en el backend (constitución v1.4.0) |
+| D23 | 29/10/2026 | Backend primero; frontend cuando se cierre el diseño UX/UI | Pedido del usuario |

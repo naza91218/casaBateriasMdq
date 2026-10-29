@@ -1,7 +1,8 @@
 <!--
 Sync Impact Report
-- Version change: 1.2.0 → 1.3.0 (MINOR: PostgreSQL en el VPS, repo frontend/backend y tres
-  entornos. 1.2.0: VPS HostGator. 1.1.0: confirmación manual de pagos. 1.0.1: plazo 30 días)
+- Version change: 1.3.0 → 1.4.0 (MINOR: stack del backend con Fastify y enlace mágico propio en
+  lugar de Auth.js. 1.3.0: PostgreSQL en VPS, frontend/backend, tres entornos. 1.2.0: VPS.
+  1.1.0: confirmación manual de pagos. 1.0.1: plazo 30 días)
 - Origen: specs/constitucion.md (13 reglas, 25/10/2026), agrupadas en 8 principios
 - Modified principles: ninguno (primera versión)
 - Added sections: Core Principles (I–VIII), Restricciones técnicas y de costo,
@@ -93,10 +94,10 @@ Razón: lo que se rompe caro es la compra.
 
 ## Restricciones técnicas y de costo
 
-- Stack: TypeScript estricto, Next.js (App Router), Tailwind CSS (shadcn/ui solo en el panel),
-  PostgreSQL (en el mismo VPS), Drizzle ORM, Zod, Mercado Pago Checkout Pro, Resend + React Email,
-  Auth.js con enlace por mail, Cloudflare R2, Sentry, Vitest y Playwright
-  (detalle en `PLAN_TECNICO.md` §2).
+- Stack: TypeScript estricto. Backend: Node.js + Fastify, PostgreSQL (en el mismo VPS), Drizzle
+  ORM, Zod, Mercado Pago Checkout Pro, Resend + React Email, ingreso al panel por enlace mágico
+  propio. Frontend: Next.js (App Router), Tailwind CSS (shadcn/ui solo en el panel). Cloudflare
+  R2, Sentry, Vitest y Playwright (detalle en `specs/001-tienda-online/plan.md`).
 - Hosting: VPS de HostGator, contratado y pagado por el cliente, con PostgreSQL en el mismo
   servidor, detrás de Nginx con HTTPS. Las tareas programadas (vencer pedidos, mails) MUST
   correr en el propio VPS y las copias de la base MUST guardarse fuera de él.
@@ -130,4 +131,4 @@ Razón: lo que se rompe caro es la compra.
 - `docs/specs-previas/constitucion.md` es la versión anterior a spec-kit; esta es la fuente de verdad.
 - Cada plan y cada revisión de código MUST verificar el cumplimiento de estos principios.
 
-**Version**: 1.3.0 | **Ratified**: 2026-10-25 | **Last Amended**: 2026-10-29
+**Version**: 1.4.0 | **Ratified**: 2026-10-25 | **Last Amended**: 2026-10-29
