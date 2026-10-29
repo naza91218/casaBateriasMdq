@@ -1,7 +1,7 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 → 1.2.0 (MINOR: hosting pasa de Netlify a VPS de HostGator a cargo del
-  cliente. 1.1.0: confirmación manual de transferencia y efectivo. 1.0.1: plazo de 30 días)
+- Version change: 1.2.0 → 1.3.0 (MINOR: PostgreSQL en el VPS, repo frontend/backend y tres
+  entornos. 1.2.0: VPS HostGator. 1.1.0: confirmación manual de pagos. 1.0.1: plazo 30 días)
 - Origen: specs/constitucion.md (13 reglas, 25/10/2026), agrupadas en 8 principios
 - Modified principles: ninguno (primera versión)
 - Added sections: Core Principles (I–VIII), Restricciones técnicas y de costo,
@@ -94,12 +94,17 @@ Razón: lo que se rompe caro es la compra.
 ## Restricciones técnicas y de costo
 
 - Stack: TypeScript estricto, Next.js (App Router), Tailwind CSS (shadcn/ui solo en el panel),
-  PostgreSQL en Neon, Drizzle ORM, Zod, Mercado Pago Checkout Pro, Resend + React Email,
+  PostgreSQL (en el mismo VPS), Drizzle ORM, Zod, Mercado Pago Checkout Pro, Resend + React Email,
   Auth.js con enlace por mail, Cloudflare R2, Sentry, Vitest y Playwright
   (detalle en `PLAN_TECNICO.md` §2).
-- Hosting: VPS de HostGator, contratado y pagado por el cliente. La app corre como Next.js
-  en modo `standalone`, detrás de Nginx con HTTPS. Las tareas programadas (vencer pedidos)
-  MUST correr en el propio VPS.
+- Hosting: VPS de HostGator, contratado y pagado por el cliente, con PostgreSQL en el mismo
+  servidor, detrás de Nginx con HTTPS. Las tareas programadas (vencer pedidos, mails) MUST
+  correr en el propio VPS y las copias de la base MUST guardarse fuera de él.
+- Estructura: el repositorio MUST dividirse en `frontend/` (tienda y panel) y `backend/`
+  (dominio, datos, pagos, mails y tareas). El frontend MUST NOT acceder a la base ni a los
+  secretos: todo pasa por el backend.
+- Entornos: MUST existir desarrollo (local), pruebas (staging) y producción, cada uno con su
+  base, sus credenciales y Mercado Pago en modo prueba fuera de producción.
 - Fuera del VPS y el dominio, los servicios de terceros MUST mantenerse en planes gratuitos, y
   todas las cuentas MUST quedar a nombre del negocio.
 - La identidad visual MUST seguir `DESIGN.md` y `DISENO_UI.md`: colores `#FF2610`, `#FF4E10`,
@@ -122,7 +127,7 @@ Razón: lo que se rompe caro es la compra.
 - Cambiar un principio MUST anotarse como decisión en `PLAN_TECNICO.md` §9 y subir la versión:
   MAJOR si se quita o redefine un principio, MINOR si se agrega o amplía uno, PATCH para
   aclaraciones de redacción.
-- `specs/constitucion.md` es la versión anterior a spec-kit; esta es la fuente de verdad.
+- `docs/specs-previas/constitucion.md` es la versión anterior a spec-kit; esta es la fuente de verdad.
 - Cada plan y cada revisión de código MUST verificar el cumplimiento de estos principios.
 
-**Version**: 1.2.0 | **Ratified**: 2026-10-25 | **Last Amended**: 2026-10-28
+**Version**: 1.3.0 | **Ratified**: 2026-10-25 | **Last Amended**: 2026-10-29
