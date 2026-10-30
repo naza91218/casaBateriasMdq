@@ -3,6 +3,7 @@ import type { BaseDeDatos, Transaccion } from '../../../platform/db.js';
 import { Dinero } from '../../../shared-kernel/dinero.js';
 import { ErrorDeDominio, noEncontrado } from '../../../shared-kernel/errores.js';
 import type { ServicioStock } from '../../catalogo/application/stock.js';
+import { MAIL_ADMIN_POR_ESTADO, MAIL_COMPRADOR_POR_ESTADO, mail } from '../../notificaciones/application/eventos.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
 import { pagos } from '../../pagos/infrastructure/schema.js';
 import { puedeTransicionar, type EstadoPedido } from '../domain/maquina-estados.js';
@@ -18,20 +19,6 @@ export interface SolicitudCambio {
   /** Transferencia o efectivo confirmados por el administrador (FR-028, FR-029). */
   pagoManual?: { medio: 'transferencia' | 'efectivo'; usuarioId: string };
 }
-
-/** Mail al comprador según el estado al que llega (FR-036). */
-const MAIL_COMPRADOR: Partial<Record<EstadoPedido, string>> = {
-  pagado: 'pago_confirmado',
-  en_camino: 'en_camino',
-  listo_para_retirar: 'listo_para_retirar',
-  entregado: 'entregado',
-  cancelado: 'cancelado',
-};
-
-/** Avisos al administrador (FR-037). */
-const MAIL_ADMIN: Partial<Record<EstadoPedido, string>> = {
-  pagado: 'aviso_admin_pago',
-};
 
 /**
  * La única puerta para cambiar el estado de un pedido (constitución VII, FR-033): valida la
@@ -94,28 +81,10 @@ export class ServicioEstados {
     await tx.insert(pedidoEventos).values(evento);
 
     const datos = await this.datosMail.para(tx, pedido.id);
-    const mailComprador = MAIL_COMPRADOR[s.a];
-    if (mailComprador) {
-      await this.outbox.encolar(tx, {
-        clave: `${mailComprador}:${pedido.id}:comprador`,
-        canal: 'mail',
-        evento: mailComprador,
-        destinatario: 'comprador',
-        pedidoId: pedido.id,
-        datos,
-      });
-    }
-    const mailAdmin = MAIL_ADMIN[s.a];
-    if (mailAdmin) {
-      await this.outbox.encolar(tx, {
-        clave: `${mailAdmin}:${pedido.id}:admin`,
-        canal: 'mail',
-        evento: mailAdmin,
-        destinatario: 'admin',
-        pedidoId: pedido.id,
-        datos,
-      });
-    }
+    const mailComprador = MAIL_COMPRADOR_POR_ESTADO[s.a];
+    if (mailComprador) await this.outbox.encolar(tx, mail(mailComprador, 'comprador', pedido.id, datos, pedido.id));
+    const mailAdmin = MAIL_ADMIN_POR_ESTADO[s.a];
+    if (mailAdmin) await this.outbox.encolar(tx, mail(mailAdmin, 'admin', pedido.id, datos, pedido.id));
     return { ok: true, de: pedido.estado };
   }
 }

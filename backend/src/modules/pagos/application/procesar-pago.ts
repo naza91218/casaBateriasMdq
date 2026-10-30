@@ -2,6 +2,7 @@ import { eq, sql } from 'drizzle-orm';
 import type { BaseDeDatos, Transaccion } from '../../../platform/db.js';
 import { ErrorDeDominio } from '../../../shared-kernel/errores.js';
 import type { PasarelaPago } from '../../../shared-kernel/puertos.js';
+import { MAILS, mail } from '../../notificaciones/application/eventos.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
 import type { ServicioEstados } from '../../pedidos/application/cambiar-estado.js';
 import { pedidos } from '../../pedidos/infrastructure/schema.js';
@@ -32,6 +33,7 @@ export class ServicioPagosMercadoPago {
     private readonly pasarela: PasarelaPago,
     private readonly estados: ServicioEstados,
     private readonly outbox: Outbox,
+    private readonly urlPanelPedido: (pedidoId: string) => string,
   ) {}
 
   async procesar(n: NotificacionMp): Promise<ResultadoNotificacion> {
@@ -100,13 +102,7 @@ export class ServicioPagosMercadoPago {
   ): Promise<void> {
     const [alerta] = await tx.insert(alertas).values({ pedidoId, tipo, detalle }).returning({ id: alertas.id });
     const [pedido] = await tx.select({ numero: pedidos.numero }).from(pedidos).where(eq(pedidos.id, pedidoId));
-    await this.outbox.encolar(tx, {
-      clave: `aviso_admin_alerta:${alerta?.id}:admin`,
-      canal: 'mail',
-      evento: 'aviso_admin_alerta',
-      destinatario: 'admin',
-      pedidoId,
-      datos: { tipo, numero: pedido?.numero, ...detalle },
-    });
+    const datos = { tipo, numero: pedido?.numero, urlPanel: this.urlPanelPedido(pedidoId), ...detalle };
+    await this.outbox.encolar(tx, mail(MAILS.alertaDePago.admin, 'admin', String(alerta?.id), datos, pedidoId));
   }
 }

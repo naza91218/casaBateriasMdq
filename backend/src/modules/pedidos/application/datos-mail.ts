@@ -2,13 +2,14 @@ import { asc, eq } from 'drizzle-orm';
 import type { FirmadorSeguimiento } from '../../../platform/crypto.js';
 import type { Ejecutor } from '../../../platform/db.js';
 import { enlaceWhatsapp } from '../../../shared-kernel/whatsapp.js';
+import { enlacesPanel } from '../../notificaciones/application/eventos.js';
 import type { ServicioCompradores } from '../../clientes/application/compradores.js';
 import type { ServicioConfiguracion } from '../../configuracion/application/configuracion.js';
 import { pedidoItems, pedidos } from '../infrastructure/schema.js';
 
 /**
  * Arma los datos que necesitan las plantillas de mail de un pedido. Nunca incluye el DNI,
- * la dirección ni el teléfono del comprador (FR-038).
+ * la dirección ni el teléfono del comprador (FR-038); sí los datos del comercio para el pie.
  */
 export class DatosMailPedido {
   constructor(
@@ -49,9 +50,15 @@ export class DatosMailPedido {
       total: Number(pedido.total),
       venceEn: pedido.venceEn?.toISOString() ?? null,
       urlSeguimiento: this.urlSeguimiento(pedidoId),
-      urlPanel: `${this.urlFrontend}/panel/pedidos/${pedidoId}`,
+      urlPanel: enlacesPanel(this.urlFrontend).pedido(pedidoId),
       whatsappUrl: enlaceWhatsapp(config.whatsapp, `Hola, tengo una consulta por mi pedido #${pedido.numero}`).url,
       resenasUrl: config.googleResenasUrl,
+      comercio: {
+        razonSocial: config.comercioRazonSocial,
+        cuit: config.comercioCuit,
+        domicilio: config.comercioDomicilio,
+        telefono: config.comercioTelefono,
+      },
       banco: transferenciaPendiente
         ? { titular: config.bancoTitular, cbu: config.bancoCbu, alias: config.bancoAlias, cuit: config.bancoCuit }
         : null,

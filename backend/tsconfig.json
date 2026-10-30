@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx"
   },
-  "include": ["src", "db", "tests", "drizzle.config.ts", "vitest.config.ts"]
+  "include": ["src", "db", "scripts", "tests", "drizzle.config.ts", "vitest.config.ts"]
 }

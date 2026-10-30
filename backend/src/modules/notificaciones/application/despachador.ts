@@ -17,6 +17,6 @@ export function crearDespachador(deps: {
     const para =
       mensaje.destinatario === 'admin' ? deps.mailAdmin : String(mensaje.datos.email ?? '');
     if (!para) throw new Error('Mensaje sin destinatario');
-    await deps.mailer.enviar({ para, ...renderizar(mensaje.evento, mensaje.datos) });
+    await deps.mailer.enviar({ para, ...(await renderizar(mensaje.evento, mensaje.datos)) });
   };
 }

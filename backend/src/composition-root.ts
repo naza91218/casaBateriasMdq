@@ -27,6 +27,7 @@ import { ServicioBuscador } from './modules/compatibilidad/application/buscador.
 import { RepositorioCompatibilidad } from './modules/compatibilidad/infrastructure/repositorio.js';
 import { ServicioConfiguracion } from './modules/configuracion/application/configuracion.js';
 import { ServicioZonas } from './modules/entregas/application/zonas.js';
+import { enlacesPanel } from './modules/notificaciones/application/eventos.js';
 import { Outbox } from './modules/notificaciones/application/outbox.js';
 import { clavesDeCifrado, type Config } from './platform/config.js';
 import { crearCifrador, crearFirmadorSeguimiento, type Cifrador } from './platform/crypto.js';
@@ -131,6 +132,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
       : new PasarelaFalsa(config.MP_WEBHOOK_SECRET ?? 'secreto-webhook-de-prueba'));
   const almacenamiento = reemplazos.almacenamiento ?? elegirAlmacenamiento(config);
   const outbox = new Outbox(db, reloj);
+  const panel = enlacesPanel(config.FRONTEND_URL);
   const claveSeguimiento = clavesDeCifrado(config)[config.DNI_KEY_VERSION];
   if (!claveSeguimiento) throw new Error('Falta la clave de cifrado actual');
   const firmador = crearFirmadorSeguimiento(claveSeguimiento);
@@ -175,11 +177,11 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     pedidos,
     seguimiento: new ServicioSeguimiento(db, firmador, configuracion, zonas, compradores, pedidos, reloj),
     vencimientos: new ServicioVencimientos(db, estados, reloj),
-    pagosMp: new ServicioPagosMercadoPago(db, pasarela, estados, outbox),
+    pagosMp: new ServicioPagosMercadoPago(db, pasarela, estados, outbox, panel.pedido),
     pagosManuales: new ServicioPagosManuales(db, estados),
     alertas,
     panelPedidos: new ServicioPanelPedidos(db, estados, compradores, zonas, alertas, reloj),
-    canje: new ServicioCanje(db, configuracion, zonas),
+    canje: new ServicioCanje(db, configuracion, zonas, outbox, panel.canje()),
     fotos,
     adminProductos: new ServicioAdminProductos(db, fotos, outbox),
     adminVehiculos: new ServicioAdminVehiculos(db, outbox),

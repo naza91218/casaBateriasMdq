@@ -139,8 +139,8 @@ describe('después de todas las cargas', () => {
 });
 
 describe('HTML en los mails', () => {
-  test('un nombre con <script> llega escapado, nunca como HTML', () => {
-    const mail = renderizar('pedido_recibido', {
+  test('un nombre con <script> llega escapado, nunca como HTML', async () => {
+    const mail = await renderizar('pedido_recibido', {
       nombre: '<script>alert(1)</script>',
       numero: 1001,
       entrega: 'retiro',
@@ -152,6 +152,6 @@ describe('HTML en los mails', () => {
     });
     expect(mail.html).not.toContain('<script>');
     expect(mail.html).not.toContain('<img');
-    expect(mail.html).toContain('&#60;script&#62;');
+    expect(mail.html).toContain('&lt;script&gt;');
   });
 });

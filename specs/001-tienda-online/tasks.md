@@ -246,13 +246,13 @@ cerrado y se refina en ese momento.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T115 [P] [US4] Tests de integración: US4-01 (transferencia → mail con CBU/alias, monto y plazo + aviso al admin con link al panel), US4-02 ("Vamos en camino" con número), US4-03 (ningún mail al comprador contiene el DNI), US4-04 (mailer caído → pedido creado, error registrado, sale al reintentar), US4-05 (evento pagado dos veces → un mail) en `backend/tests/integration/notificaciones/mails.test.ts`
+- [X] T115 [P] [US4] Tests de integración: US4-01 (transferencia → mail con CBU/alias, monto y plazo + aviso al admin con link al panel), US4-02 ("Vamos en camino" con número), US4-03 (ningún mail al comprador contiene el DNI), US4-04 (mailer caído → pedido creado, error registrado, sale al reintentar), US4-05 (evento pagado dos veces → un mail) en `backend/tests/integration/notificaciones/mails.test.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T116 [US4] Completar el mapa evento → plantillas → destinatarios para todos los estados, alertas, consultas de canje y arrepentimientos en `backend/src/modules/notificaciones/application/eventos.ts`
-- [ ] T117 [P] [US4] Crear el layout común de mails (número, productos, entrega, total, enlace de seguimiento, botón de WhatsApp, datos del comercio) en `backend/src/modules/notificaciones/plantillas/layout.tsx`
-- [ ] T118 [US4] Documentar la configuración de SPF, DKIM y DMARC del dominio en Resend y la prueba de reputación ≥ 9/10 (US4-06) en `infra/README.md`
+- [X] T116 [US4] Completar el mapa evento → plantillas → destinatarios para todos los estados, alertas, consultas de canje y arrepentimientos en `backend/src/modules/notificaciones/application/eventos.ts`
+- [X] T117 [P] [US4] Crear el layout común de mails (número, productos, entrega, total, enlace de seguimiento, botón de WhatsApp, datos del comercio) en `backend/src/modules/notificaciones/plantillas/layout.tsx`
+- [X] T118 [US4] Documentar la configuración de SPF, DKIM y DMARC del dominio en Resend y la prueba de reputación ≥ 9/10 (US4-06) en `infra/README.md`
 
 **Checkpoint**: SC-007 verificable
 

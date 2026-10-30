@@ -9,6 +9,7 @@ import type { ServicioStock } from '../../catalogo/application/stock.js';
 import type { ServicioCompradores } from '../../clientes/application/compradores.js';
 import type { ServicioConfiguracion } from '../../configuracion/application/configuracion.js';
 import type { ServicioZonas } from '../../entregas/application/zonas.js';
+import { MAILS, mail } from '../../notificaciones/application/eventos.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
 import { MEDIOS_PAGO, mediosDisponibles, type MedioPago } from '../../pagos/domain/medios-pago.js';
 import { calcularImportes } from '../domain/importes.js';
@@ -152,22 +153,8 @@ export class ServicioPedidos {
       });
 
       const datos = await this.d.datosMail.para(tx, pedido.id);
-      await this.d.outbox.encolar(tx, {
-        clave: `pedido_recibido:${pedido.id}:comprador`,
-        canal: 'mail',
-        evento: 'pedido_recibido',
-        destinatario: 'comprador',
-        pedidoId: pedido.id,
-        datos,
-      });
-      await this.d.outbox.encolar(tx, {
-        clave: `aviso_admin_pedido_nuevo:${pedido.id}:admin`,
-        canal: 'mail',
-        evento: 'aviso_admin_pedido_nuevo',
-        destinatario: 'admin',
-        pedidoId: pedido.id,
-        datos,
-      });
+      await this.d.outbox.encolar(tx, mail(MAILS.pedidoCreado.comprador, 'comprador', pedido.id, datos, pedido.id));
+      await this.d.outbox.encolar(tx, mail(MAILS.pedidoCreado.admin, 'admin', pedido.id, datos, pedido.id));
       return { pedido, reservados, banco: datos.banco as Record<string, string> | null };
     });
 

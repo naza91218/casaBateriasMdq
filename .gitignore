@@ -30,5 +30,6 @@ Thumbs.db
 # Desarrollo del sistema
 data/import/
 backend/uploads/
+backend/.previews/
 *.log
 .turbo/

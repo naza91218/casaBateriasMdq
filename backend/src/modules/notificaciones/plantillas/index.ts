@@ -1,31 +1,36 @@
+import { render, toPlainText } from '@react-email/render';
+import type { ReactElement } from 'react';
 import type { MensajeMail } from '../../../shared-kernel/puertos.js';
+import { plantillasAdmin } from './admin.js';
+import { plantillasLegales } from './legales.js';
 import { plantillasPedidos } from './pedidos.js';
 
 export type Contenido = Omit<MensajeMail, 'para'>;
-type Plantilla = (datos: Record<string, unknown>) => Contenido;
-
-const escapar = (v: unknown) =>
-  String(v ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+export type Plantilla = (datos: Record<string, unknown>) => {
+  asunto: string;
+  cuerpo: ReactElement;
+};
 
 /**
- * Registro de plantillas por evento. Las de pedidos se suman en T086/T095 y el diseño común
- * (React Email) en T117. Ninguna plantilla recibe ni muestra el DNI (FR-038).
+ * Registro de plantillas por evento, todas sobre el diseño común de `layout.tsx` (T117).
+ * Ninguna plantilla recibe ni muestra el DNI (FR-038).
  */
 const plantillas: Record<string, Plantilla> = {
   ...plantillasPedidos,
-  enlace_ingreso: (d) => ({
-    asunto: 'Tu enlace para entrar al panel',
-    texto: `Entrá al panel con este enlace (vence en 15 minutos y sirve una sola vez):\n${String(d.url)}\n\nSi no lo pediste, ignorá este mail.`,
-    html: `<p>Entrá al panel con este enlace. Vence en 15 minutos y sirve una sola vez.</p><p><a href="${escapar(d.url)}">Entrar al panel</a></p><p>Si no lo pediste, ignorá este mail.</p>`,
-  }),
+  ...plantillasAdmin,
+  ...plantillasLegales,
 };
 
-export function registrarPlantilla(evento: string, plantilla: Plantilla): void {
-  plantillas[evento] = plantilla;
-}
+export const eventosConPlantilla = (): string[] => Object.keys(plantillas);
 
-export function renderizar(evento: string, datos: Record<string, unknown>): Contenido {
+/** HTML para el cliente de correo y versión en texto (mejora la entrega y evita el spam). */
+export async function renderizar(
+  evento: string,
+  datos: Record<string, unknown>,
+): Promise<Contenido> {
   const plantilla = plantillas[evento];
   if (!plantilla) throw new Error(`No hay plantilla para el evento "${evento}"`);
-  return plantilla(datos);
+  const { asunto, cuerpo } = plantilla(datos);
+  const html = await render(cuerpo);
+  return { asunto, html, texto: toPlainText(html) };
 }
