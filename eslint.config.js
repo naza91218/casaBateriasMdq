@@ -27,6 +27,11 @@ export default tseslint.config(
     },
   },
   {
+    // Scripts de carga de k6 (T150): corren en k6, que define estas variables globales.
+    files: ['infra/carga/**/*.js'],
+    languageOptions: { globals: { __ENV: 'readonly', __VU: 'readonly', __ITER: 'readonly' } },
+  },
+  {
     // El dominio es puro: no conoce la base, Fastify ni los adaptadores (constitución VII, SOLID-D).
     files: ['backend/src/modules/*/domain/**/*.ts', 'backend/src/shared-kernel/**/*.ts'],
     rules: {

@@ -73,7 +73,7 @@ describe('el panel exige sesión (FR-041)', () => {
 });
 
 describe('pedidos en el panel', () => {
-  test('el listado no trae DNI; el detalle sí, con mapa y WhatsApp al comprador', async () => {
+  test('US3-05: el listado no trae DNI; el detalle sí, con mapa y WhatsApp al comprador', async () => {
     const { id } = await e.ctx.servicios.pedidos.crear(
       solicitud(e, { entrega: 'colocacion', zonaId: e.zonaMdp }),
     );

@@ -1,4 +1,5 @@
 import cookie from '@fastify/cookie';
+import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
@@ -31,7 +32,7 @@ import { rutasPedidos } from '../modules/pedidos/http/rutas.js';
 import { rutasBuscador } from '../modules/compatibilidad/http/rutas.js';
 import { rutasConfiguracion } from '../modules/configuracion/http/rutas.js';
 import { registrarManejoDeErrores } from './plugins/errores.js';
-import { requiereSesion } from './plugins/sesion.js';
+import { requiereSesion, soloDesdeLaTienda } from './plugins/sesion.js';
 import { rutasAdminResumen } from './rutas-admin-resumen.js';
 
 export const PREFIJO = '/api/v1';
@@ -52,7 +53,9 @@ export async function construirServidor(
 ): Promise<FastifyInstance> {
   const base = Fastify({
     loggerInstance: ctx.logger as FastifyBaseLogger,
-    trustProxy: true, // detrás de Nginx: la IP real llega en X-Forwarded-For (rate limit)
+    // Detrás de Nginx la IP real llega en X-Forwarded-For (rate limit). Solo se le cree a un
+    // proxy de la máquina o de la red interna de Docker: si no, cualquiera inventa su IP.
+    trustProxy: ['loopback', 'uniquelocal'],
   });
   registrarManejoDeErrores(
     base,
@@ -63,6 +66,19 @@ export async function construirServidor(
   base.decorateRequest('usuario', null);
   const app = base.withTypeProvider<ZodTypeProvider>();
 
+  // Cabeceras de seguridad (T146). La API solo devuelve JSON y fotos: nada se ejecuta ni se
+  // embebe. La política de contenido se apaga donde está la documentación (no en producción).
+  await app.register(helmet, {
+    contentSecurityPolicy: ctx.config.esProduccion
+      ? { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] } }
+      : false,
+    frameguard: { action: 'deny' },
+    referrerPolicy: { policy: 'no-referrer' },
+    // Sin includeSubDomains: el dominio puede tener otros subdominios que no son de la tienda.
+    hsts: { maxAge: 180 * 24 * 60 * 60, includeSubDomains: false },
+    // Las fotos de desarrollo (/uploads) las muestra el frontend, que está en otro origen.
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  });
   await app.register(cookie);
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024, files: 10 } });
   await app.register(rateLimit, {
@@ -130,6 +146,10 @@ export async function construirServidor(
         async (admin) => {
           // onRequest: la sesión se verifica antes de leer o validar el body (sin sesión siempre es 401).
           admin.addHook('onRequest', requiereSesion(ctx.servicios.auth));
+          admin.addHook(
+            'onRequest',
+            soloDesdeLaTienda([ctx.config.FRONTEND_URL, ctx.config.API_PUBLIC_URL]),
+          );
           const s = ctx.servicios;
           await admin.register(
             rutasAdminResumen({

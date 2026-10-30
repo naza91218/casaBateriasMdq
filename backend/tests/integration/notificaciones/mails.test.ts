@@ -33,6 +33,7 @@ beforeAll(async () => {
       comercioRazonSocial: 'La Casa de las Baterías SRL',
       comercioCuit: '30-71234567-8',
       whatsapp: '5492235123456',
+      googleResenasUrl: 'https://g.page/r/casa-de-las-baterias/review',
     })
     .where(eq(configuracion.id, 1));
   // Varios pedidos por test: alcanza con el stock de sobra.
@@ -166,6 +167,17 @@ describe('avisos por mail (US4)', () => {
     await enviarPendientes();
     expect(delComprador().filter((m) => m.asunto.startsWith('Pago confirmado'))).toHaveLength(1);
     expect(delAdmin().filter((m) => m.asunto.startsWith('Pago confirmado'))).toHaveLength(1);
+  });
+
+  test('US6-09: el mail de "entregado" lleva el enlace para dejar una reseña en Google', async () => {
+    const { id } = await e.ctx.servicios.pedidos.crear(solicitud(e));
+    await e.ctx.servicios.pagosManuales.confirmarTransferencia(id, admin);
+    await e.ctx.servicios.panelPedidos.moverEstado(id, { a: 'listo_para_retirar' }, admin);
+    await e.ctx.servicios.panelPedidos.moverEstado(id, { a: 'entregado' }, admin);
+    await enviarPendientes();
+    const entregado = delComprador().find((m) => m.asunto.startsWith('¡Listo!'));
+    expect(entregado?.html).toContain('https://g.page/r/casa-de-las-baterias/review');
+    expect(entregado?.texto).toContain('Dejanos tu opinión en Google');
   });
 
   test('una consulta de canje avisa al administrador con los datos para contactarlo', async () => {

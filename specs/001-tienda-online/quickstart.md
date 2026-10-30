@@ -21,7 +21,8 @@ pnpm install
 docker compose -f infra/docker-compose.dev.yml up -d
 ```
 
-Levanta PostgreSQL 17 (puerto 5432) y Mailpit (bandeja de mails en `http://localhost:8025`).
+Levanta PostgreSQL 17 (puerto **5433**, para no chocar con un PostgreSQL instalado en la PC) y
+Mailpit (bandeja de mails en `http://localhost:8025`).
 
 ```bash
 cp backend/.env.example backend/.env

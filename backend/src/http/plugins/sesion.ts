@@ -24,6 +24,29 @@ export function requiereSesion(auth: ServicioAuth) {
   };
 }
 
+const SIN_EFECTOS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
+/**
+ * Defensa contra pedidos falsificados desde otro sitio (CSRF), además de la cookie SameSite=Lax:
+ * una acción del panel que llega desde un navegador tiene que venir de la tienda. Sin cabecera
+ * Origin (herramientas, servidor a servidor) no hay navegador del que abusar.
+ */
+export function soloDesdeLaTienda(urls: string[]) {
+  const permitidos = new Set(urls.map((u) => new URL(u).origin));
+  return async (req: FastifyRequest, _reply: FastifyReply): Promise<void> => {
+    if (SIN_EFECTOS.has(req.method)) return;
+    const origen = req.headers.origin;
+    const desdeOtroSitio = req.headers['sec-fetch-site'] === 'cross-site';
+    if ((origen && !permitidos.has(origen)) || desdeOtroSitio) {
+      throw new ErrorDeDominio(
+        'prohibido',
+        'ORIGEN_NO_PERMITIDO',
+        'Esta acción solo se puede hacer desde el panel',
+      );
+    }
+  };
+}
+
 /** Para usar dentro de un handler /admin: el usuario ya fue validado por requiereSesion. */
 export function usuarioActual(req: FastifyRequest): UsuarioPanel {
   if (!req.usuario) {

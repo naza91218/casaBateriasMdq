@@ -55,10 +55,31 @@ export function cargarConfig(env: NodeJS.ProcessEnv = process.env): Config {
     throw new Error(`Configuración inválida. Revisá el archivo .env:\n${detalle}`);
   }
   const config = resultado.data;
-  if (config.NODE_ENV === 'production' || config.NODE_ENV === 'staging') {
-    if (!config.RESEND_API_KEY) throw new Error('Falta RESEND_API_KEY fuera de desarrollo');
-  }
+  if (config.NODE_ENV === 'production' || config.NODE_ENV === 'staging') exigirServidor(config);
   return { ...config, esProduccion: config.NODE_ENV === 'production' };
+}
+
+/** Valores de `.env.example`: sirven para desarrollo y nunca para un servidor. */
+const VALORES_DE_EJEMPLO = new Set([
+  'MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=',
+  'cambiar-por-un-secreto-largo',
+]);
+
+/**
+ * En staging y producción falta algo → no arranca (T146). Sin credenciales de Mercado Pago se
+ * usaría la pasarela simulada de desarrollo, y con una clave de ejemplo el DNI no estaría protegido.
+ */
+function exigirServidor(config: z.infer<typeof esquema>): void {
+  const faltan = (['RESEND_API_KEY', 'MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET'] as const).filter(
+    (clave) => !config[clave],
+  );
+  if (faltan.length) throw new Error(`Faltan variables fuera de desarrollo: ${faltan.join(', ')}`);
+  const deEjemplo = (['DNI_ENCRYPTION_KEY', 'REVALIDATE_SECRET'] as const).filter((clave) =>
+    VALORES_DE_EJEMPLO.has(config[clave]),
+  );
+  if (deEjemplo.length) {
+    throw new Error(`Estas variables tienen el valor de ejemplo: ${deEjemplo.join(', ')}`);
+  }
 }
 
 /** Claves de cifrado del DNI por versión: la actual más las anteriores (rotación). */
