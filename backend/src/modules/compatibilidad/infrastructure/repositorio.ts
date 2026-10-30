@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, isNotNull, isNull, lte, or } from 'drizzle-orm';
+import { and, asc, eq, gte, isNotNull, isNull, lte, max, or } from 'drizzle-orm';
 import type { Ejecutor } from '../../../platform/db.js';
 import { vehiculoMedidas, vehiculos } from './schema.js';
 
@@ -28,7 +28,13 @@ export class RepositorioCompatibilidad {
       .selectDistinct({ desde: vehiculos.anioDesde, hasta: vehiculos.anioHasta })
       .from(vehiculos)
       .innerJoin(vehiculoMedidas, eq(vehiculoMedidas.vehiculoId, vehiculos.id))
-      .where(and(eq(vehiculos.marcaSlug, marcaSlug), eq(vehiculos.modeloSlug, modeloSlug), isNotNull(vehiculos.anioDesde)));
+      .where(
+        and(
+          eq(vehiculos.marcaSlug, marcaSlug),
+          eq(vehiculos.modeloSlug, modeloSlug),
+          isNotNull(vehiculos.anioDesde),
+        ),
+      );
   }
 
   /**
@@ -50,9 +56,47 @@ export class RepositorioCompatibilidad {
           eq(vehiculos.modeloSlug, modeloSlug),
           anio === undefined
             ? isNull(vehiculos.anioDesde)
-            : or(isNull(vehiculos.anioDesde), and(lte(vehiculos.anioDesde, anio), gte(vehiculos.anioHasta, anio))),
+            : or(
+                isNull(vehiculos.anioDesde),
+                and(lte(vehiculos.anioDesde, anio), gte(vehiculos.anioHasta, anio)),
+              ),
         ),
       );
+  }
+
+  /** Todas las variantes de un modelo con sus medidas: la página del auto (FR-072). */
+  filasDelModelo(marcaSlug: string, modeloSlug: string) {
+    return this.db
+      .select({
+        id: vehiculos.id,
+        marca: vehiculos.marca,
+        modelo: vehiculos.modelo,
+        anioDesde: vehiculos.anioDesde,
+        anioHasta: vehiculos.anioHasta,
+        motor: vehiculos.motor,
+        actualizadoEn: vehiculos.actualizadoEn,
+        medida: vehiculoMedidas.medida,
+      })
+      .from(vehiculos)
+      .innerJoin(vehiculoMedidas, eq(vehiculoMedidas.vehiculoId, vehiculos.id))
+      .where(and(eq(vehiculos.marcaSlug, marcaSlug), eq(vehiculos.modeloSlug, modeloSlug)))
+      .orderBy(asc(vehiculos.anioDesde), asc(vehiculos.motor));
+  }
+
+  /** Modelos con al menos una medida cargada, con su última modificación (mapa del sitio). */
+  modelosConCompatibilidad() {
+    return this.db
+      .select({
+        marca: vehiculos.marca,
+        marcaSlug: vehiculos.marcaSlug,
+        modelo: vehiculos.modelo,
+        modeloSlug: vehiculos.modeloSlug,
+        actualizadoEn: max(vehiculos.actualizadoEn),
+      })
+      .from(vehiculos)
+      .innerJoin(vehiculoMedidas, eq(vehiculoMedidas.vehiculoId, vehiculos.id))
+      .groupBy(vehiculos.marca, vehiculos.marcaSlug, vehiculos.modelo, vehiculos.modeloSlug)
+      .orderBy(asc(vehiculos.marca), asc(vehiculos.modelo));
   }
 
   /** Autos que llevan una medida: los muestra la ficha de producto (FR-006). */

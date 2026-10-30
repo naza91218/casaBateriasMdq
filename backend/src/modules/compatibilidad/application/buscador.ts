@@ -1,10 +1,20 @@
-import type { OpcionVehiculo, ResultadoCompatibles } from '@casa/shared';
+import type { Gama, ItemProducto, OpcionVehiculo, ResultadoCompatibles } from '@casa/shared';
 import { desdeSlug } from '../../../shared-kernel/slug.js';
 import { enlaceWhatsapp, mensajes } from '../../../shared-kernel/whatsapp.js';
 import type { ServicioCatalogo } from '../../catalogo/application/catalogo.js';
 import { ORDEN_GAMA } from '../../catalogo/domain/precios.js';
 import type { ServicioConfiguracion } from '../../configuracion/application/configuracion.js';
 import type { RepositorioCompatibilidad } from '../infrastructure/repositorio.js';
+
+/** Económica primero y sin grupos vacíos (FR-011). */
+export function agruparPorGama(
+  productos: ItemProducto[],
+): { gama: Gama; productos: ItemProducto[] }[] {
+  return ORDEN_GAMA.map((gama) => ({
+    gama,
+    productos: productos.filter((p) => p.gama === gama),
+  })).filter((g) => g.productos.length > 0);
+}
 
 /**
  * Buscador por auto: marca → modelo → año → baterías de las medidas compatibles (US1).
@@ -38,7 +48,11 @@ export class ServicioBuscador {
     return [...anios].sort((a, b) => b - a);
   }
 
-  async compatibles(marcaSlug: string, modeloSlug: string, anio?: number): Promise<ResultadoCompatibles> {
+  async compatibles(
+    marcaSlug: string,
+    modeloSlug: string,
+    anio?: number,
+  ): Promise<ResultadoCompatibles> {
     const [filas, config] = await Promise.all([
       this.repo.vehiculosEnAnio(marcaSlug, modeloSlug, anio),
       this.configuracion.obtener(),
@@ -57,10 +71,7 @@ export class ServicioBuscador {
     const ordenMedidas = (await this.catalogo.medidas()).map((m) => m.codigo);
     medidas.sort((a, b) => ordenMedidas.indexOf(a) - ordenMedidas.indexOf(b));
 
-    const grupos = ORDEN_GAMA.map((gama) => ({
-      gama,
-      productos: productos.filter((p) => p.gama === gama),
-    })).filter((g) => g.productos.length > 0);
+    const grupos = agruparPorGama(productos);
 
     return {
       vehiculo,

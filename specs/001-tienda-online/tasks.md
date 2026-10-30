@@ -311,12 +311,12 @@ cerrado y se refina en ese momento.
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T132 [P] [US6] Tests de contrato: `GET /seo/indice` excluye productos no activos (US6-04); `GET /vehiculos/:marcaSlug/:modeloSlug` incluye medidas por rango de años y preguntas frecuentes cuya primera respuesta es la medida (US6-07); `GET /configuracion/publica` incluye zonas atendidas y datos idénticos del comercio en `backend/tests/contract/seo/seo.test.ts`
+- [X] T132 [P] [US6] Tests de contrato: `GET /seo/indice` excluye productos no activos (US6-04); `GET /vehiculos/:marcaSlug/:modeloSlug` incluye medidas por rango de años y preguntas frecuentes cuya primera respuesta es la medida (US6-07); `GET /configuracion/publica` incluye zonas atendidas y datos idénticos del comercio en `backend/tests/contract/seo/seo.test.ts`
 
 ### Implementation for User Story 6
 
-- [ ] T133 [US6] Implementar `GET /vehiculos/:marcaSlug/:modeloSlug` con medidas por rango de años, productos y preguntas frecuentes generadas desde los datos en `backend/src/modules/compatibilidad/application/pagina-vehiculo.ts`
-- [ ] T134 [US6] Implementar `GET /seo/indice` (productos activos y modelos con compatibilidad, con fecha de actualización) en `backend/src/modules/catalogo/http/rutas-seo.ts`
+- [X] T133 [US6] Implementar `GET /vehiculos/:marcaSlug/:modeloSlug` con medidas por rango de años, productos y preguntas frecuentes generadas desde los datos en `backend/src/modules/compatibilidad/application/pagina-vehiculo.ts`
+- [X] T134 [US6] Implementar `GET /seo/indice` (productos activos y modelos con compatibilidad, con fecha de actualización) en `backend/src/modules/catalogo/http/rutas-seo.ts`
 
 **Checkpoint**: backend completo; todas las historias verificables por API
 

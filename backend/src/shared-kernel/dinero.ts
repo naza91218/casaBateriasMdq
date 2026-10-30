@@ -59,6 +59,12 @@ export class Dinero {
     return this.centavos === 0n;
   }
 
+  /** Para textos: "$98.500" o "$98.500,50", como se escribe en Argentina. */
+  aTexto(): string {
+    const pesos = Number(this.centavos) / 100;
+    return `$${pesos.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  }
+
   /** Para JSON: los importes viajan como enteros en centavos. */
   aNumero(): number {
     return Number(this.centavos);

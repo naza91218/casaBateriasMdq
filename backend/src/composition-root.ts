@@ -29,6 +29,8 @@ import { ServicioConfiguracion } from './modules/configuracion/application/confi
 import { ServicioZonas } from './modules/entregas/application/zonas.js';
 import { enlacesPanel } from './modules/notificaciones/application/eventos.js';
 import { Outbox } from './modules/notificaciones/application/outbox.js';
+import { ServicioPaginaVehiculo } from './modules/compatibilidad/application/pagina-vehiculo.js';
+import { ServicioIndiceSeo } from './modules/catalogo/application/indice-seo.js';
 import { ServicioArrepentimientos } from './modules/legales/application/arrepentimientos.js';
 import { ServicioAnonimizacion } from './modules/clientes/application/anonimizar.js';
 import { clavesDeCifrado, type Config } from './platform/config.js';
@@ -60,6 +62,8 @@ export interface Contexto {
     configuracion: ServicioConfiguracion;
     catalogo: ServicioCatalogo;
     buscador: ServicioBuscador;
+    paginaVehiculo: ServicioPaginaVehiculo;
+    indiceSeo: ServicioIndiceSeo;
     stock: ServicioStock;
     compradores: ServicioCompradores;
     estados: ServicioEstados;
@@ -144,8 +148,9 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
   const zonas = new ServicioZonas(db);
   const configuracion = new ServicioConfiguracion(db, zonas);
   const repoCompatibilidad = new RepositorioCompatibilidad(db);
+  const repoCatalogo = new RepositorioCatalogo(db);
   const catalogo = new ServicioCatalogo({
-    repo: new RepositorioCatalogo(db),
+    repo: repoCatalogo,
     configuracion,
     urlFoto: (clave) => almacenamiento.urlPublica(clave),
     autosDeMedida: (medida) => repoCompatibilidad.vehiculosDeMedida(medida),
@@ -176,6 +181,8 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     configuracion,
     catalogo,
     buscador: new ServicioBuscador(repoCompatibilidad, catalogo, configuracion),
+    paginaVehiculo: new ServicioPaginaVehiculo(repoCompatibilidad, catalogo, configuracion, zonas),
+    indiceSeo: new ServicioIndiceSeo(repoCatalogo, () => repoCompatibilidad.modelosConCompatibilidad()),
     stock,
     compradores,
     estados,

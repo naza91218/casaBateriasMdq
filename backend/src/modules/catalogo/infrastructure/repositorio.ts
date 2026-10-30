@@ -110,6 +110,19 @@ export class RepositorioCatalogo {
       .orderBy(asc(medidas.orden), asc(productos.precioLista), asc(productos.nombre));
   }
 
+  /** Productos que se pueden indexar: solo los activos (FR-055, US6-04). */
+  activosParaIndice() {
+    return this.db
+      .select({
+        slug: productos.slug,
+        nombre: productos.nombre,
+        actualizadoEn: productos.actualizadoEn,
+      })
+      .from(productos)
+      .where(eq(productos.estado, 'activo'))
+      .orderBy(asc(productos.nombre));
+  }
+
   /** Claves de fotos en orden, agrupadas por producto. */
   async fotosDe(ids: string[]): Promise<Map<string, string[]>> {
     const resultado = new Map<string, string[]>();

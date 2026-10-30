@@ -9,7 +9,8 @@ import { vehiculoMedidas, vehiculos } from '../infrastructure/schema.js';
 
 const textoLike = (q: string) => `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
 
-export const etiquetaVehiculo = (marca: string, modelo: string) => `vehiculo:${slug(marca)}/${slug(modelo)}`;
+export const etiquetaVehiculo = (marca: string, modelo: string) =>
+  `vehiculo:${slug(marca)}/${slug(modelo)}`;
 
 /** Clave natural de un vehículo: marca, modelo, rango de años y motor (contracts/importacion-csv.md). */
 export interface ClaveVehiculo {
@@ -35,7 +36,10 @@ export class ServicioAdminVehiculos {
     const condiciones: SQL[] = [];
     if (f.q) {
       for (const palabra of f.q.split(/\s+/).filter(Boolean)) {
-        const coincide = or(ilike(vehiculos.marca, textoLike(palabra)), ilike(vehiculos.modelo, textoLike(palabra)));
+        const coincide = or(
+          ilike(vehiculos.marca, textoLike(palabra)),
+          ilike(vehiculos.modelo, textoLike(palabra)),
+        );
         if (coincide) condiciones.push(coincide);
       }
     }
@@ -67,7 +71,8 @@ export class ServicioAdminVehiculos {
 
   async crear(d: DatosVehiculo): Promise<VehiculoAdmin> {
     const id = await this.db.transaction(async (tx) => {
-      if (await buscarPorClave(tx, d)) throw validacion({ modelo: 'Ese auto con esos años y motor ya está cargado' });
+      if (await buscarPorClave(tx, d))
+        throw validacion({ modelo: 'Ese auto con esos años y motor ya está cargado' });
       const { id } = await guardarVehiculo(tx, d, 'manual');
       await this.outbox.revalidar(tx, ['buscador', etiquetaVehiculo(d.marca, d.modelo)]);
       return id;
@@ -80,7 +85,8 @@ export class ServicioAdminVehiculos {
       const [actual] = await tx.select().from(vehiculos).where(eq(vehiculos.id, id)).for('update');
       if (!actual) throw noEncontrado('No encontramos ese auto');
       const otro = await buscarPorClave(tx, d);
-      if (otro && otro !== id) throw validacion({ modelo: 'Ese auto con esos años y motor ya está cargado' });
+      if (otro && otro !== id)
+        throw validacion({ modelo: 'Ese auto con esos años y motor ya está cargado' });
       await tx
         .update(vehiculos)
         .set({ ...camposVehiculo(d) })
@@ -112,7 +118,8 @@ export class ServicioAdminVehiculos {
       .innerJoin(medidas, eq(medidas.codigo, vehiculoMedidas.medida))
       .where(inArray(vehiculoMedidas.vehiculoId, ids))
       .orderBy(asc(medidas.orden));
-    for (const f of filas) resultado.set(f.vehiculoId, [...(resultado.get(f.vehiculoId) ?? []), f.medida]);
+    for (const f of filas)
+      resultado.set(f.vehiculoId, [...(resultado.get(f.vehiculoId) ?? []), f.medida]);
     return resultado;
   }
 }
@@ -172,7 +179,10 @@ export async function guardarVehiculo(
   const existente = await buscarPorClave(tx, d);
   let id = existente;
   if (existente) {
-    await tx.update(vehiculos).set({ ...camposVehiculo(d), fuente }).where(eq(vehiculos.id, existente));
+    await tx
+      .update(vehiculos)
+      .set({ ...camposVehiculo(d), fuente })
+      .where(eq(vehiculos.id, existente));
   } else {
     const [v] = await tx
       .insert(vehiculos)
@@ -187,14 +197,25 @@ export async function guardarVehiculo(
 
 async function exigirMedidas(ej: Ejecutor, lista: string[]): Promise<void> {
   const existentes = new Set(
-    (await ej.select({ codigo: medidas.codigo }).from(medidas).where(inArray(medidas.codigo, lista))).map((m) => m.codigo),
+    (
+      await ej
+        .select({ codigo: medidas.codigo })
+        .from(medidas)
+        .where(inArray(medidas.codigo, lista))
+    ).map((m) => m.codigo),
   );
   const faltan = lista.filter((m) => !existentes.has(m));
   if (faltan.length) throw validacion({ medidas: `No existe la medida ${faltan.join(', ')}` });
 }
 
-async function reemplazarMedidas(tx: Transaccion, vehiculoId: string, lista: string[]): Promise<void> {
+async function reemplazarMedidas(
+  tx: Transaccion,
+  vehiculoId: string,
+  lista: string[],
+): Promise<void> {
   await exigirMedidas(tx, lista);
   await tx.delete(vehiculoMedidas).where(eq(vehiculoMedidas.vehiculoId, vehiculoId));
-  await tx.insert(vehiculoMedidas).values([...new Set(lista)].map((medida) => ({ vehiculoId, medida })));
+  await tx
+    .insert(vehiculoMedidas)
+    .values([...new Set(lista)].map((medida) => ({ vehiculoId, medida })));
 }

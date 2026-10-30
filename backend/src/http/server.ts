@@ -20,6 +20,7 @@ import { rutasAdminConfiguracion } from '../modules/configuracion/http/rutas-adm
 import { rutasAdminImportacion } from '../modules/importacion/http/rutas-admin.js';
 import { rutasAuth } from '../modules/auth/http/rutas.js';
 import { rutasCanje } from '../modules/canje/http/rutas.js';
+import { rutasSeo } from '../modules/catalogo/http/rutas-seo.js';
 import { rutasAdminLegales } from '../modules/legales/http/rutas-admin.js';
 import { rutasLegales } from '../modules/legales/http/rutas.js';
 import { rutasCatalogo } from '../modules/catalogo/http/rutas.js';
@@ -97,7 +98,10 @@ export async function construirServidor(
       // Públicas
       await api.register(rutasConfiguracion({ configuracion: ctx.servicios.configuracion }));
       await api.register(rutasCatalogo({ catalogo: ctx.servicios.catalogo }));
-      await api.register(rutasBuscador({ buscador: ctx.servicios.buscador }));
+      await api.register(
+        rutasBuscador({ buscador: ctx.servicios.buscador, paginaVehiculo: ctx.servicios.paginaVehiculo }),
+      );
+      await api.register(rutasSeo({ indice: ctx.servicios.indiceSeo }));
       await api.register(
         rutasPedidos({ pedidos: ctx.servicios.pedidos, seguimiento: ctx.servicios.seguimiento }),
       );

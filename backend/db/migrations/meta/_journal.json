@@ -43,6 +43,13 @@
       "when": 1793379301230,
       "tag": "0005_legales",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793380283129,
+      "tag": "0006_vehiculos_actualizado",
+      "breakpoints": true
     }
   ]
 }

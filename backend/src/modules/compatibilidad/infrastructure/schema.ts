@@ -1,6 +1,15 @@
 import { sql } from 'drizzle-orm';
-import { check, index, pgTable, primaryKey, smallint, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import { idUuid } from '../../../platform/columnas.js';
+import {
+  check,
+  index,
+  pgTable,
+  primaryKey,
+  smallint,
+  text,
+  uniqueIndex,
+  uuid,
+} from 'drizzle-orm/pg-core';
+import { actualizadoEn, idUuid } from '../../../platform/columnas.js';
 import { medidas } from '../../catalogo/infrastructure/schema.js';
 
 /**
@@ -19,6 +28,8 @@ export const vehiculos = pgTable(
     anioHasta: smallint('anio_hasta'),
     motor: text('motor'),
     fuente: text('fuente').notNull().default('manual'),
+    // Para el mapa del sitio: la página del modelo cambia cuando cambia alguno de sus autos.
+    actualizadoEn: actualizadoEn(),
   },
   (t) => [
     check(
@@ -47,5 +58,8 @@ export const vehiculoMedidas = pgTable(
       .notNull()
       .references(() => medidas.codigo),
   },
-  (t) => [primaryKey({ columns: [t.vehiculoId, t.medida] }), index('vehiculo_medidas_medida_idx').on(t.medida)],
+  (t) => [
+    primaryKey({ columns: [t.vehiculoId, t.medida] }),
+    index('vehiculo_medidas_medida_idx').on(t.medida),
+  ],
 );

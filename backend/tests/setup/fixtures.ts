@@ -1,7 +1,10 @@
 import { eq } from 'drizzle-orm';
 import type { BaseDeDatos } from '../../src/platform/db.js';
 import { marcas, productos } from '../../src/modules/catalogo/infrastructure/schema.js';
-import { vehiculoMedidas, vehiculos } from '../../src/modules/compatibilidad/infrastructure/schema.js';
+import {
+  vehiculoMedidas,
+  vehiculos,
+} from '../../src/modules/compatibilidad/infrastructure/schema.js';
 import { slug } from '../../src/shared-kernel/slug.js';
 
 let contador = 0;
@@ -49,7 +52,14 @@ export async function crearProducto(
 
 export async function crearVehiculo(
   db: BaseDeDatos,
-  datos: { marca: string; modelo: string; desde?: number | null; hasta?: number | null; medidas: string[] },
+  datos: {
+    marca: string;
+    modelo: string;
+    desde?: number | null;
+    hasta?: number | null;
+    motor?: string | null;
+    medidas: string[];
+  },
 ) {
   const [v] = await db
     .insert(vehiculos)
@@ -60,12 +70,15 @@ export async function crearVehiculo(
       modeloSlug: slug(datos.modelo),
       anioDesde: datos.desde ?? null,
       anioHasta: datos.hasta ?? null,
+      motor: datos.motor ?? null,
       fuente: 'test',
     })
     .returning();
   if (!v) throw new Error('No se creó el vehículo');
   if (datos.medidas.length) {
-    await db.insert(vehiculoMedidas).values(datos.medidas.map((medida) => ({ vehiculoId: v.id, medida })));
+    await db
+      .insert(vehiculoMedidas)
+      .values(datos.medidas.map((medida) => ({ vehiculoId: v.id, medida })));
   }
   return v;
 }
@@ -79,7 +92,9 @@ export async function vaciarCatalogo(db: BaseDeDatos): Promise<void> {
 /** Una foto JPG de prueba, con EXIF (para comprobar que se borra al subirla). */
 export async function fotoDePrueba(ancho = 800, alto = 600): Promise<Buffer> {
   const { default: sharp } = await import('sharp');
-  return sharp({ create: { width: ancho, height: alto, channels: 3, background: { r: 200, g: 30, b: 30 } } })
+  return sharp({
+    create: { width: ancho, height: alto, channels: 3, background: { r: 200, g: 30, b: 30 } },
+  })
     .jpeg()
     .withExif({ IFD0: { Copyright: 'Prueba', Artist: 'Celular de Juan' } })
     .toBuffer();
