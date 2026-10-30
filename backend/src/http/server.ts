@@ -20,6 +20,8 @@ import { rutasAdminConfiguracion } from '../modules/configuracion/http/rutas-adm
 import { rutasAdminImportacion } from '../modules/importacion/http/rutas-admin.js';
 import { rutasAuth } from '../modules/auth/http/rutas.js';
 import { rutasCanje } from '../modules/canje/http/rutas.js';
+import { rutasAdminLegales } from '../modules/legales/http/rutas-admin.js';
+import { rutasLegales } from '../modules/legales/http/rutas.js';
 import { rutasCatalogo } from '../modules/catalogo/http/rutas.js';
 import { rutasAdminAlertas } from '../modules/pagos/http/rutas-admin.js';
 import { rutasWebhookMercadoPago } from '../modules/pagos/http/webhook.js';
@@ -100,6 +102,7 @@ export async function construirServidor(
         rutasPedidos({ pedidos: ctx.servicios.pedidos, seguimiento: ctx.servicios.seguimiento }),
       );
       await api.register(rutasCanje({ canje: ctx.servicios.canje }));
+      await api.register(rutasLegales({ arrepentimientos: ctx.servicios.arrepentimientos }));
       await api.register(rutasWebhookMercadoPago({ pagos: ctx.servicios.pagosMp }));
       await api.register(
         rutasAuth({
@@ -118,13 +121,16 @@ export async function construirServidor(
           await admin.register(
             rutasAdminResumen({ panel: s.panelPedidos, alertas: s.alertas, productos: s.adminProductos, canje: s.adminCanje }),
           );
-          await admin.register(rutasAdminPedidos({ panel: s.panelPedidos, pagosManuales: s.pagosManuales }));
+          await admin.register(
+            rutasAdminPedidos({ panel: s.panelPedidos, pagosManuales: s.pagosManuales, anonimizacion: s.anonimizacion }),
+          );
           await admin.register(rutasAdminAlertas({ alertas: s.alertas }));
           await admin.register(rutasAdminProductos({ productos: s.adminProductos, fotos: s.fotos }));
           await admin.register(rutasAdminImportacion({ importacion: s.importacion }));
           await admin.register(rutasAdminVehiculos({ vehiculos: s.adminVehiculos }));
           await admin.register(rutasAdminConfiguracion({ configuracion: s.adminConfiguracion }));
           await admin.register(rutasAdminCanje({ canje: s.adminCanje }));
+          await admin.register(rutasAdminLegales({ arrepentimientos: s.arrepentimientos }));
         },
         { prefix: '/admin' },
       );

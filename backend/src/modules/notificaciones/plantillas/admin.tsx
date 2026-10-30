@@ -87,6 +87,12 @@ export const plantillasAdmin: Record<string, Plantilla> = {
           {texto(d.nombre)} pidió arrepentirse de la compra. Código de la solicitud:{' '}
           <strong>{texto(d.codigo)}</strong>.
         </Parrafo>
+        {d.pedidoEncontrado === false ? (
+          <Parrafo>
+            Ese número no corresponde a ningún pedido de la tienda: puede ser un error de tipeo o
+            una compra en el local.
+          </Parrafo>
+        ) : null}
         <Parrafo>
           Por ley hay que responder la solicitud: contactalo y registrá lo que se resuelva en el
           pedido.

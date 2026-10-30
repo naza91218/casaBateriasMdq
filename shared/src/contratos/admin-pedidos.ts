@@ -56,7 +56,9 @@ export const PedidoDetalleAdmin = z.object({
   entrega: Entrega,
   zona: z.string().nullable(),
   medioPago: MedioPago,
-  items: z.array(z.object({ nombre: z.string(), cantidad: z.number().int(), precioUnitario: Importe })),
+  items: z.array(
+    z.object({ nombre: z.string(), cantidad: z.number().int(), precioUnitario: Importe }),
+  ),
   subtotal: Importe,
   descuento: Importe,
   costoZona: Importe,
@@ -98,6 +100,10 @@ export const PedidoDetalleAdmin = z.object({
     }),
   ),
   alertas: z.array(Alerta),
+  /** Solicitudes de arrepentimiento vinculadas al pedido (FR-058). */
+  arrepentimientos: z.array(z.object({ codigo: z.string(), creadoEn: z.string() })),
+  /** Solo entregados o cancelados, y una sola vez (FR-061). */
+  puedeAnonimizar: z.boolean(),
   /** Estados a los que se puede mover con `POST .../estado` (FR-044). */
   transicionesPermitidas: z.array(EstadoPedido),
   /** Botones de un toque: los pagos manuales tienen su propia acción (FR-028, FR-029). */
@@ -122,3 +128,16 @@ export const ResumenAdmin = z.object({
   consultasCanjePendientes: z.number().int(),
 });
 export type ResumenAdmin = z.infer<typeof ResumenAdmin>;
+
+/** Solicitudes del botón de arrepentimiento en el panel (FR-058). */
+export const ArrepentimientoAdmin = z.object({
+  id: z.string(),
+  codigo: z.string(),
+  numeroPedido: z.number().int(),
+  /** null si el número que escribió no corresponde a ningún pedido. */
+  pedidoId: z.string().nullable(),
+  nombre: z.string(),
+  email: z.string(),
+  creadoEn: z.string(),
+});
+export type ArrepentimientoAdmin = z.infer<typeof ArrepentimientoAdmin>;

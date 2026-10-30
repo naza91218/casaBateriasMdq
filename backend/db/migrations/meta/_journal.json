@@ -36,6 +36,13 @@
       "when": 1793330271593,
       "tag": "0004_anios_opcionales",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793379301230,
+      "tag": "0005_legales",
+      "breakpoints": true
     }
   ]
 }

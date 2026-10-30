@@ -29,6 +29,8 @@ import { ServicioConfiguracion } from './modules/configuracion/application/confi
 import { ServicioZonas } from './modules/entregas/application/zonas.js';
 import { enlacesPanel } from './modules/notificaciones/application/eventos.js';
 import { Outbox } from './modules/notificaciones/application/outbox.js';
+import { ServicioArrepentimientos } from './modules/legales/application/arrepentimientos.js';
+import { ServicioAnonimizacion } from './modules/clientes/application/anonimizar.js';
 import { clavesDeCifrado, type Config } from './platform/config.js';
 import { crearCifrador, crearFirmadorSeguimiento, type Cifrador } from './platform/crypto.js';
 import { conectar, type BaseDeDatos, type ConexionDb } from './platform/db.js';
@@ -68,6 +70,8 @@ export interface Contexto {
     pagosManuales: ServicioPagosManuales;
     alertas: ServicioAlertas;
     panelPedidos: ServicioPanelPedidos;
+    arrepentimientos: ServicioArrepentimientos;
+    anonimizacion: ServicioAnonimizacion;
     canje: ServicioCanje;
     fotos: ServicioFotos;
     adminProductos: ServicioAdminProductos;
@@ -164,6 +168,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     urlApi: config.API_PUBLIC_URL,
   });
   const alertas = new ServicioAlertas(db, reloj);
+  const arrepentimientos = new ServicioArrepentimientos(db, compradores, configuracion, outbox, panel);
   const fotos = new ServicioFotos(db, almacenamiento, outbox);
   const servicios = {
     auth: new ServicioAuth(db, outbox, reloj, config.API_PUBLIC_URL),
@@ -180,7 +185,9 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     pagosMp: new ServicioPagosMercadoPago(db, pasarela, estados, outbox, panel.pedido),
     pagosManuales: new ServicioPagosManuales(db, estados),
     alertas,
-    panelPedidos: new ServicioPanelPedidos(db, estados, compradores, zonas, alertas, reloj),
+    panelPedidos: new ServicioPanelPedidos(db, estados, compradores, zonas, alertas, arrepentimientos, reloj),
+    arrepentimientos,
+    anonimizacion: new ServicioAnonimizacion(db, cifrador, arrepentimientos, outbox, reloj),
     canje: new ServicioCanje(db, configuracion, zonas, outbox, panel.canje()),
     fotos,
     adminProductos: new ServicioAdminProductos(db, fotos, outbox),

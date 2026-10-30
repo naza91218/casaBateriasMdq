@@ -2,6 +2,7 @@ import { crearContexto, type Contexto } from '../composition-root.js';
 import { crearDespachador } from '../modules/notificaciones/application/despachador.js';
 import { cargarConfig } from '../platform/config.js';
 import { iniciarSentry } from '../platform/sentry.js';
+import { errorSinDatosPersonales } from '../shared-kernel/privacidad.js';
 import { MINUTO } from '../shared-kernel/reloj.js';
 
 export interface TareaPeriodica {
@@ -39,8 +40,9 @@ export function iniciarBucles(
         try {
           await tarea.ejecutar();
         } catch (error) {
-          ctx.logger.error({ tarea: tarea.nombre, err: String(error) }, 'falló una tarea del worker');
-          reportar(error);
+          const limpio = errorSinDatosPersonales(error);
+          ctx.logger.error({ tarea: tarea.nombre, err: limpio.message }, 'falló una tarea del worker');
+          reportar(limpio);
         }
         await new Promise((r) => setTimeout(r, tarea.cadaMs));
       }

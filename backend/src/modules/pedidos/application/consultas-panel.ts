@@ -5,9 +5,11 @@ import { ErrorDeDominio, noEncontrado } from '../../../shared-kernel/errores.js'
 import { DIA, HORA, type Reloj } from '../../../shared-kernel/reloj.js';
 import { enlaceWhatsapp, telefonoArgentino } from '../../../shared-kernel/whatsapp.js';
 import { usuariosPanel } from '../../auth/infrastructure/schema.js';
+import { puedeAnonimizar } from '../../clientes/application/anonimizar.js';
 import type { ServicioCompradores } from '../../clientes/application/compradores.js';
 import { pedidoCompradores } from '../../clientes/infrastructure/schema.js';
 import type { ServicioZonas } from '../../entregas/application/zonas.js';
+import type { ServicioArrepentimientos } from '../../legales/application/arrepentimientos.js';
 import type { ServicioAlertas } from '../../pagos/application/alertas.js';
 import { alertas, pagos } from '../../pagos/infrastructure/schema.js';
 import { transicionesPermitidas, type EstadoPedido } from '../domain/maquina-estados.js';
@@ -46,6 +48,7 @@ export class ServicioPanelPedidos {
     private readonly compradores: ServicioCompradores,
     private readonly zonas: ServicioZonas,
     private readonly alertas: ServicioAlertas,
+    private readonly arrepentimientos: ServicioArrepentimientos,
     private readonly reloj: Reloj,
   ) {}
 
@@ -94,7 +97,7 @@ export class ServicioPanelPedidos {
     const [pedido] = await this.db.select().from(pedidos).where(eq(pedidos.id, id));
     if (!pedido) throw noEncontrado('No encontramos ese pedido');
 
-    const [items, comprador, zona, pagosDelPedido, eventos, alertasDelPedido] = await Promise.all([
+    const [items, comprador, zona, pagosDelPedido, eventos, alertasDelPedido, arrepentimientos] = await Promise.all([
       this.db
         .select({ nombre: pedidoItems.nombreProducto, cantidad: pedidoItems.cantidad, precioUnitario: pedidoItems.precioUnitario })
         .from(pedidoItems)
@@ -131,6 +134,7 @@ export class ServicioPanelPedidos {
         .where(eq(pedidoEventos.pedidoId, id))
         .orderBy(asc(pedidoEventos.creadoEn), asc(pedidoEventos.id)),
       this.alertas.listar({ soloAbiertas: false, pedidoIds: [id] }),
+      this.arrepentimientos.delPedido(this.db, id),
     ]);
     if (!comprador) throw new Error(`El pedido ${id} no tiene comprador`);
 
@@ -175,6 +179,8 @@ export class ServicioPanelPedidos {
       })),
       eventos: eventos.map(({ email, ...e }) => ({ ...e, actor: email ?? e.actor, creadoEn: e.creadoEn.toISOString() })),
       alertas: alertasDelPedido,
+      arrepentimientos,
+      puedeAnonimizar: puedeAnonimizar(pedido.estado, comprador.anonimizado),
       transicionesPermitidas: transicionesPermitidas(pedido.estado, pedido.entrega).filter(
         (a) => !requiereAccionPropia(pedido.estado, a),
       ),

@@ -10,4 +10,5 @@ export * from '../modules/pedidos/infrastructure/schema.js';
 export * from '../modules/clientes/infrastructure/schema.js';
 export * from '../modules/pagos/infrastructure/schema.js';
 export * from '../modules/canje/infrastructure/schema.js';
+export * from '../modules/legales/infrastructure/schema.js';
 export * from '../modules/importacion/infrastructure/schema.js';

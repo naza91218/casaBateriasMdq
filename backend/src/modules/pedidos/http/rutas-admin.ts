@@ -2,6 +2,7 @@ import { CambioEstadoAdmin, FiltroPedidosAdmin, ListaPedidosAdmin, PedidoDetalle
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { usuarioActual } from '../../../http/plugins/sesion.js';
+import type { ServicioAnonimizacion } from '../../clientes/application/anonimizar.js';
 import type { ServicioPagosManuales } from '../../pagos/application/pagos-manuales.js';
 import type { ServicioPanelPedidos } from '../application/consultas-panel.js';
 
@@ -12,6 +13,7 @@ import type { ServicioPanelPedidos } from '../application/consultas-panel.js';
 export function rutasAdminPedidos(deps: {
   panel: ServicioPanelPedidos;
   pagosManuales: ServicioPagosManuales;
+  anonimizacion: ServicioAnonimizacion;
 }): FastifyPluginAsyncZod {
   return async (app) => {
     const tags = ['panel-pedidos'];
@@ -36,6 +38,12 @@ export function rutasAdminPedidos(deps: {
 
     app.post('/pedidos/:id/estado', { schema: { ...accion, body: CambioEstadoAdmin } }, async (req) => {
       await deps.panel.moverEstado(req.params.id, req.body, usuarioActual(req).id);
+      return deps.panel.detalle(req.params.id);
+    });
+
+    // Cuando el comprador pide que se borren sus datos (FR-061).
+    app.post('/pedidos/:id/anonimizar', { schema: accion }, async (req) => {
+      await deps.anonimizacion.anonimizar(req.params.id);
       return deps.panel.detalle(req.params.id);
     });
   };

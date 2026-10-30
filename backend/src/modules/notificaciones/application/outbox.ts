@@ -2,6 +2,7 @@ import { and, asc, eq, lte } from 'drizzle-orm';
 import type { BaseDeDatos, Ejecutor } from '../../../platform/db.js';
 import { uuidv7 } from '../../../platform/ids.js';
 import type { Reloj } from '../../../shared-kernel/reloj.js';
+import { sinDatosPersonales } from '../../../shared-kernel/privacidad.js';
 import { MINUTO } from '../../../shared-kernel/reloj.js';
 import { outboxMensajes } from '../infrastructure/schema.js';
 
@@ -28,7 +29,7 @@ export function esperaTrasIntento(intentos: number): number {
 /** Saca mails y datos personales del texto de error antes de guardarlo. */
 function errorSeguro(error: unknown): string {
   const texto = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-  return texto.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '[mail]').replace(/\d{7,}/g, '[número]').slice(0, 300);
+  return sinDatosPersonales(texto).slice(0, 300);
 }
 
 export class Outbox {
@@ -72,6 +73,16 @@ export class Outbox {
       destinatario: 'sistema',
       datos: { etiquetas: unicas },
     });
+  }
+
+  /**
+   * Al anonimizar un pedido (FR-061) se borran sus mails, enviados o no: guardan el nombre y el
+   * mail del comprador. Un mail pendiente ya no se manda, que es lo que pidió.
+   */
+  async olvidarMailsDelPedido(ejecutor: Ejecutor, pedidoId: string): Promise<void> {
+    await ejecutor
+      .delete(outboxMensajes)
+      .where(and(eq(outboxMensajes.pedidoId, pedidoId), eq(outboxMensajes.canal, 'mail')));
   }
 
   /**

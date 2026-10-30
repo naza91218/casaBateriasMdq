@@ -58,4 +58,5 @@ export function mail(
 export const enlacesPanel = (urlFrontend: string) => ({
   pedido: (pedidoId: string) => `${urlFrontend}/panel/pedidos/${pedidoId}`,
   canje: () => `${urlFrontend}/panel/canje`,
+  arrepentimientos: () => `${urlFrontend}/panel/arrepentimientos`,
 });

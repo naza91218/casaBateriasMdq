@@ -266,14 +266,14 @@ cerrado y se refina en ese momento.
 
 ### Tests for User Story 7 ⚠️
 
-- [ ] T119 [P] [US7] Tests de integración: US7-02 (arrepentimiento → código, aviso al admin, registro en el pedido), US7-03 (DNI no legible en la tabla), US7-04 (error forzado en checkout sin DNI ni dirección en logs ni Sentry), US7-06 (anonimizar conserva total, productos y fecha) en `backend/tests/integration/legales/legales.test.ts`
-- [ ] T120 [P] [US7] Test de contrato que recorre todas las rutas públicas con un pedido de prueba y verifica que el DNI no aparece en ninguna respuesta (SC-012) en `backend/tests/contract/legales/sin-dni.test.ts`
+- [X] T119 [P] [US7] Tests de integración: US7-02 (arrepentimiento → código, aviso al admin, registro en el pedido), US7-03 (DNI no legible en la tabla), US7-04 (error forzado en checkout sin DNI ni dirección en logs ni Sentry), US7-06 (anonimizar conserva total, productos y fecha) en `backend/tests/integration/legales/legales.test.ts`
+- [X] T120 [P] [US7] Test de contrato que recorre todas las rutas públicas con un pedido de prueba y verifica que el DNI no aparece en ninguna respuesta (SC-012) en `backend/tests/contract/legales/sin-dni.test.ts`
 
 ### Implementation for User Story 7
 
-- [ ] T121 [P] [US7] Crear el esquema `arrepentimientos` (`pedido_id` null, `numero_pedido`, `nombre`, `email`, `codigo` UNIQUE legible tipo `ARR-7K2Q`) en `backend/src/modules/legales/infrastructure/schema.ts` y generar la migración en `backend/db/migrations/`
-- [ ] T122 [US7] Implementar el servicio y la ruta `POST /arrepentimiento` (rate limit, vínculo al pedido si el número existe, aviso al admin) y `GET /admin/arrepentimientos` en `backend/src/modules/legales/`
-- [ ] T123 [US7] Implementar `anonimizar` (reemplaza nombre, DNI, teléfono, mail y dirección; completa `anonimizado_en`) y la ruta `POST /admin/pedidos/:id/anonimizar` en `backend/src/modules/clientes/application/anonimizar.ts`
+- [X] T121 [P] [US7] Crear el esquema `arrepentimientos` (`pedido_id` null, `numero_pedido`, `nombre`, `email`, `codigo` UNIQUE legible tipo `ARR-7K2Q`) en `backend/src/modules/legales/infrastructure/schema.ts` y generar la migración en `backend/db/migrations/`
+- [X] T122 [US7] Implementar el servicio y la ruta `POST /arrepentimiento` (rate limit, vínculo al pedido si el número existe, aviso al admin) y `GET /admin/arrepentimientos` en `backend/src/modules/legales/`
+- [X] T123 [US7] Implementar `anonimizar` (reemplaza nombre, DNI, teléfono, mail y dirección; completa `anonimizado_en`) y la ruta `POST /admin/pedidos/:id/anonimizar` en `backend/src/modules/clientes/application/anonimizar.ts`
 
 **Checkpoint**: US7 por API completa (el pie legal y HTTPS se verifican en las fases 9 y 11)
 
@@ -366,6 +366,18 @@ cerrado y se refina en ese momento.
 - **US6 backend (10)** depende de US1.
 - **Frontend (11)** depende del diseño UX/UI y de las fases de backend de cada historia.
 - **Polish (12)** al final.
+
+### Orden acordado (30/10/2026)
+
+Fases 1–7 hechas. Sigue: **8 → 10 → 11 → 9 → 12**. El deploy (9) se hace después del frontend
+para configurar Nginx, frontend y backend juntos una sola vez. Consecuencias:
+
+- **Prueba temprana del VPS** apenas el cliente dé acceso, antes de la fase 11 si se puede:
+  instalar Docker, medir memoria libre y levantar base y API de prueba. Así se confirma pronto
+  si alcanzan los 4 GB.
+- **T143** (punta a punta con el sandbox de Mercado Pago) necesita una dirección pública para el
+  webhook: se corre en staging después de la fase 9, o en local con un túnel temporal.
+- **T147** y **T150** dependen de staging: van con la fase 12, después de la 9.
 
 ### Within Each User Story
 

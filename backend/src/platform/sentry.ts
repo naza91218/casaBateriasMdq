@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node';
+import { sinDatosPersonales } from '../shared-kernel/privacidad.js';
 
 /**
  * Reporte de errores (FR-063). `beforeSend` borra cuerpos de request, cookies y cabeceras para
@@ -18,6 +19,10 @@ export function iniciarSentry(opciones: { dsn?: string; entorno: string }): (e: 
         delete evento.request.query_string;
       }
       delete evento.user;
+      for (const ex of evento.exception?.values ?? []) {
+        if (ex.value) ex.value = sinDatosPersonales(ex.value);
+      }
+      if (evento.message) evento.message = sinDatosPersonales(evento.message);
       return evento;
     },
   });

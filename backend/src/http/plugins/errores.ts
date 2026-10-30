@@ -1,6 +1,7 @@
 import type { FastifyError, FastifyInstance } from 'fastify';
 import { hasZodFastifySchemaValidationErrors } from 'fastify-type-provider-zod';
 import { ESTADO_HTTP, ErrorDeDominio } from '../../shared-kernel/errores.js';
+import { errorSinDatosPersonales } from '../../shared-kernel/privacidad.js';
 
 interface CuerpoError {
   error: { codigo: string; mensaje: string; campos?: Record<string, string> };
@@ -60,8 +61,11 @@ export function registrarManejoDeErrores(
       return reply.code(error.statusCode).send(cuerpo);
     }
 
-    req.log.error({ err: { name: error.name, message: error.message, stack: error.stack } }, 'error no controlado');
-    opciones.reportar?.(error);
+    // Un error de la base puede traer en el mensaje valores de la fila (DNI, teléfono, mail):
+    // se registra y se reporta una copia limpia, sin las propiedades extra del original.
+    const limpio = errorSinDatosPersonales(error);
+    req.log.error({ err: { name: limpio.name, message: limpio.message, stack: limpio.stack } }, 'error no controlado');
+    opciones.reportar?.(limpio);
     const cuerpo: CuerpoError = {
       error: { codigo: 'ERROR_INTERNO', mensaje: 'Algo salió mal. Probá de nuevo en un rato.' },
     };
