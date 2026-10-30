@@ -229,8 +229,8 @@ cerrado y se refina en ese momento.
 - [X] T108 [US5] Implementar el listado de consultas de canje con cambio de estado y descarga CSV en `backend/src/modules/canje/application/admin-consultas.ts`
 - [X] T109 [P] [US5] Crear los contratos Zod del panel de catálogo, importación, vehículos, configuración, zonas y canje en `shared/src/contratos/admin-catalogo.ts`
 - [X] T110 [US5] Implementar las rutas `/admin/productos*`, `/admin/productos/revision`, fotos, `/admin/importaciones`, `/admin/vehiculos*`, `/admin/configuracion`, `/admin/zonas*`, `/admin/consultas-canje*` en los `http/rutas-admin.ts` de cada módulo, y sumar contadores de productos a revisar y consultas pendientes a `GET /admin/resumen`
-- [ ] T111 [P] [US5] Crear el scraper base (CLI, `robots.txt`, 1 pedido cada 2 s, User-Agent identificado, salida CSV con el formato de importación y fotos en `data/import/fotos/`, sin precios) en `tools/scraper/src/`
-- [ ] T112 [US5] Implementar la fuente Herbo (catálogo, especificaciones, compatibilidades, fotos) en `tools/scraper/src/fuentes/herbo.ts`
+- [X] T111 [P] [US5] Crear el scraper base (CLI, `robots.txt`, 1 pedido cada 2 s, User-Agent identificado, salida CSV con el formato de importación y fotos en `data/import/fotos/`, sin precios) en `tools/scraper/src/`
+- [X] T112 [US5] Implementar la fuente Herbo (catálogo, especificaciones, compatibilidades, fotos) en `tools/scraper/src/fuentes/herbo.ts`
 - [ ] T113 [US5] Implementar la fuente Sermat/Volta desde listas públicas de distribuidores (modelos y aplicaciones) en `tools/scraper/src/fuentes/sermat-volta.ts`
 - [ ] T114 [US5] Crear la planilla manual de Edna con el formato de importación en `tools/scraper/manual/edna.csv` y unificar las tres fuentes en `data/import/productos.csv` y `data/import/compatibilidades.csv`
 

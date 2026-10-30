@@ -10,7 +10,7 @@ import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { z } from 'zod';
 import { sembrarBase } from '../../../db/seed/base.js';
-import { sembrarCatalogo } from '../../../db/seed/catalogo.js';
+import { MEDIDAS, sembrarCatalogo } from '../../../db/seed/catalogo.js';
 import { construirServidor } from '../../../src/http/server.js';
 import { crearProducto, crearVehiculo } from '../../setup/fixtures.js';
 import { crearContextoDePrueba, prepararBase, type ContextoDePrueba } from '../../setup/contexto.js';
@@ -42,7 +42,7 @@ describe('contratos de catálogo y buscador', () => {
     const marcas = z.array(MarcaCatalogo).parse((await get('/catalogo/marcas')).json());
     expect(marcas.map((m) => m.nombre)).toEqual(['Edna', 'Herbo', 'Sermat', 'Volta']);
     const medidas = z.array(Medida).parse((await get('/catalogo/medidas')).json());
-    expect(medidas.map((m) => m.codigo)).toEqual(['12x65', '12x75', '12x90', '12x110', '12x160']);
+    expect(medidas.map((m) => m.codigo)).toEqual([...MEDIDAS]);
   });
 
   test('GET /catalogo/productos con filtros válidos e inválidos', async () => {
