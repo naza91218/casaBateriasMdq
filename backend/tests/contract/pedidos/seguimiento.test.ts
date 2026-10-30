@@ -18,7 +18,8 @@ afterAll(async () => {
   await e.ctx.cerrar();
 });
 
-const rutaDe = (url: string) => new URL(url).pathname.replace('/pedido/', '/api/v1/pedidos/') + new URL(url).search;
+const rutaDe = (url: string) =>
+  new URL(url).pathname.replace('/pedido/', '/api/v1/pedidos/') + new URL(url).search;
 
 describe('seguimiento del pedido', () => {
   test('US2-13: muestra número, productos, entrega, estado y banco; nunca DNI, dirección ni teléfono', async () => {
@@ -39,7 +40,10 @@ describe('seguimiento del pedido', () => {
 
   test('US2-08: vuelta de Mercado Pago con "approved" sin aviso verificado → sigue pendiente, "confirmando"', async () => {
     const creado = await e.ctx.servicios.pedidos.crear(solicitud(e, { medioPago: 'mercadopago' }));
-    const r = await app.inject({ method: 'GET', url: `${rutaDe(creado.urlSeguimiento)}&retorno=approved` });
+    const r = await app.inject({
+      method: 'GET',
+      url: `${rutaDe(creado.urlSeguimiento)}&retorno=approved`,
+    });
     const s = Seguimiento.parse(r.json());
     expect(s.estado).toBe('pendiente_pago');
     expect(s.pagoEnVerificacion).toBe(true);
@@ -48,7 +52,14 @@ describe('seguimiento del pedido', () => {
 
   test('US2-12: pago rechazado → se puede reintentar con una preferencia nueva', async () => {
     const creado = await e.ctx.servicios.pedidos.crear(solicitud(e, { medioPago: 'mercadopago' }));
-    const s = Seguimiento.parse((await app.inject({ method: 'GET', url: `${rutaDe(creado.urlSeguimiento)}&retorno=rejected` })).json());
+    const s = Seguimiento.parse(
+      (
+        await app.inject({
+          method: 'GET',
+          url: `${rutaDe(creado.urlSeguimiento)}&retorno=rejected`,
+        })
+      ).json(),
+    );
     expect(s.pagoRechazado).toBe(true);
     const ruta = rutaDe(creado.urlSeguimiento).replace('?t=', '/reintentar-pago?t=');
     const r = await app.inject({ method: 'POST', url: ruta });
@@ -58,7 +69,10 @@ describe('seguimiento del pedido', () => {
 
   test('US2-14: con un token incorrecto responde "no encontrado"', async () => {
     const creado = await e.ctx.servicios.pedidos.crear(solicitud(e));
-    const r = await app.inject({ method: 'GET', url: `/api/v1/pedidos/${creado.id}?t=token-falso` });
+    const r = await app.inject({
+      method: 'GET',
+      url: `/api/v1/pedidos/${creado.id}?t=token-falso`,
+    });
     expect(r.statusCode).toBe(404);
   });
 });

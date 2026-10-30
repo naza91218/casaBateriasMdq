@@ -6,6 +6,8 @@ import { centavos, idUuid } from '../../../platform/columnas.js';
 export const zonasColocacion = pgTable('zonas_colocacion', {
   id: idUuid(),
   nombre: text('nombre').notNull().unique(),
-  costoExtra: centavos('costo_extra').notNull().default(sql`0`),
+  costoExtra: centavos('costo_extra')
+    .notNull()
+    .default(sql`0`),
   activa: boolean('activa').notNull().default(true),
 });

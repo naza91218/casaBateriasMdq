@@ -27,7 +27,12 @@ export const medidas = pgTable('medidas', {
 });
 
 export const gama = pgEnum('gama', ['economica', 'reforzada']);
-export const estadoProducto = pgEnum('estado_producto', ['a_revisar', 'activo', 'pausado', 'archivado']);
+export const estadoProducto = pgEnum('estado_producto', [
+  'a_revisar',
+  'activo',
+  'pausado',
+  'archivado',
+]);
 export const origenFoto = pgEnum('origen_foto', ['marca', 'propia']);
 
 export const productos = pgTable(
@@ -47,7 +52,9 @@ export const productos = pgTable(
     cca: integer('cca'),
     gama: gama('gama').notNull(),
     descripcion: text('descripcion').notNull().default(''),
-    precioLista: centavos('precio_lista').notNull().default(sql`0`),
+    precioLista: centavos('precio_lista')
+      .notNull()
+      .default(sql`0`),
     stock: integer('stock').notNull().default(0),
     // Lo importado entra "a revisar" y no se ve hasta que el admin lo habilita (FR-070).
     estado: estadoProducto('estado').notNull().default('a_revisar'),

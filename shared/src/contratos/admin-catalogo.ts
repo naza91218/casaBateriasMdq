@@ -7,8 +7,12 @@ import { Importe, paginado, Whatsapp } from './comunes.js';
  */
 
 const Gama = z.enum(['economica', 'reforzada']);
-const medida = z.string().trim().regex(/^\d+x\d+$/, 'La medida tiene el formato 12x65');
-const vacioONulo = <T extends z.ZodType>(t: T) => z.preprocess((v) => (v === '' ? null : v), t.nullable());
+const medida = z
+  .string()
+  .trim()
+  .regex(/^\d+x\d+$/, 'La medida tiene el formato 12x65');
+const vacioONulo = <T extends z.ZodType>(t: T) =>
+  z.preprocess((v) => (v === '' ? null : v), t.nullable());
 
 // ── Productos ────────────────────────────────────────────────────────────────
 
@@ -168,11 +172,24 @@ export const ConfiguracionAdmin = z.object({
   banco: z.object({
     titular: z.string().trim().max(120),
     cbu: vacioO(z.string().regex(/^\d{22}$/, 'El CBU tiene 22 números')),
-    alias: vacioO(z.string().regex(/^[a-zA-Z0-9.-]{6,20}$/, 'El alias tiene entre 6 y 20 letras, números, puntos o guiones')),
-    cuit: vacioO(z.string().regex(/^\d{2}-?\d{8}-?\d$/, 'El CUIT tiene 11 números, por ejemplo 20-12345678-3')),
+    alias: vacioO(
+      z
+        .string()
+        .regex(
+          /^[a-zA-Z0-9.-]{6,20}$/,
+          'El alias tiene entre 6 y 20 letras, números, puntos o guiones',
+        ),
+    ),
+    cuit: vacioO(
+      z.string().regex(/^\d{2}-?\d{8}-?\d$/, 'El CUIT tiene 11 números, por ejemplo 20-12345678-3'),
+    ),
   }),
-  whatsapp: vacioO(z.string().regex(/^\d{10,15}$/, 'Escribí el WhatsApp solo con números, con 549 adelante')),
-  horarios: z.array(z.object({ dias: z.string().trim().min(3).max(60), desde: hora, hasta: hora })).max(10),
+  whatsapp: vacioO(
+    z.string().regex(/^\d{10,15}$/, 'Escribí el WhatsApp solo con números, con 549 adelante'),
+  ),
+  horarios: z
+    .array(z.object({ dias: z.string().trim().min(3).max(60), desde: hora, hasta: hora }))
+    .max(10),
   comercio: z.object({
     razonSocial: z.string().trim().max(150),
     cuit: vacioO(z.string().regex(/^\d{2}-?\d{8}-?\d$/, 'El CUIT tiene 11 números')),
@@ -198,7 +215,12 @@ export const EdicionConfiguracion = z
   .refine((e) => Object.keys(e).length > 0, 'No hay cambios para guardar');
 export type EdicionConfiguracion = z.infer<typeof EdicionConfiguracion>;
 
-export const ZonaAdmin = z.object({ id: z.string(), nombre: z.string(), costoExtra: Importe, activa: z.boolean() });
+export const ZonaAdmin = z.object({
+  id: z.string(),
+  nombre: z.string(),
+  costoExtra: Importe,
+  activa: z.boolean(),
+});
 export type ZonaAdmin = z.infer<typeof ZonaAdmin>;
 
 export const DatosZona = z.object({

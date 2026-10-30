@@ -13,9 +13,6 @@ export async function sembrarBase(db: BaseDeDatos, opciones: { mailAdmin: string
     .insert(configuracion)
     .values({ id: 1, comercioDomicilio: 'Av. Juan B. Justo 5766, Mar del Plata' })
     .onConflictDoNothing();
-  await db
-    .insert(zonasColocacion)
-    .values({ nombre: 'Mar del Plata' })
-    .onConflictDoNothing();
+  await db.insert(zonasColocacion).values({ nombre: 'Mar del Plata' }).onConflictDoNothing();
   await db.insert(usuariosPanel).values({ email: opciones.mailAdmin }).onConflictDoNothing();
 }

@@ -49,7 +49,10 @@ export function registrarManejoDeErrores(
 
     if (error.statusCode === 429) {
       const cuerpo: CuerpoError = {
-        error: { codigo: 'LIMITE', mensaje: 'Hiciste muchos intentos seguidos. Probá en un minuto.' },
+        error: {
+          codigo: 'LIMITE',
+          mensaje: 'Hiciste muchos intentos seguidos. Probá en un minuto.',
+        },
       };
       return reply.code(429).send(cuerpo);
     }
@@ -64,7 +67,10 @@ export function registrarManejoDeErrores(
     // Un error de la base puede traer en el mensaje valores de la fila (DNI, teléfono, mail):
     // se registra y se reporta una copia limpia, sin las propiedades extra del original.
     const limpio = errorSinDatosPersonales(error);
-    req.log.error({ err: { name: limpio.name, message: limpio.message, stack: limpio.stack } }, 'error no controlado');
+    req.log.error(
+      { err: { name: limpio.name, message: limpio.message, stack: limpio.stack } },
+      'error no controlado',
+    );
     opciones.reportar?.(limpio);
     const cuerpo: CuerpoError = {
       error: { codigo: 'ERROR_INTERNO', mensaje: 'Algo salió mal. Probá de nuevo en un rato.' },

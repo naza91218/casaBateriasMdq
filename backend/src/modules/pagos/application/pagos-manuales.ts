@@ -39,12 +39,17 @@ export class ServicioPagosManuales {
 
   // El medio de pago no cambia nunca, así que se puede leer fuera de la transacción;
   // el estado lo valida `cambiarEstado` con el pedido bloqueado.
-  private async exigirMedio(pedidoId: string, medio: 'transferencia' | 'efectivo', mensaje: string): Promise<void> {
+  private async exigirMedio(
+    pedidoId: string,
+    medio: 'transferencia' | 'efectivo',
+    mensaje: string,
+  ): Promise<void> {
     const [pedido] = await this.db
       .select({ medioPago: pedidos.medioPago })
       .from(pedidos)
       .where(eq(pedidos.id, pedidoId));
     if (!pedido) throw noEncontrado('No encontramos ese pedido');
-    if (pedido.medioPago !== medio) throw new ErrorDeDominio('regla_de_negocio', 'MEDIO_DISTINTO', mensaje);
+    if (pedido.medioPago !== medio)
+      throw new ErrorDeDominio('regla_de_negocio', 'MEDIO_DISTINTO', mensaje);
   }
 }

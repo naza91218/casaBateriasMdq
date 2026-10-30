@@ -63,8 +63,12 @@ describe('medios de pago (FR-022, clarify)', () => {
   test('vencimientos: MP 30 min, transferencia 48 h, efectivo no vence', () => {
     const creado = new Date('2026-11-01T12:00:00Z');
     const plazos = { minutosVencMercadopago: 30, horasVencTransferencia: 48 };
-    expect(MEDIOS_PAGO.mercadopago.vencimiento(creado, plazos)?.getTime()).toBe(creado.getTime() + 30 * MINUTO);
-    expect(MEDIOS_PAGO.transferencia.vencimiento(creado, plazos)?.getTime()).toBe(creado.getTime() + 48 * HORA);
+    expect(MEDIOS_PAGO.mercadopago.vencimiento(creado, plazos)?.getTime()).toBe(
+      creado.getTime() + 30 * MINUTO,
+    );
+    expect(MEDIOS_PAGO.transferencia.vencimiento(creado, plazos)?.getTime()).toBe(
+      creado.getTime() + 48 * HORA,
+    );
     expect(MEDIOS_PAGO.efectivo.vencimiento(creado, plazos)).toBeNull();
     expect(MEDIOS_PAGO.efectivo.estadoInicial).toBe('a_pagar_en_local');
   });

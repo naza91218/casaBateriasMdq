@@ -40,7 +40,10 @@ function notificar(idPago: string, firmaValida = true) {
 }
 
 async function estado(id: string) {
-  const [p] = await e.ctx.db.select({ estado: pedidos.estado }).from(pedidos).where(eq(pedidos.id, id));
+  const [p] = await e.ctx.db
+    .select({ estado: pedidos.estado })
+    .from(pedidos)
+    .where(eq(pedidos.id, id));
   return p?.estado;
 }
 
@@ -87,7 +90,12 @@ describe('webhook de Mercado Pago', () => {
 
   test('pago aprobado sobre un pedido cancelado → no se reactiva y queda alerta', async () => {
     const { id, total } = await pedidoMp();
-    await e.ctx.servicios.estados.cambiar({ pedidoId: id, a: 'cancelado', actor: 'worker', motivo: 'vencido' });
+    await e.ctx.servicios.estados.cambiar({
+      pedidoId: id,
+      a: 'cancelado',
+      actor: 'worker',
+      motivo: 'vencido',
+    });
     e.pasarela.registrarPago('1005', id, 'approved', BigInt(total));
     expect((await notificar('1005')).json().resultado).toBe('alerta_pago_sobre_cancelado');
     expect(await estado(id)).toBe('cancelado');

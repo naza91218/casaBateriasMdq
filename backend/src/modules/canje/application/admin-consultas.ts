@@ -21,7 +21,9 @@ function celda(valor: string): string {
 export class ServicioAdminCanje {
   constructor(private readonly db: BaseDeDatos) {}
 
-  async listar(f: { estado?: EstadoConsulta | undefined; id?: string } = {}): Promise<ConsultaCanjeAdmin[]> {
+  async listar(
+    f: { estado?: EstadoConsulta | undefined; id?: string } = {},
+  ): Promise<ConsultaCanjeAdmin[]> {
     const filas = await this.db
       .select({
         id: consultasCanje.id,
@@ -36,7 +38,12 @@ export class ServicioAdminCanje {
       })
       .from(consultasCanje)
       .leftJoin(productos, eq(productos.id, consultasCanje.productoId))
-      .where(and(f.estado ? eq(consultasCanje.estado, f.estado) : undefined, f.id ? eq(consultasCanje.id, f.id) : undefined))
+      .where(
+        and(
+          f.estado ? eq(consultasCanje.estado, f.estado) : undefined,
+          f.id ? eq(consultasCanje.id, f.id) : undefined,
+        ),
+      )
       .orderBy(desc(consultasCanje.creadoEn), desc(consultasCanje.id))
       .limit(1000);
     return filas.map((f) => ({
@@ -51,10 +58,21 @@ export class ServicioAdminCanje {
   }
 
   async planilla(estado?: EstadoConsulta): Promise<string> {
-    const encabezados = ['Fecha', 'Nombre', 'Teléfono', 'Batería usada', 'Auto', 'Localidad', 'Producto', 'Estado'];
+    const encabezados = [
+      'Fecha',
+      'Nombre',
+      'Teléfono',
+      'Batería usada',
+      'Auto',
+      'Localidad',
+      'Producto',
+      'Estado',
+    ];
     const filas = (await this.listar({ estado })).map((c) =>
       [
-        new Date(c.creadoEn).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
+        new Date(c.creadoEn).toLocaleString('es-AR', {
+          timeZone: 'America/Argentina/Buenos_Aires',
+        }),
         c.nombre,
         c.telefono,
         c.bateriaUsada ?? '',
@@ -72,7 +90,11 @@ export class ServicioAdminCanje {
   }
 
   async cambiarEstado(id: string, estado: EstadoConsulta): Promise<ConsultaCanjeAdmin> {
-    const [f] = await this.db.update(consultasCanje).set({ estado }).where(eq(consultasCanje.id, id)).returning({ id: consultasCanje.id });
+    const [f] = await this.db
+      .update(consultasCanje)
+      .set({ estado })
+      .where(eq(consultasCanje.id, id))
+      .returning({ id: consultasCanje.id });
     if (!f) throw noEncontrado('No encontramos esa consulta');
     const [consulta] = await this.listar({ id });
     if (!consulta) throw noEncontrado('No encontramos esa consulta');
@@ -80,7 +102,10 @@ export class ServicioAdminCanje {
   }
 
   async contarPendientes(): Promise<number> {
-    const [fila] = await this.db.select({ n: count() }).from(consultasCanje).where(eq(consultasCanje.estado, 'pendiente'));
+    const [fila] = await this.db
+      .select({ n: count() })
+      .from(consultasCanje)
+      .where(eq(consultasCanje.estado, 'pendiente'));
     return fila?.n ?? 0;
   }
 }

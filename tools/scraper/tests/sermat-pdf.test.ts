@@ -14,7 +14,12 @@ import {
 
 const TITULO = 'fuente_titulo';
 const NORMAL = 'fuente_texto';
-const t = (x: number, y: number, texto: string, fuente = NORMAL): TextoPdf => ({ x, y, texto: limpiar(texto), fuente });
+const t = (x: number, y: number, texto: string, fuente = NORMAL): TextoPdf => ({
+  x,
+  y,
+  texto: limpiar(texto),
+  fuente,
+});
 
 /** Una página de compatibilidad con la misma grilla que el catálogo (modelo, estándar, opcional). */
 const PAGINA_AUTOS: TextoPdf[] = [
@@ -49,16 +54,37 @@ describe('catálogo de Sermat: autos', () => {
 
   test('arma filas por renglón con la marca del título y saltea secciones fuera del rubro', () => {
     expect(filas).toEqual([
-      { marca: 'Chevrolet', modelos: 'AGILE /CELTA / CLASSIC / ONIX / PRISMA', estandar: '12-65 D', opcional: '12-70 D' },
+      {
+        marca: 'Chevrolet',
+        modelos: 'AGILE /CELTA / CLASSIC / ONIX / PRISMA',
+        estandar: '12-65 D',
+        opcional: '12-70 D',
+      },
       { marca: 'Chevrolet', modelos: 'SPARK* / COBALT**', estandar: 'NS-40', opcional: '12-55' },
-      { marca: 'Chevrolet', modelos: 'D20 / SILVERADO / S10 >2016', estandar: '12-90 BD', opcional: '12-110 BD' },
-      { marca: 'Fiat', modelos: 'TEMPRA / SPAZIO / DOBLO NAFTA', estandar: '12-65 I', opcional: '12-70 I' },
+      {
+        marca: 'Chevrolet',
+        modelos: 'D20 / SILVERADO / S10 >2016',
+        estandar: '12-90 BD',
+        opcional: '12-110 BD',
+      },
+      {
+        marca: 'Fiat',
+        modelos: 'TEMPRA / SPAZIO / DOBLO NAFTA',
+        estandar: '12-65 I',
+        opcional: '12-70 I',
+      },
       { marca: 'Fiat', modelos: '600, 800 COUPE', estandar: '12-75 BD', opcional: null },
     ]);
   });
 
   test('códigos → medida comercial; las NS y las de 6 V no tienen', () => {
-    expect(['12-65 D', '12-110 BD', '12-75 AL', 'NS-40', '6-160'].map(medidaDeCodigo)).toEqual(['12x65', '12x110', '12x75', null, null]);
+    expect(['12-65 D', '12-110 BD', '12-75 AL', 'NS-40', '6-160'].map(medidaDeCodigo)).toEqual([
+      '12x65',
+      '12x110',
+      '12x75',
+      null,
+      null,
+    ]);
     expect(normalizarCodigo('12/75 AD')).toBe('12-75 AD');
     expect(normalizarCodigo('12-1101')).toBe('12-110 I');
     expect(normalizarCodigo('-')).toBeNull();
@@ -70,11 +96,21 @@ describe('catálogo de Sermat: autos', () => {
       ['Spazio', ''],
       ['Doblo', 'NAFTA'],
     ]);
-    expect(autosDeFila('D20 / SILVERADO / S10 >2016').map((a) => a.modelo)).toEqual(['D20', 'Silverado', 'S10']);
+    expect(autosDeFila('D20 / SILVERADO / S10 >2016').map((a) => a.modelo)).toEqual([
+      'D20',
+      'Silverado',
+      'S10',
+    ]);
     expect(autosDeFila('600, 800 COUPE').map((a) => a.modelo)).toEqual(['600', '800 Coupe']);
-    expect(autosDeFila('CAMIONES: FH 12380/ NH 12420').map((a) => a.modelo)).toEqual(['FH 12380', 'NH 12420']);
+    expect(autosDeFila('CAMIONES: FH 12380/ NH 12420').map((a) => a.modelo)).toEqual([
+      'FH 12380',
+      'NH 12420',
+    ]);
     expect(autosDeFila('33 / V6 3.0').map((a) => a.modelo)).toEqual(['33']);
-    expect(autosDeFila(limpiar('LUV D./ CR\u001fV')).map((a) => a.modelo)).toEqual(['LUV D', 'CR-V']);
+    expect(autosDeFila(limpiar('LUV D./ CR\u001fV')).map((a) => a.modelo)).toEqual([
+      'LUV D',
+      'CR-V',
+    ]);
   });
 
   test('marca las letras mal codificadas del PDF para que Juan las revise', () => {
@@ -119,7 +155,14 @@ describe('catálogo de Sermat: fichas técnicas', () => {
 
   test('lee cada modelo con sus medidas, placas y peso', () => {
     expect(modelos.map((m) => m.codigo)).toEqual(['NS40', '12/75 B', '6/160', 'VOLTA 50']);
-    expect(modelos[1]).toEqual({ codigo: '12/75 B', largo: 264, ancho: 175, alto: 178, placas: 13, pesoKg: 15.7 });
+    expect(modelos[1]).toEqual({
+      codigo: '12/75 B',
+      largo: 264,
+      ancho: 175,
+      alto: 178,
+      placas: 13,
+      pesoKg: 15.7,
+    });
   });
 
   test('arma la fila de producto: Volta como segunda marca, sin inventar amperajes', () => {
@@ -134,6 +177,12 @@ describe('catálogo de Sermat: fichas técnicas', () => {
       descripcion: 'Medidas: 264 x 175 x 178 mm. 13 placas. Peso: 15,7 kg. Borne bajo.',
       precio_lista: '',
     });
-    expect(volta).toMatchObject({ sku: 'VOLTA-50', marca: 'Volta', nombre: 'Volta 50', medida: '12x50', gama: 'economica' });
+    expect(volta).toMatchObject({
+      sku: 'VOLTA-50',
+      marca: 'Volta',
+      nombre: 'Volta 50',
+      medida: '12x50',
+      gama: 'economica',
+    });
   });
 });

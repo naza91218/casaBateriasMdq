@@ -8,7 +8,16 @@ import { leerRobots, sePuede } from '../src/robots.js';
 
 describe('robots.txt', () => {
   const reglas = leerRobots(
-    ['User-agent: AhrefsBot', 'Disallow: /', '', 'User-agent: *', 'Disallow: /wp-admin/', 'Allow: /wp-admin/admin-ajax.php', 'Disallow: /*.json$', 'Crawl-delay: 3'].join('\n'),
+    [
+      'User-agent: AhrefsBot',
+      'Disallow: /',
+      '',
+      'User-agent: *',
+      'Disallow: /wp-admin/',
+      'Allow: /wp-admin/admin-ajax.php',
+      'Disallow: /*.json$',
+      'Crawl-delay: 3',
+    ].join('\n'),
     'CasaDeLasBaterias-Catalogo/1.0',
   );
   test.each([
@@ -35,7 +44,9 @@ describe('cliente educado', () => {
     }) as typeof fetch;
     const cliente = new ClienteEducado({ esperaMs: 50, fetch: fetchFalso });
 
-    await expect(cliente.texto('https://sitio.test/privado/x')).rejects.toThrow('robots.txt no permite');
+    await expect(cliente.texto('https://sitio.test/privado/x')).rejects.toThrow(
+      'robots.txt no permite',
+    );
     expect(await cliente.texto('https://sitio.test/a')).toBe('ok');
     await cliente.texto('https://sitio.test/b');
 
@@ -83,8 +94,20 @@ describe('autos compatibles', () => {
   });
 
   test('texto libre de aplicaciones → un fragmento por auto y la marca sale del modelo', () => {
-    const fragmentos = fragmentar('P 208/308/207 Fiat Argo-Cronos - Toyota Corolla/Etios - VW Fox/UP');
-    expect(fragmentos).toEqual(['P 208', '308', '207', 'Fiat Argo', 'Cronos', 'Toyota Corolla', 'Etios', 'VW Fox', 'UP']);
+    const fragmentos = fragmentar(
+      'P 208/308/207 Fiat Argo-Cronos - Toyota Corolla/Etios - VW Fox/UP',
+    );
+    expect(fragmentos).toEqual([
+      'P 208',
+      '308',
+      '207',
+      'Fiat Argo',
+      'Cronos',
+      'Toyota Corolla',
+      'Etios',
+      'VW Fox',
+      'UP',
+    ]);
     expect(fragmentos.map((f) => detectarAuto(f)?.marca)).toEqual([
       'Peugeot',
       'Peugeot',
@@ -99,13 +122,27 @@ describe('autos compatibles', () => {
   });
 
   test('rangos de años y marcas sin separador', () => {
-    expect(fragmentar('Blazer-C10-BMW serie 3-Ranger 2012/16')).toEqual(['Blazer', 'C10', 'BMW serie 3', 'Ranger 2012~16']);
-    expect(fragmentar('Clio mio-palio 8v-Ford ka y Ecosport 1ra gen.')).toEqual(['Clio mio', 'palio 8v', 'Ford ka', 'Ecosport 1ra gen.']);
+    expect(fragmentar('Blazer-C10-BMW serie 3-Ranger 2012/16')).toEqual([
+      'Blazer',
+      'C10',
+      'BMW serie 3',
+      'Ranger 2012~16',
+    ]);
+    expect(fragmentar('Clio mio-palio 8v-Ford ka y Ecosport 1ra gen.')).toEqual([
+      'Clio mio',
+      'palio 8v',
+      'Ford ka',
+      'Ecosport 1ra gen.',
+    ]);
   });
 
   test('un auto con varias medidas queda en una fila; lo no reconocido va aparte sin marca', () => {
     const a = new AcumuladorCompatibilidades();
-    a.agregar(['VW Gol 1.0', 'Autoelevadores'], '12x65', 'https://www.herbobaterias.com/producto/compact/');
+    a.agregar(
+      ['VW Gol 1.0', 'Autoelevadores'],
+      '12x65',
+      'https://www.herbobaterias.com/producto/compact/',
+    );
     a.agregar(['VW.Gol 1.0'], '12x45', 'https://www.bateriaspeiro.com.ar/sermat.html');
     expect(a.resultado()).toEqual([
       expect.objectContaining({
@@ -117,7 +154,9 @@ describe('autos compatibles', () => {
         fuente: 'herbobaterias.com | bateriaspeiro.com.ar',
       }),
     ]);
-    expect(a.sinReconocerComoFilas()).toEqual([expect.objectContaining({ marca_auto: '', modelo: 'Autoelevadores', medidas: '12x65' })]);
+    expect(a.sinReconocerComoFilas()).toEqual([
+      expect.objectContaining({ marca_auto: '', modelo: 'Autoelevadores', medidas: '12x65' }),
+    ]);
   });
 });
 
@@ -158,7 +197,8 @@ describe('fuente Herbo', () => {
       amperaje_ah: '80',
       cca: '600',
       gama: 'reforzada',
-      descripcion: 'Línea 12 volts. 600 A de arranque en frío (CCA). Reserva de 90 minutos. Medidas: 277 x 175 x 176 mm.',
+      descripcion:
+        'Línea 12 volts. 600 A de arranque en frío (CCA). Reserva de 90 minutos. Medidas: 277 x 175 x 176 mm.',
       precio_lista: '',
       stock: '',
       fotos: 'fotos/herbo/platinum.png',
@@ -213,7 +253,10 @@ describe('fuente Sermat y Volta', () => {
       gama: 'reforzada',
       descripcion: 'Línea Pesada. 12 V 90 Ah. Borne alto.',
     });
-    expect(sermatVolta.aFila(modelos[2] as sermatVolta.ModeloLista)).toMatchObject({ sku: 'VOLTA-VT-180', medida: '12x180' });
+    expect(sermatVolta.aFila(modelos[2] as sermatVolta.ModeloLista)).toMatchObject({
+      sku: 'VOLTA-VT-180',
+      medida: '12x180',
+    });
   });
 });
 

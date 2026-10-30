@@ -47,8 +47,14 @@ export const pedidos = pgTable(
     actualizadoEn: actualizadoEn(),
   },
   (t) => [
-    check('pedidos_zona_si_colocacion', sql`${t.entrega} <> 'colocacion' or ${t.zonaId} is not null`),
-    check('pedidos_efectivo_solo_retiro', sql`${t.medioPago} <> 'efectivo' or ${t.entrega} = 'retiro'`),
+    check(
+      'pedidos_zona_si_colocacion',
+      sql`${t.entrega} <> 'colocacion' or ${t.zonaId} is not null`,
+    ),
+    check(
+      'pedidos_efectivo_solo_retiro',
+      sql`${t.medioPago} <> 'efectivo' or ${t.entrega} = 'retiro'`,
+    ),
     index('pedidos_estado_vence_idx').on(t.estado, t.venceEn),
     index('pedidos_estado_creado_idx').on(t.estado, t.creadoEn.desc()),
   ],
@@ -69,7 +75,10 @@ export const pedidoItems = pgTable(
     cantidad: integer('cantidad').notNull(),
     precioUnitario: centavos('precio_unitario').notNull(),
   },
-  (t) => [check('pedido_items_cantidad_positiva', sql`${t.cantidad} > 0`), index('pedido_items_pedido_idx').on(t.pedidoId)],
+  (t) => [
+    check('pedido_items_cantidad_positiva', sql`${t.cantidad} > 0`),
+    index('pedido_items_pedido_idx').on(t.pedidoId),
+  ],
 );
 
 /** Auditoría de cada cambio de estado, incluidos los intentos rechazados (FR-033). */

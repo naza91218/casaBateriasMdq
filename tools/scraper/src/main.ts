@@ -8,7 +8,12 @@ import { AcumuladorCompatibilidades, fragmentar } from './compatibilidad.js';
 import * as herbo from './fuentes/herbo.js';
 import * as sermatPdf from './fuentes/sermat-pdf.js';
 import * as sermatVolta from './fuentes/sermat-volta.js';
-import { aCsv, COLUMNAS_COMPATIBILIDADES, COLUMNAS_PRODUCTOS, type FilaProducto } from './planillas.js';
+import {
+  aCsv,
+  COLUMNAS_COMPATIBILIDADES,
+  COLUMNAS_PRODUCTOS,
+  type FilaProducto,
+} from './planillas.js';
 
 /**
  * Carga inicial del catálogo (research R10, FR-070): baja datos técnicos, autos compatibles y
@@ -42,16 +47,20 @@ async function deHerbo(): Promise<void> {
         descartados++;
         continue;
       }
-      const ruta = sinFotos || !ficha.foto ? null : await guardarFoto(ficha.foto, 'herbo', ficha.slug);
+      const ruta =
+        sinFotos || !ficha.foto ? null : await guardarFoto(ficha.foto, 'herbo', ficha.slug);
       const fila = herbo.aFila(ficha, ruta);
-      if (!fila.medida) avisos.push(`Herbo "${ficha.nombre}": no se pudo deducir el amperaje (${url})`);
+      if (!fila.medida)
+        avisos.push(`Herbo "${ficha.nombre}": no se pudo deducir el amperaje (${url})`);
       productos.push(fila);
       compat.agregar(ficha.autos, fila.medida, url);
     } catch (error) {
       avisos.push(`Herbo ${url}: ${(error as Error).message}`);
     }
   }
-  console.log(`Herbo: ${urls.length - descartados} baterías del rubro, ${descartados} descartadas (motos, solares, estacionarias…)`);
+  console.log(
+    `Herbo: ${urls.length - descartados} baterías del rubro, ${descartados} descartadas (motos, solares, estacionarias…)`,
+  );
 }
 
 /**
@@ -66,7 +75,8 @@ async function deCatalogoSermat(ruta: string): Promise<void> {
   const modelos = sermatPdf.leerModelos(paginas).filter((m) => !sermatPdf.esDeSeisVolts(m.codigo));
   for (const m of modelos) {
     const fila = sermatPdf.aFilaProducto(m, fuente);
-    if (!fila.medida) avisos.push(`${fila.nombre}: el catálogo no dice su amperaje; completalo en la planilla`);
+    if (!fila.medida)
+      avisos.push(`${fila.nombre}: el catálogo no dice su amperaje; completalo en la planilla`);
     productos.push(fila);
   }
 
@@ -80,7 +90,9 @@ async function deCatalogoSermat(ruta: string): Promise<void> {
       continue;
     }
     const revisar = [
-      sermatPdf.textoDudoso(f.modelos) ? 'El catálogo trae letras mal codificadas: revisá el nombre' : '',
+      sermatPdf.textoDudoso(f.modelos)
+        ? 'El catálogo trae letras mal codificadas: revisá el nombre'
+        : '',
       /[*]/.test(f.modelos) ? 'Tiene notas al pie (*): revisá qué batería va con cada modelo' : '',
       /[<>]\s*\d{4}/.test(f.modelos) ? 'Menciona años: completalos si corresponde' : '',
     ]
@@ -88,7 +100,12 @@ async function deCatalogoSermat(ruta: string): Promise<void> {
       .join('; ');
     for (const a of sermatPdf.autosDeFila(f.modelos)) {
       compat.agregarConMarca(
-        { marca: f.marca, modelo: a.modelo, motor: a.motor, textoOriginal: `${a.textoOriginal} → ${codigos.join(' / ')}` },
+        {
+          marca: f.marca,
+          modelo: a.modelo,
+          motor: a.motor,
+          textoOriginal: `${a.textoOriginal} → ${codigos.join(' / ')}`,
+        },
         medidas,
         fuente,
         revisar || null,
@@ -107,7 +124,8 @@ async function deSermatVolta(): Promise<void> {
   const modelos = sermatVolta.leerLista(await cliente.texto(sermatVolta.URL_SERMAT_VOLTA));
   for (const m of modelos) {
     const fila = sermatVolta.aFila(m);
-    if (!fila.medida) avisos.push(`${m.marca} ${m.codigo}: no se pudo deducir el amperaje de "${m.tipo}"`);
+    if (!fila.medida)
+      avisos.push(`${m.marca} ${m.codigo}: no se pudo deducir el amperaje de "${m.tipo}"`);
     productos.push(fila);
     compat.agregar(fragmentar(m.aplicaciones), fila.medida, sermatVolta.URL_SERMAT_VOLTA);
   }
@@ -117,7 +135,12 @@ async function deSermatVolta(): Promise<void> {
 /** Edna no tiene fuente pública: se carga a mano en tools/scraper/manual/edna.csv. */
 async function deEdna(): Promise<void> {
   const ruta = join(AQUI, '..', 'manual', 'edna.csv');
-  const filas = parse(await readFile(ruta), { bom: true, columns: true, skip_empty_lines: true, trim: true }) as FilaProducto[];
+  const filas = parse(await readFile(ruta), {
+    bom: true,
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+  }) as FilaProducto[];
   productos.push(...filas);
   console.log(`Edna: ${filas.length} filas de la planilla manual`);
 }
@@ -138,7 +161,11 @@ async function guardarFoto(url: string, marca: string, nombre: string): Promise<
   }
 }
 
-const fuentes: Record<string, () => Promise<void>> = { herbo: deHerbo, 'sermat-volta': deSermatVolta, edna: deEdna };
+const fuentes: Record<string, () => Promise<void>> = {
+  herbo: deHerbo,
+  'sermat-volta': deSermatVolta,
+  edna: deEdna,
+};
 for (const [nombre, correr] of Object.entries(fuentes)) {
   if (!solo || solo === nombre) await correr();
 }
@@ -146,15 +173,26 @@ for (const [nombre, correr] of Object.entries(fuentes)) {
 await mkdir(SALIDA, { recursive: true });
 await writeFile(join(SALIDA, 'productos.csv'), aCsv(COLUMNAS_PRODUCTOS, productos));
 const compatibilidades = compat.resultado();
-await writeFile(join(SALIDA, 'compatibilidades.csv'), aCsv(COLUMNAS_COMPATIBILIDADES, compatibilidades));
+await writeFile(
+  join(SALIDA, 'compatibilidades.csv'),
+  aCsv(COLUMNAS_COMPATIBILIDADES, compatibilidades),
+);
 const sinReconocer = compat.sinReconocerComoFilas();
-await writeFile(join(SALIDA, 'compatibilidades-sin-reconocer.csv'), aCsv(COLUMNAS_COMPATIBILIDADES, sinReconocer));
+await writeFile(
+  join(SALIDA, 'compatibilidades-sin-reconocer.csv'),
+  aCsv(COLUMNAS_COMPATIBILIDADES, sinReconocer),
+);
 
 console.log(`\nListo. En ${SALIDA}:`);
-console.log(`  productos.csv: ${productos.length} productos (${productos.filter((p) => !p.medida).length} sin medida)`);
+console.log(
+  `  productos.csv: ${productos.length} productos (${productos.filter((p) => !p.medida).length} sin medida)`,
+);
 const paraRevisar = compatibilidades.filter((c) => c.revisar).length;
 console.log(
   `  compatibilidades.csv: ${compatibilidades.length} autos (${paraRevisar} marcados en la columna "revisar"). Sin años = valen para todos los años.`,
 );
-console.log(`  compatibilidades-sin-reconocer.csv: ${sinReconocer.length} textos de las fuentes que no se pudieron leer como un auto.`);
-if (avisos.length) console.log(`\nAvisos (${avisos.length}):\n${avisos.map((a) => `  - ${a}`).join('\n')}`);
+console.log(
+  `  compatibilidades-sin-reconocer.csv: ${sinReconocer.length} textos de las fuentes que no se pudieron leer como un auto.`,
+);
+if (avisos.length)
+  console.log(`\nAvisos (${avisos.length}):\n${avisos.map((a) => `  - ${a}`).join('\n')}`);

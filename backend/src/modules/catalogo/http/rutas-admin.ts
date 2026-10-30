@@ -26,12 +26,18 @@ export function rutasAdminProductos(deps: {
     const params = z.object({ id: z.string().uuid('Producto inválido') });
     const fotos = z.array(FotoAdmin);
 
-    app.get('/productos', { schema: { tags, querystring: FiltroProductosAdmin, response: { 200: ListaProductosAdmin } } }, (req) =>
-      deps.productos.listar(req.query),
+    app.get(
+      '/productos',
+      {
+        schema: { tags, querystring: FiltroProductosAdmin, response: { 200: ListaProductosAdmin } },
+      },
+      (req) => deps.productos.listar(req.query),
     );
 
-    app.post('/productos', { schema: { tags, body: NuevoProducto, response: { 201: ProductoAdmin } } }, async (req, reply) =>
-      reply.code(201).send(await deps.productos.crear(req.body)),
+    app.post(
+      '/productos',
+      { schema: { tags, body: NuevoProducto, response: { 201: ProductoAdmin } } },
+      async (req, reply) => reply.code(201).send(await deps.productos.crear(req.body)),
     );
 
     app.post(
@@ -40,16 +46,22 @@ export function rutasAdminProductos(deps: {
       (req) => deps.productos.revisar(req.body),
     );
 
-    app.get('/productos/:id', { schema: { tags, params, response: { 200: ProductoAdmin } } }, (req) =>
-      deps.productos.obtener(req.params.id),
+    app.get(
+      '/productos/:id',
+      { schema: { tags, params, response: { 200: ProductoAdmin } } },
+      (req) => deps.productos.obtener(req.params.id),
     );
 
-    app.patch('/productos/:id', { schema: { tags, params, body: EdicionProducto, response: { 200: ProductoAdmin } } }, (req) =>
-      deps.productos.editar(req.params.id, req.body),
+    app.patch(
+      '/productos/:id',
+      { schema: { tags, params, body: EdicionProducto, response: { 200: ProductoAdmin } } },
+      (req) => deps.productos.editar(req.params.id, req.body),
     );
 
-    app.delete('/productos/:id', { schema: { tags, params, response: { 200: ResultadoEliminacion } } }, (req) =>
-      deps.productos.eliminar(req.params.id),
+    app.delete(
+      '/productos/:id',
+      { schema: { tags, params, response: { 200: ResultadoEliminacion } } },
+      (req) => deps.productos.eliminar(req.params.id),
     );
 
     // Multipart: una o varias fotos en el campo "fotos" (desde el celular, FR-045).
@@ -59,7 +71,8 @@ export function rutasAdminProductos(deps: {
       async (req, reply) => {
         let subidas = 0;
         for await (const parte of req.files()) {
-          if (++subidas > MAX_FOTOS) throw validacion({ fotos: `Podés subir hasta ${MAX_FOTOS} fotos a la vez` });
+          if (++subidas > MAX_FOTOS)
+            throw validacion({ fotos: `Podés subir hasta ${MAX_FOTOS} fotos a la vez` });
           await deps.fotos.subir(req.params.id, await parte.toBuffer());
         }
         if (subidas === 0) throw validacion({ fotos: 'Elegí al menos una foto' });
@@ -67,13 +80,21 @@ export function rutasAdminProductos(deps: {
       },
     );
 
-    app.patch('/productos/:id/fotos/orden', { schema: { tags, params, body: OrdenFotos, response: { 200: fotos } } }, (req) =>
-      deps.fotos.ordenar(req.params.id, req.body.ids),
+    app.patch(
+      '/productos/:id/fotos/orden',
+      { schema: { tags, params, body: OrdenFotos, response: { 200: fotos } } },
+      (req) => deps.fotos.ordenar(req.params.id, req.body.ids),
     );
 
     app.delete(
       '/productos/:id/fotos/:fotoId',
-      { schema: { tags, params: params.extend({ fotoId: z.string().uuid('Foto inválida') }), response: { 200: fotos } } },
+      {
+        schema: {
+          tags,
+          params: params.extend({ fotoId: z.string().uuid('Foto inválida') }),
+          response: { 200: fotos },
+        },
+      },
       (req) => deps.fotos.borrar(req.params.id, req.params.fotoId),
     );
   };

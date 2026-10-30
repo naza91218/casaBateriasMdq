@@ -2,7 +2,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { sembrarBase } from '../../../db/seed/base.js';
 import { sembrarCatalogo } from '../../../db/seed/catalogo.js';
 import { crearProducto, crearVehiculo, vaciarCatalogo } from '../../setup/fixtures.js';
-import { crearContextoDePrueba, prepararBase, type ContextoDePrueba } from '../../setup/contexto.js';
+import {
+  crearContextoDePrueba,
+  prepararBase,
+  type ContextoDePrueba,
+} from '../../setup/contexto.js';
 
 let p: ContextoDePrueba;
 
@@ -25,9 +29,25 @@ const buscador = () => p.ctx.servicios.buscador;
 
 describe('buscador por auto (US1)', () => {
   test('US1-01: Gol Trend 2015 muestra las dos 12x65, la económica primero', async () => {
-    await crearVehiculo(p.ctx.db, { marca: 'Volkswagen', modelo: 'Gol Trend', desde: 2008, hasta: 2023, medidas: ['12x65'] });
-    await crearProducto(p.ctx.db, { marca: 'Herbo', medida: '12x65', gama: 'reforzada', nombre: 'Herbo 12x65 Reforzada' });
-    await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x65', gama: 'economica', nombre: 'Sermat 12x65 Económica' });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Volkswagen',
+      modelo: 'Gol Trend',
+      desde: 2008,
+      hasta: 2023,
+      medidas: ['12x65'],
+    });
+    await crearProducto(p.ctx.db, {
+      marca: 'Herbo',
+      medida: '12x65',
+      gama: 'reforzada',
+      nombre: 'Herbo 12x65 Reforzada',
+    });
+    await crearProducto(p.ctx.db, {
+      marca: 'Sermat',
+      medida: '12x65',
+      gama: 'economica',
+      nombre: 'Sermat 12x65 Económica',
+    });
     await crearProducto(p.ctx.db, { marca: 'Volta', medida: '12x75', gama: 'economica' }); // otra medida
 
     const r = await buscador().compatibles('volkswagen', 'gol-trend', 2015);
@@ -40,7 +60,13 @@ describe('buscador por auto (US1)', () => {
   });
 
   test('US1-02: un año fuera del rango no figura entre las opciones', async () => {
-    await crearVehiculo(p.ctx.db, { marca: 'Volkswagen', modelo: 'Gol Trend', desde: 2008, hasta: 2023, medidas: ['12x65'] });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Volkswagen',
+      modelo: 'Gol Trend',
+      desde: 2008,
+      hasta: 2023,
+      medidas: ['12x65'],
+    });
     const anios = await buscador().anios('volkswagen', 'gol-trend');
     expect(anios).toContain(2015);
     expect(anios).not.toContain(2005);
@@ -49,8 +75,20 @@ describe('buscador por auto (US1)', () => {
   });
 
   test('cada paso muestra solo opciones con datos (FR-010)', async () => {
-    await crearVehiculo(p.ctx.db, { marca: 'Volkswagen', modelo: 'Gol Trend', desde: 2008, hasta: 2023, medidas: ['12x65'] });
-    await crearVehiculo(p.ctx.db, { marca: 'Fiat', modelo: 'Sin Medida', desde: 2010, hasta: 2012, medidas: [] });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Volkswagen',
+      modelo: 'Gol Trend',
+      desde: 2008,
+      hasta: 2023,
+      medidas: ['12x65'],
+    });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Fiat',
+      modelo: 'Sin Medida',
+      desde: 2010,
+      hasta: 2012,
+      medidas: [],
+    });
     expect((await buscador().marcas()).map((m) => m.slug)).toEqual(['volkswagen']);
     expect((await buscador().modelos('volkswagen')).map((m) => m.nombre)).toEqual(['Gol Trend']);
   });
@@ -60,13 +98,31 @@ describe('buscador por auto (US1)', () => {
     expect(r.sinResultados).toBe('auto_no_cargado');
     expect(r.grupos).toEqual([]);
     expect(r.whatsapp.mensaje).toBe('Hola, busco batería para un Renault Clio Mio 2014');
-    expect(r.whatsapp.url).toContain(encodeURIComponent('Hola, busco batería para un Renault Clio Mio 2014'));
+    expect(r.whatsapp.url).toContain(
+      encodeURIComponent('Hola, busco batería para un Renault Clio Mio 2014'),
+    );
   });
 
   test('US1-04: sin stock de la medida → "sin_stock" y WhatsApp', async () => {
-    await crearVehiculo(p.ctx.db, { marca: 'Volkswagen', modelo: 'Gol Trend', desde: 2008, hasta: 2023, medidas: ['12x65'] });
-    await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x65', gama: 'economica', stock: 0 });
-    await crearProducto(p.ctx.db, { marca: 'Herbo', medida: '12x65', gama: 'reforzada', estado: 'pausado' });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Volkswagen',
+      modelo: 'Gol Trend',
+      desde: 2008,
+      hasta: 2023,
+      medidas: ['12x65'],
+    });
+    await crearProducto(p.ctx.db, {
+      marca: 'Sermat',
+      medida: '12x65',
+      gama: 'economica',
+      stock: 0,
+    });
+    await crearProducto(p.ctx.db, {
+      marca: 'Herbo',
+      medida: '12x65',
+      gama: 'reforzada',
+      estado: 'pausado',
+    });
 
     const r = await buscador().compatibles('volkswagen', 'gol-trend', 2015);
     expect(r.sinResultados).toBe('sin_stock');
@@ -74,7 +130,13 @@ describe('buscador por auto (US1)', () => {
   });
 
   test('un auto con dos medidas muestra las baterías de ambas', async () => {
-    await crearVehiculo(p.ctx.db, { marca: 'Toyota', modelo: 'Hilux', desde: 2016, hasta: 2024, medidas: ['12x90', '12x110'] });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Toyota',
+      modelo: 'Hilux',
+      desde: 2016,
+      hasta: 2024,
+      medidas: ['12x90', '12x110'],
+    });
     await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x90', gama: 'economica' });
     await crearProducto(p.ctx.db, { marca: 'Edna', medida: '12x110', gama: 'reforzada' });
     const r = await buscador().compatibles('toyota', 'hilux', 2020);
@@ -97,10 +159,21 @@ describe('autos sin años (clarify 2026-10-30)', () => {
 
   test('si el modelo mezcla, los años salen de los rangos y lo cargado sin años vale para todos', async () => {
     await crearVehiculo(p.ctx.db, { marca: 'Chevrolet', modelo: 'S10', medidas: ['12x75'] });
-    await crearVehiculo(p.ctx.db, { marca: 'Chevrolet', modelo: 'S10', desde: 2016, hasta: 2024, medidas: ['12x90'] });
+    await crearVehiculo(p.ctx.db, {
+      marca: 'Chevrolet',
+      modelo: 'S10',
+      desde: 2016,
+      hasta: 2024,
+      medidas: ['12x90'],
+    });
 
-    expect(await buscador().anios('chevrolet', 's10')).toEqual([2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016]);
-    expect((await buscador().compatibles('chevrolet', 's10', 2020)).medidas).toEqual(['12x75', '12x90']);
+    expect(await buscador().anios('chevrolet', 's10')).toEqual([
+      2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016,
+    ]);
+    expect((await buscador().compatibles('chevrolet', 's10', 2020)).medidas).toEqual([
+      '12x75',
+      '12x90',
+    ]);
     expect((await buscador().compatibles('chevrolet', 's10', 2010)).medidas).toEqual(['12x75']);
   });
 

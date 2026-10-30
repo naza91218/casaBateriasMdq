@@ -30,7 +30,13 @@ describe('consulta de canje (FR-004, clarify)', () => {
 
   test('fuera de Mar del Plata o de las zonas atendidas → mensaje claro', async () => {
     await expect(
-      e.ctx.servicios.canje.registrar({ nombre: 'Ana', telefono: '341 400 1122', localidad: 'Rosario' }),
-    ).rejects.toMatchObject({ campos: { localidad: 'Por ahora el canje es solo en Mar del Plata' } });
+      e.ctx.servicios.canje.registrar({
+        nombre: 'Ana',
+        telefono: '341 400 1122',
+        localidad: 'Rosario',
+      }),
+    ).rejects.toMatchObject({
+      campos: { localidad: 'Por ahora el canje es solo en Mar del Plata' },
+    });
   });
 });

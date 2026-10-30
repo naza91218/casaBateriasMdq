@@ -64,7 +64,13 @@ export class ServicioPedidos {
     const lineas = s.items.map((i) => {
       const p = vigentes.get(i.productoId);
       if (!p || p.stock < i.cantidad) {
-        throw new ErrorDeDominio('conflicto', 'STOCK_INSUFICIENTE', p ? `No hay stock suficiente de ${p.nombre}` : 'Ese producto ya no está disponible', undefined, { productoId: i.productoId });
+        throw new ErrorDeDominio(
+          'conflicto',
+          'STOCK_INSUFICIENTE',
+          p ? `No hay stock suficiente de ${p.nombre}` : 'Ese producto ya no está disponible',
+          undefined,
+          { productoId: i.productoId },
+        );
       }
       return { ...i, nombre: p.nombre, precioUnitario: p.precioLista };
     });
@@ -153,8 +159,14 @@ export class ServicioPedidos {
       });
 
       const datos = await this.d.datosMail.para(tx, pedido.id);
-      await this.d.outbox.encolar(tx, mail(MAILS.pedidoCreado.comprador, 'comprador', pedido.id, datos, pedido.id));
-      await this.d.outbox.encolar(tx, mail(MAILS.pedidoCreado.admin, 'admin', pedido.id, datos, pedido.id));
+      await this.d.outbox.encolar(
+        tx,
+        mail(MAILS.pedidoCreado.comprador, 'comprador', pedido.id, datos, pedido.id),
+      );
+      await this.d.outbox.encolar(
+        tx,
+        mail(MAILS.pedidoCreado.admin, 'admin', pedido.id, datos, pedido.id),
+      );
       return { pedido, reservados, banco: datos.banco as Record<string, string> | null };
     });
 
@@ -185,7 +197,13 @@ export class ServicioPedidos {
     }
     if (medio.id === 'efectivo') return { ...base, pago: { tipo: 'efectivo' } };
 
-    return { ...base, pago: { tipo: 'mercadopago', initPoint: await this.preferencia(pedido.id, s.comprador.email) } };
+    return {
+      ...base,
+      pago: {
+        tipo: 'mercadopago',
+        initPoint: await this.preferencia(pedido.id, s.comprador.email),
+      },
+    };
   }
 
   /**
@@ -199,7 +217,11 @@ export class ServicioPedidos {
       const venceEn = datos.venceEn ? new Date(String(datos.venceEn)) : new Date();
       const { initPoint } = await this.d.pasarela.crearPreferencia({
         pedidoId,
-        items: items.map((i) => ({ titulo: i.nombre, cantidad: i.cantidad, precioUnitarioCentavos: BigInt(i.precioUnitario) })),
+        items: items.map((i) => ({
+          titulo: i.nombre,
+          cantidad: i.cantidad,
+          precioUnitarioCentavos: BigInt(i.precioUnitario),
+        })),
         emailComprador: email,
         urlRetorno: String(datos.urlSeguimiento),
         urlNotificacion: `${this.d.urlApi}/api/v1/webhooks/mercadopago`,
@@ -207,7 +229,10 @@ export class ServicioPedidos {
       });
       return initPoint;
     } catch (error) {
-      this.d.logger.error({ pedidoId, err: String(error) }, 'no se pudo crear la preferencia de Mercado Pago');
+      this.d.logger.error(
+        { pedidoId, err: String(error) },
+        'no se pudo crear la preferencia de Mercado Pago',
+      );
       return null;
     }
   }

@@ -46,6 +46,7 @@ function coincide(patron: string, ruta: string): boolean {
 }
 
 export function sePuede(reglas: Reglas, ruta: string): boolean {
-  const largo = (lista: string[]) => Math.max(-1, ...lista.filter((p) => coincide(p, ruta)).map((p) => p.length));
+  const largo = (lista: string[]) =>
+    Math.max(-1, ...lista.filter((p) => coincide(p, ruta)).map((p) => p.length));
   return largo(reglas.permitir) >= largo(reglas.prohibir);
 }

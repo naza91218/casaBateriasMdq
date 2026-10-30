@@ -13,14 +13,19 @@ export function rutasAdminResumen(deps: {
   canje: ServicioAdminCanje;
 }): FastifyPluginAsyncZod {
   return async (app) => {
-    app.get('/resumen', { schema: { tags: ['panel'], response: { 200: ResumenAdmin } } }, async () => {
-      const [pedidos, alertasAbiertas, productosARevisar, consultasCanjePendientes] = await Promise.all([
-        deps.panel.contadores(),
-        deps.alertas.contarAbiertas(),
-        deps.productos.contarARevisar(),
-        deps.canje.contarPendientes(),
-      ]);
-      return { ...pedidos, alertasAbiertas, productosARevisar, consultasCanjePendientes };
-    });
+    app.get(
+      '/resumen',
+      { schema: { tags: ['panel'], response: { 200: ResumenAdmin } } },
+      async () => {
+        const [pedidos, alertasAbiertas, productosARevisar, consultasCanjePendientes] =
+          await Promise.all([
+            deps.panel.contadores(),
+            deps.alertas.contarAbiertas(),
+            deps.productos.contarARevisar(),
+            deps.canje.contarPendientes(),
+          ]);
+        return { ...pedidos, alertasAbiertas, productosARevisar, consultasCanjePendientes };
+      },
+    );
   };
 }

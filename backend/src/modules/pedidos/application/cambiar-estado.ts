@@ -3,7 +3,11 @@ import type { BaseDeDatos, Transaccion } from '../../../platform/db.js';
 import { Dinero } from '../../../shared-kernel/dinero.js';
 import { ErrorDeDominio, noEncontrado } from '../../../shared-kernel/errores.js';
 import type { ServicioStock } from '../../catalogo/application/stock.js';
-import { MAIL_ADMIN_POR_ESTADO, MAIL_COMPRADOR_POR_ESTADO, mail } from '../../notificaciones/application/eventos.js';
+import {
+  MAIL_ADMIN_POR_ESTADO,
+  MAIL_COMPRADOR_POR_ESTADO,
+  mail,
+} from '../../notificaciones/application/eventos.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
 import { pagos } from '../../pagos/infrastructure/schema.js';
 import { puedeTransicionar, type EstadoPedido } from '../domain/maquina-estados.js';
@@ -42,17 +46,32 @@ export class ServicioEstados {
         'conflicto',
         'TRANSICION_INVALIDA',
         // Mismo estado: casi siempre es un doble toque o dos pestañas abiertas.
-        r.de === s.a ? `Este pedido ya está ${de}` : `El pedido está ${de} y no puede pasar a ${s.a.replaceAll('_', ' ')}`,
+        r.de === s.a
+          ? `Este pedido ya está ${de}`
+          : `El pedido está ${de} y no puede pasar a ${s.a.replaceAll('_', ' ')}`,
       );
     }
   }
 
   /** Para usar dentro de otra transacción (webhook de pagos, vencimientos). */
-  async cambiarEnTx(tx: Transaccion, s: SolicitudCambio): Promise<{ ok: boolean; de: EstadoPedido }> {
-    const [pedido] = await tx.select().from(pedidos).where(eq(pedidos.id, s.pedidoId)).for('update');
+  async cambiarEnTx(
+    tx: Transaccion,
+    s: SolicitudCambio,
+  ): Promise<{ ok: boolean; de: EstadoPedido }> {
+    const [pedido] = await tx
+      .select()
+      .from(pedidos)
+      .where(eq(pedidos.id, s.pedidoId))
+      .for('update');
     if (!pedido) throw noEncontrado('No encontramos ese pedido');
 
-    const evento = { pedidoId: pedido.id, de: pedido.estado, a: s.a, actor: s.actor, motivo: s.motivo ?? '' };
+    const evento = {
+      pedidoId: pedido.id,
+      de: pedido.estado,
+      a: s.a,
+      actor: s.actor,
+      motivo: s.motivo ?? '',
+    };
     if (!puedeTransicionar(pedido.estado, s.a, pedido.entrega)) {
       await tx.insert(pedidoEventos).values({ ...evento, rechazado: true });
       return { ok: false, de: pedido.estado };
@@ -82,9 +101,11 @@ export class ServicioEstados {
 
     const datos = await this.datosMail.para(tx, pedido.id);
     const mailComprador = MAIL_COMPRADOR_POR_ESTADO[s.a];
-    if (mailComprador) await this.outbox.encolar(tx, mail(mailComprador, 'comprador', pedido.id, datos, pedido.id));
+    if (mailComprador)
+      await this.outbox.encolar(tx, mail(mailComprador, 'comprador', pedido.id, datos, pedido.id));
     const mailAdmin = MAIL_ADMIN_POR_ESTADO[s.a];
-    if (mailAdmin) await this.outbox.encolar(tx, mail(mailAdmin, 'admin', pedido.id, datos, pedido.id));
+    if (mailAdmin)
+      await this.outbox.encolar(tx, mail(mailAdmin, 'admin', pedido.id, datos, pedido.id));
     return { ok: true, de: pedido.estado };
   }
 }

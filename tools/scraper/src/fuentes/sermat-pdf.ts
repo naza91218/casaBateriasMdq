@@ -17,14 +17,22 @@ export interface TextoPdf {
 
 export async function leerTextosPdf(ruta: string): Promise<TextoPdf[][]> {
   const { getDocument } = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  const doc = await getDocument({ data: new Uint8Array(await readFile(ruta)), verbosity: 0 }).promise;
+  const doc = await getDocument({ data: new Uint8Array(await readFile(ruta)), verbosity: 0 })
+    .promise;
   const paginas: TextoPdf[][] = [];
   for (let n = 1; n <= doc.numPages; n++) {
     const contenido = await (await doc.getPage(n)).getTextContent();
     paginas.push(
       contenido.items.flatMap((i) =>
         'str' in i && i.str.trim()
-          ? [{ x: i.transform[4] as number, y: i.transform[5] as number, texto: limpiar(i.str), fuente: i.fontName }]
+          ? [
+              {
+                x: i.transform[4] as number,
+                y: i.transform[5] as number,
+                texto: limpiar(i.str),
+                fuente: i.fontName,
+              },
+            ]
           : [],
       ),
     );
@@ -63,7 +71,10 @@ export interface FilaCatalogo {
 /** Secciones que no son del rubro (autos, camionetas y camiones). */
 const SECCIONES_EXCLUIDAS = /^(tractores|m[aá]quinas viales)/i;
 
-const NOMBRES_DE_MARCA: Record<string, string> = { 'Citröen': 'Citroën', 'Mercedes Benz': 'Mercedes-Benz' };
+const NOMBRES_DE_MARCA: Record<string, string> = {
+  Citröen: 'Citroën',
+  'Mercedes Benz': 'Mercedes-Benz',
+};
 
 /**
  * "12- 75 BD" → "12-75 BD"; "12/75 AD" → "12-75 AD"; "-" (sin opcional) → null. En el PDF la
@@ -75,7 +86,9 @@ export function normalizarCodigo(texto: string): string | null {
     .replace(/\//g, '-')
     .replace(/\s*-\s*/g, '-')
     .replace(/^(\d+-\d+)\s*([A-Z]+)$/, '$1 $2')
-    .replace(/^(\d+-\d{2,3})1$/, (todo, base: string) => (Number(base.split('-')[1]) <= 250 && todo.length > base.length ? `${base} I` : todo))
+    .replace(/^(\d+-\d{2,3})1$/, (todo, base: string) =>
+      Number(base.split('-')[1]) <= 250 && todo.length > base.length ? `${base} I` : todo,
+    )
     .trim();
   return c && c !== '-' ? c : null;
 }
@@ -90,7 +103,9 @@ export function leerCompatibilidades(paginas: TextoPdf[][]): FilaCatalogo[] {
   const filas: FilaCatalogo[] = [];
   // La tipografía de los títulos de marca es la del primer título conocido.
   const todos = paginas.flat();
-  const fuenteTitulo = todos.find((t) => t.texto === 'Alfa Romeo' || t.texto === 'Chevrolet')?.fuente;
+  const fuenteTitulo = todos.find(
+    (t) => t.texto === 'Alfa Romeo' || t.texto === 'Chevrolet',
+  )?.fuente;
   for (const pagina of paginas) {
     if (!pagina.some((t) => t.texto === 'ESTANDAR')) continue;
     let marca: string | null = null;
@@ -106,7 +121,12 @@ export function leerCompatibilidades(paginas: TextoPdf[][]): FilaCatalogo[] {
       const estandar = renglon.find((t) => t.x >= COL_ESTANDAR && t.x < COL_OPCIONAL)?.texto ?? '';
       const opcional = renglon.find((t) => t.x >= COL_OPCIONAL)?.texto ?? '';
       if (!estandar && !opcional) continue;
-      filas.push({ marca, modelos: texto, estandar: normalizarCodigo(estandar), opcional: normalizarCodigo(opcional) });
+      filas.push({
+        marca,
+        modelos: texto,
+        estandar: normalizarCodigo(estandar),
+        opcional: normalizarCodigo(opcional),
+      });
     }
   }
   return filas;
@@ -123,9 +143,37 @@ export interface AutoCatalogo {
   textoOriginal: string;
 }
 
-const CALIFICADORES = /\b(\d\.\d+\s*(?:16V|8V|T|JTD|TDI|TD)?|TDI|JTD|HDI|TD|DIESEL|NAFTA|V6|V8|TURBO)\b/gi;
+const CALIFICADORES =
+  /\b(\d\.\d+\s*(?:16V|8V|T|JTD|TDI|TD)?|TDI|JTD|HDI|TD|DIESEL|NAFTA|V6|V8|TURBO)\b/gi;
 
-const SIGLAS = new Set(['LUV', 'NPR', 'TT', 'GT', 'GTI', 'RS', 'SW', 'XL', 'CL', 'ES', 'AX', 'BX', 'ZX', 'DS', 'CE', 'RAM', 'SUV', 'BMW', 'MX', 'RX', 'GL', 'GLX', 'GLS', 'SL', 'SLK', 'CLK']);
+const SIGLAS = new Set([
+  'LUV',
+  'NPR',
+  'TT',
+  'GT',
+  'GTI',
+  'RS',
+  'SW',
+  'XL',
+  'CL',
+  'ES',
+  'AX',
+  'BX',
+  'ZX',
+  'DS',
+  'CE',
+  'RAM',
+  'SUV',
+  'BMW',
+  'MX',
+  'RX',
+  'GL',
+  'GLX',
+  'GLS',
+  'SL',
+  'SLK',
+  'CLK',
+]);
 
 /** Modelos de dos letras que son palabras, no siglas. */
 const MODELOS_CORTOS = new Set(['UP', 'KA']);
@@ -135,7 +183,8 @@ const MODELOS_CORTOS = new Set(['UP', 'KA']);
  * palabras de dos letras ("FH", "NH") quedan en mayúscula, salvo modelos como "Up" o "Ka".
  */
 function prolijo(texto: string): string {
-  const siglaOCodigo = (p: string) => /\d|-/.test(p) || SIGLAS.has(p) || (p.length <= 2 && !MODELOS_CORTOS.has(p));
+  const siglaOCodigo = (p: string) =>
+    /\d|-/.test(p) || SIGLAS.has(p) || (p.length <= 2 && !MODELOS_CORTOS.has(p));
   return texto
     .split(' ')
     .map((p) => (siglaOCodigo(p) ? p : p.charAt(0) + p.slice(1).toLowerCase()))
@@ -178,7 +227,9 @@ export function leerModelos(paginas: TextoPdf[][]): ModeloSermat[] {
   const pagina = paginas.find((p) => p.some((t) => t.texto === 'PLACAS'));
   if (!pagina) return [];
   const encabezado = Object.fromEntries(
-    pagina.filter((t) => /^(MODELO|LARGO|ANCHO|ALTO|PLACAS|PESO)$/.test(t.texto)).map((t) => [t.texto, t.x]),
+    pagina
+      .filter((t) => /^(MODELO|LARGO|ANCHO|ALTO|PLACAS|PESO)$/.test(t.texto))
+      .map((t) => [t.texto, t.x]),
   );
   const yEncabezado = pagina.find((t) => t.texto === 'MODELO')?.y ?? Infinity;
   const columna = (renglon: TextoPdf[], nombre: string) => {
@@ -213,7 +264,10 @@ export function aFilaProducto(m: ModeloSermat, fuente: string): FilaProducto {
   const marca = esVolta ? 'Volta' : 'Sermat';
   const borne = / A$/.test(m.codigo) ? ' Borne alto.' : / B$/.test(m.codigo) ? ' Borne bajo.' : '';
   return {
-    sku: `${marca.toUpperCase()}-${m.codigo.toUpperCase().replace(/^VOLTA\s*/, '').replace(/[^A-Z0-9]+/g, '-')}`,
+    sku: `${marca.toUpperCase()}-${m.codigo
+      .toUpperCase()
+      .replace(/^VOLTA\s*/, '')
+      .replace(/[^A-Z0-9]+/g, '-')}`,
     marca,
     nombre: esVolta ? `Volta ${m.codigo.replace(/^volta\s*/i, '')}` : `Sermat ${m.codigo}`,
     medida: ah ? medida(12, ah) : '',

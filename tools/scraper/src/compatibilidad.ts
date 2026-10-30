@@ -9,12 +9,95 @@ const agregar = (marca: string, modelos: string[]) => {
   for (const m of modelos) MODELOS[normalizar(m)] = [marca, m];
 };
 
-agregar('Volkswagen', ['Gol', 'Gol Trend', 'Fox', 'Up', 'Amarok', 'Saveiro', 'Voyage', 'Suran', 'Bora', 'Vento', 'Polo', 'Golf', 'Passat']);
-agregar('Peugeot', ['106', '205', '206', '207', '208', '306', '307', '308', '405', '408', '504', '2008', 'Partner', 'Boxer', 'Expert']);
-agregar('Renault', ['Clio', 'Clio Mio', 'Kangoo', 'Logan', 'Sandero', 'Duster', 'Megane', 'Symbol', 'Twingo', 'Master', 'Trafic']);
-agregar('Fiat', ['Palio', 'Siena', 'Uno', 'Argo', 'Cronos', 'Fiorino', 'Ducato', 'Strada', 'Toro', 'Punto', 'Idea', 'Mobi']);
-agregar('Chevrolet', ['Classic', 'Corsa', 'Onix', 'Prisma', 'Spin', 'S10', 'Blazer', 'C10', 'Aveo', 'Cruze', 'Agile', 'Celta', 'Tracker', 'Spark']);
-agregar('Ford', ['Ka', 'Fiesta', 'Focus', 'EcoSport', 'Ranger', 'F100', 'F150', 'F350', 'Cargo', 'Mondeo', 'Escort', 'Transit']);
+agregar('Volkswagen', [
+  'Gol',
+  'Gol Trend',
+  'Fox',
+  'Up',
+  'Amarok',
+  'Saveiro',
+  'Voyage',
+  'Suran',
+  'Bora',
+  'Vento',
+  'Polo',
+  'Golf',
+  'Passat',
+]);
+agregar('Peugeot', [
+  '106',
+  '205',
+  '206',
+  '207',
+  '208',
+  '306',
+  '307',
+  '308',
+  '405',
+  '408',
+  '504',
+  '2008',
+  'Partner',
+  'Boxer',
+  'Expert',
+]);
+agregar('Renault', [
+  'Clio',
+  'Clio Mio',
+  'Kangoo',
+  'Logan',
+  'Sandero',
+  'Duster',
+  'Megane',
+  'Symbol',
+  'Twingo',
+  'Master',
+  'Trafic',
+]);
+agregar('Fiat', [
+  'Palio',
+  'Siena',
+  'Uno',
+  'Argo',
+  'Cronos',
+  'Fiorino',
+  'Ducato',
+  'Strada',
+  'Toro',
+  'Punto',
+  'Idea',
+  'Mobi',
+]);
+agregar('Chevrolet', [
+  'Classic',
+  'Corsa',
+  'Onix',
+  'Prisma',
+  'Spin',
+  'S10',
+  'Blazer',
+  'C10',
+  'Aveo',
+  'Cruze',
+  'Agile',
+  'Celta',
+  'Tracker',
+  'Spark',
+]);
+agregar('Ford', [
+  'Ka',
+  'Fiesta',
+  'Focus',
+  'EcoSport',
+  'Ranger',
+  'F100',
+  'F150',
+  'F350',
+  'Cargo',
+  'Mondeo',
+  'Escort',
+  'Transit',
+]);
 agregar('Toyota', ['Corolla', 'Etios', 'Yaris', 'Hilux', 'SW4', 'RAV4']);
 agregar('Honda', ['Fit', 'Civic', 'Accord', 'HR-V', 'City', 'CR-V']);
 agregar('Hyundai', ['i30', 'Atos', 'Tucson', 'Accent']);
@@ -35,7 +118,8 @@ const ALIAS: Record<string, string> = {
 };
 
 /** Prefijos de marca que se descartan antes de buscar el modelo ("VW Gol", "F. Palio", "P 208"). */
-const PREFIJOS = /^(vw|volkswagen|f|fiat|r|renault|p|peugeot|ch|chev|chevrolet|gm|ford|toyota|honda|hyundai|nissan|mb|mercedes( benz)?|citroen|jeep|bmw|dodge|mitsubishi|iveco|scania)\b\.?\s*/;
+const PREFIJOS =
+  /^(vw|volkswagen|f|fiat|r|renault|p|peugeot|ch|chev|chevrolet|gm|ford|toyota|honda|hyundai|nissan|mb|mercedes( benz)?|citroen|jeep|bmw|dodge|mitsubishi|iveco|scania)\b\.?\s*/;
 
 export function normalizar(texto: string): string {
   return texto
@@ -72,7 +156,13 @@ export function detectarAuto(fragmento: string): AutoDetectado | null {
     for (let n = Math.min(3, palabras.length); n >= 1; n--) {
       const clave = palabras.slice(0, n).join(' ');
       const conocido = MODELOS[clave] ?? MODELOS[ALIAS[clave] ?? ''];
-      if (conocido) return { marca: conocido[0], modelo: conocido[1], motor: motorDe(fragmento), textoOriginal: fragmento.trim() };
+      if (conocido)
+        return {
+          marca: conocido[0],
+          modelo: conocido[1],
+          motor: motorDe(fragmento),
+          textoOriginal: fragmento.trim(),
+        };
     }
   }
   return null;
@@ -103,7 +193,13 @@ export function fragmentar(texto: string): string[] {
 export class AcumuladorCompatibilidades {
   private readonly filas = new Map<
     string,
-    { auto: AutoDetectado; medidas: Set<string>; fuentes: Set<string>; textos: Set<string>; revisar: Set<string> }
+    {
+      auto: AutoDetectado;
+      medidas: Set<string>;
+      fuentes: Set<string>;
+      textos: Set<string>;
+      revisar: Set<string>;
+    }
   >();
   readonly sinReconocer: { texto: string; medida: string; fuente: string }[] = [];
 
@@ -117,11 +213,21 @@ export class AcumuladorCompatibilidades {
   }
 
   /** Fuente que ya trae la marca (el catálogo de Sermat, ordenado por marca). */
-  agregarConMarca(auto: AutoDetectado, medidas: string[], fuente: string, revisar: string | null): void {
+  agregarConMarca(
+    auto: AutoDetectado,
+    medidas: string[],
+    fuente: string,
+    revisar: string | null,
+  ): void {
     this.sumar(auto, medidas, fuente, revisar);
   }
 
-  private sumar(auto: AutoDetectado, medidas: string[], fuente: string, revisar: string | null): void {
+  private sumar(
+    auto: AutoDetectado,
+    medidas: string[],
+    fuente: string,
+    revisar: string | null,
+  ): void {
     const clave = `${normalizar(auto.marca)}|${normalizar(auto.modelo)}|${normalizar(auto.motor)}`;
     const fila = this.filas.get(clave) ?? {
       auto,
@@ -149,7 +255,9 @@ export class AcumuladorCompatibilidades {
       texto_original: [...f.textos].join(' | '),
       revisar: [...f.revisar].join('; '),
     }));
-    return listas.sort((a, b) => `${a.marca_auto} ${a.modelo}`.localeCompare(`${b.marca_auto} ${b.modelo}`, 'es'));
+    return listas.sort((a, b) =>
+      `${a.marca_auto} ${a.modelo}`.localeCompare(`${b.marca_auto} ${b.modelo}`, 'es'),
+    );
   }
 
   /** Lo no reconocido va aparte, sin marca, para que Juan lo complete o lo descarte. */

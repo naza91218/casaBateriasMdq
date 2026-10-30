@@ -73,8 +73,11 @@ export function hashToken(token: string): string {
  * No se guarda en la base y se puede volver a generar para cada mail (FR-021, FR-038).
  */
 export function crearFirmadorSeguimiento(claveMaestra: Buffer) {
-  const clave = Buffer.from(hkdfSync('sha256', claveMaestra, Buffer.alloc(0), 'seguimiento-pedido', 32));
-  const token = (pedidoId: string) => createHmac('sha256', clave).update(pedidoId).digest('base64url');
+  const clave = Buffer.from(
+    hkdfSync('sha256', claveMaestra, Buffer.alloc(0), 'seguimiento-pedido', 32),
+  );
+  const token = (pedidoId: string) =>
+    createHmac('sha256', clave).update(pedidoId).digest('base64url');
   return {
     token,
     verificar(pedidoId: string, candidato: string): boolean {

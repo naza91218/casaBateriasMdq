@@ -37,13 +37,7 @@ export interface PreferenciaPago {
 }
 
 export type EstadoPagoExterno =
-  | 'approved'
-  | 'rejected'
-  | 'cancelled'
-  | 'pending'
-  | 'in_process'
-  | 'refunded'
-  | 'charged_back';
+  'approved' | 'rejected' | 'cancelled' | 'pending' | 'in_process' | 'refunded' | 'charged_back';
 
 export interface PagoExterno {
   id: string;

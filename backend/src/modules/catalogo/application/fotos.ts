@@ -31,7 +31,9 @@ export async function normalizarFoto(original: Buffer): Promise<Buffer> {
       .webp({ quality: 82 })
       .toBuffer();
   } catch {
-    throw validacion({ archivo: 'El archivo no es una foto válida. Probá con una JPG, PNG o WebP' });
+    throw validacion({
+      archivo: 'El archivo no es una foto válida. Probá con una JPG, PNG o WebP',
+    });
   }
 }
 
@@ -56,7 +58,11 @@ export class ServicioFotos {
           .from(productoFotos)
           .where(eq(productoFotos.productoId, productoId));
         if (n >= MAX_FOTOS) {
-          throw new ErrorDeDominio('regla_de_negocio', 'DEMASIADAS_FOTOS', `Cada producto puede tener hasta ${MAX_FOTOS} fotos`);
+          throw new ErrorDeDominio(
+            'regla_de_negocio',
+            'DEMASIADAS_FOTOS',
+            `Cada producto puede tener hasta ${MAX_FOTOS} fotos`,
+          );
         }
         const [foto] = await tx
           .insert(productoFotos)
@@ -80,8 +86,14 @@ export class ServicioFotos {
         .select({ id: productoFotos.id })
         .from(productoFotos)
         .where(eq(productoFotos.productoId, productoId));
-      const mismas = ids.length === actuales.length && new Set(ids).size === ids.length && actuales.every((f) => ids.includes(f.id));
-      if (!mismas) throw validacion({ ids: 'El orden tiene que incluir todas las fotos del producto, una vez cada una' });
+      const mismas =
+        ids.length === actuales.length &&
+        new Set(ids).size === ids.length &&
+        actuales.every((f) => ids.includes(f.id));
+      if (!mismas)
+        throw validacion({
+          ids: 'El orden tiene que incluir todas las fotos del producto, una vez cada una',
+        });
       await this.renumerar(tx, productoId, ids);
       await this.revalidarSiSeVe(tx, producto);
       return this.deProducto(productoId, tx);
@@ -153,7 +165,12 @@ export class ServicioFotos {
   }
 
   private aFoto(f: typeof productoFotos.$inferSelect): Foto {
-    return { id: f.id, url: this.almacenamiento.urlPublica(f.clave), orden: f.orden, origen: f.origen };
+    return {
+      id: f.id,
+      url: this.almacenamiento.urlPublica(f.clave),
+      orden: f.orden,
+      origen: f.origen,
+    };
   }
 
   private async bloquearProducto(tx: Transaccion, productoId: string) {
@@ -181,7 +198,11 @@ export class ServicioFotos {
     }
   }
 
-  private async revalidarSiSeVe(tx: Transaccion, producto: { slug: string; estado: string }): Promise<void> {
-    if (producto.estado === 'activo') await this.outbox.revalidar(tx, ['catalogo', `producto:${producto.slug}`]);
+  private async revalidarSiSeVe(
+    tx: Transaccion,
+    producto: { slug: string; estado: string },
+  ): Promise<void> {
+    if (producto.estado === 'activo')
+      await this.outbox.revalidar(tx, ['catalogo', `producto:${producto.slug}`]);
   }
 }

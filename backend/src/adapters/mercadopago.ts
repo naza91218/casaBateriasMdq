@@ -64,7 +64,10 @@ export class PasarelaMercadoPago implements PasarelaPago {
       payment_methods: { excluded_payment_types: [{ id: 'ticket' }, { id: 'atm' }] },
       statement_descriptor: 'CASA BATERIAS',
     };
-    const r = await this.llamar('/checkout/preferences', { method: 'POST', body: JSON.stringify(cuerpo) });
+    const r = await this.llamar('/checkout/preferences', {
+      method: 'POST',
+      body: JSON.stringify(cuerpo),
+    });
     return { id: String(r.id), initPoint: String(r.init_point) };
   }
 
@@ -119,13 +122,26 @@ export class PasarelaFalsa implements PasarelaPago {
   }
 
   /** Simula un pago en Mercado Pago. */
-  registrarPago(id: string, pedidoId: string, estado: EstadoPagoExterno, montoCentavos: bigint): void {
-    this.pagos.set(id, { id, estado, montoCentavos, referenciaExterna: pedidoId, resumen: { status: estado } });
+  registrarPago(
+    id: string,
+    pedidoId: string,
+    estado: EstadoPagoExterno,
+    montoCentavos: bigint,
+  ): void {
+    this.pagos.set(id, {
+      id,
+      estado,
+      montoCentavos,
+      referenciaExterna: pedidoId,
+      resumen: { status: estado },
+    });
   }
 
   /** Arma la cabecera x-signature válida para un pago. */
   firmar(id: string, requestId: string, ts = '1730000000'): string {
-    const v1 = createHmac('sha256', this.secreto).update(`id:${id};request-id:${requestId};ts:${ts};`).digest('hex');
+    const v1 = createHmac('sha256', this.secreto)
+      .update(`id:${id};request-id:${requestId};ts:${ts};`)
+      .digest('hex');
     return `ts=${ts},v1=${v1}`;
   }
 }

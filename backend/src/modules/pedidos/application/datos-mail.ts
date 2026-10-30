@@ -28,14 +28,19 @@ export class DatosMailPedido {
     if (!pedido) throw new Error('Pedido inexistente');
     const [items, contacto, config] = await Promise.all([
       ej
-        .select({ nombre: pedidoItems.nombreProducto, cantidad: pedidoItems.cantidad, precioUnitario: pedidoItems.precioUnitario })
+        .select({
+          nombre: pedidoItems.nombreProducto,
+          cantidad: pedidoItems.cantidad,
+          precioUnitario: pedidoItems.precioUnitario,
+        })
         .from(pedidoItems)
         .where(eq(pedidoItems.pedidoId, pedidoId))
         .orderBy(asc(pedidoItems.nombreProducto)),
       this.compradores.contacto(ej, pedidoId),
       this.configuracion.obtener(ej),
     ]);
-    const transferenciaPendiente = pedido.medioPago === 'transferencia' && pedido.estado === 'pendiente_pago';
+    const transferenciaPendiente =
+      pedido.medioPago === 'transferencia' && pedido.estado === 'pendiente_pago';
     return {
       email: contacto?.email ?? '',
       nombre: contacto?.nombre.split(' ')[0] ?? '',
@@ -51,7 +56,10 @@ export class DatosMailPedido {
       venceEn: pedido.venceEn?.toISOString() ?? null,
       urlSeguimiento: this.urlSeguimiento(pedidoId),
       urlPanel: enlacesPanel(this.urlFrontend).pedido(pedidoId),
-      whatsappUrl: enlaceWhatsapp(config.whatsapp, `Hola, tengo una consulta por mi pedido #${pedido.numero}`).url,
+      whatsappUrl: enlaceWhatsapp(
+        config.whatsapp,
+        `Hola, tengo una consulta por mi pedido #${pedido.numero}`,
+      ).url,
       resenasUrl: config.googleResenasUrl,
       comercio: {
         razonSocial: config.comercioRazonSocial,
@@ -60,7 +68,12 @@ export class DatosMailPedido {
         telefono: config.comercioTelefono,
       },
       banco: transferenciaPendiente
-        ? { titular: config.bancoTitular, cbu: config.bancoCbu, alias: config.bancoAlias, cuit: config.bancoCuit }
+        ? {
+            titular: config.bancoTitular,
+            cbu: config.bancoCbu,
+            alias: config.bancoAlias,
+            cuit: config.bancoCuit,
+          }
         : null,
     };
   }

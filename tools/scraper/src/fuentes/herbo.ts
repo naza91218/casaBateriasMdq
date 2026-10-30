@@ -22,7 +22,9 @@ export interface ProductoHerbo {
 export function leerFicha(html: string, url: string): ProductoHerbo {
   const $ = cheerio.load(html);
   const meta = (p: string) => $(`meta[property="${p}"]`).attr('content')?.trim() ?? '';
-  const nombre = meta('og:title').replace(/\s*-\s*Herbo Bater[ií]as\s*$/i, '').trim();
+  const nombre = meta('og:title')
+    .replace(/\s*-\s*Herbo Bater[ií]as\s*$/i, '')
+    .trim();
   // "Dimensiones:204 X 174 X 190 mm > Línea Evolution12V 400CA 60min RC"
   const desc = meta('og:description');
   const electrico = desc.match(/(\d+)\s*V\s*(\d+)\s*CA(?:\s*(\d+)\s*min)?/i);
@@ -39,7 +41,11 @@ export function leerFicha(html: string, url: string): ProductoHerbo {
     volts: electrico ? Number(electrico[1]) : null,
     cca: electrico ? Number(electrico[2]) : null,
     reservaMin: electrico?.[3] ? Number(electrico[3]) : null,
-    dimensiones: desc.match(/Dimensiones:\s*([\d\sxX.,]+mm)/i)?.[1]?.replace(/\s*[xX]\s*/g, ' x ').trim() ?? '',
+    dimensiones:
+      desc
+        .match(/Dimensiones:\s*([\d\sxX.,]+mm)/i)?.[1]
+        ?.replace(/\s*[xX]\s*/g, ' x ')
+        .trim() ?? '',
     foto: meta('og:image') || null,
     autos: lista('.posted_in a'),
     etiquetas: lista('.tagged_as a'),
@@ -79,7 +85,9 @@ export function aFila(p: ProductoHerbo, rutaFoto: string | null): FilaProducto {
     amperaje_ah: ah ? String(ah) : '',
     cca: p.cca ? String(p.cca) : '',
     // Suposición inicial: las líneas premium como reforzadas. Juan la confirma al revisar.
-    gama: /platinum|premium|max|servicio pesado/i.test(`${p.nombre} ${p.linea}`) ? 'reforzada' : 'economica',
+    gama: /platinum|premium|max|servicio pesado/i.test(`${p.nombre} ${p.linea}`)
+      ? 'reforzada'
+      : 'economica',
     descripcion: partes.filter(Boolean).join(' '),
     precio_lista: '',
     stock: '',

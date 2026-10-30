@@ -20,14 +20,20 @@ beforeAll(async () => {
     '/prueba/validacion',
     {
       schema: {
-        body: z.object({ dni: z.string().regex(/^\d{7,8}$/, 'El DNI tiene solo números, sin puntos') }),
+        body: z.object({
+          dni: z.string().regex(/^\d{7,8}$/, 'El DNI tiene solo números, sin puntos'),
+        }),
       },
     },
     async () => ({ ok: true }),
   );
-  app.get('/prueba/limite', { config: { rateLimit: { max: 1, timeWindow: '1 minute' } } }, async () => ({
-    ok: true,
-  }));
+  app.get(
+    '/prueba/limite',
+    { config: { rateLimit: { max: 1, timeWindow: '1 minute' } } },
+    async () => ({
+      ok: true,
+    }),
+  );
   app.get('/prueba/explota', async () => {
     throw new Error('falló algo con el dni 30123456');
   });
@@ -43,11 +49,18 @@ describe('formato de errores de la API', () => {
     const r = await app.inject({ method: 'GET', url: '/prueba/conflicto' });
     expect(r.statusCode).toBe(409);
     const cuerpo = ErrorRespuesta.parse(r.json());
-    expect(cuerpo.error).toEqual({ codigo: 'STOCK_INSUFICIENTE', mensaje: 'Se agotó mientras comprabas' });
+    expect(cuerpo.error).toEqual({
+      codigo: 'STOCK_INSUFICIENTE',
+      mensaje: 'Se agotó mientras comprabas',
+    });
   });
 
   test('validación → 400 con el mensaje por campo', async () => {
-    const r = await app.inject({ method: 'POST', url: '/prueba/validacion', payload: { dni: '30.123.456' } });
+    const r = await app.inject({
+      method: 'POST',
+      url: '/prueba/validacion',
+      payload: { dni: '30.123.456' },
+    });
     expect(r.statusCode).toBe(400);
     const cuerpo = ErrorRespuesta.parse(r.json());
     expect(cuerpo.error.codigo).toBe('VALIDACION');

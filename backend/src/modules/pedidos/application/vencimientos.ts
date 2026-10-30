@@ -26,11 +26,17 @@ export class ServicioVencimientos {
     let cancelados = 0;
     for (const { id } of vencidos) {
       try {
-        await this.estados.cambiar({ pedidoId: id, a: 'cancelado', actor: 'worker', motivo: 'vencido' });
+        await this.estados.cambiar({
+          pedidoId: id,
+          a: 'cancelado',
+          actor: 'worker',
+          motivo: 'vencido',
+        });
         cancelados++;
       } catch (error) {
         // Si justo se pagó, la transición ya no es válida: se ignora.
-        if (!(error instanceof ErrorDeDominio && error.codigo === 'TRANSICION_INVALIDA')) throw error;
+        if (!(error instanceof ErrorDeDominio && error.codigo === 'TRANSICION_INVALIDA'))
+          throw error;
       }
     }
     return cancelados;

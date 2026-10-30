@@ -38,7 +38,10 @@ export type ListadoProductos = z.infer<typeof ListadoProductos>;
 
 export const FiltrosCatalogo = Paginacion.extend({
   marca: z.string().optional(),
-  medida: z.string().regex(/^\d+x\d+$/, 'La medida tiene el formato 12x65').optional(),
+  medida: z
+    .string()
+    .regex(/^\d+x\d+$/, 'La medida tiene el formato 12x65')
+    .optional(),
   gama: Gama.optional(),
 });
 

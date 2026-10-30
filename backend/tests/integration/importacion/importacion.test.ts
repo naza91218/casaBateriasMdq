@@ -7,10 +7,17 @@ import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { sembrarBase } from '../../../db/seed/base.js';
 import { sembrarCatalogo } from '../../../db/seed/catalogo.js';
 import { productoFotos, productos } from '../../../src/modules/catalogo/infrastructure/schema.js';
-import { ServicioImportacion, urlDeFotoPermitida } from '../../../src/modules/importacion/application/importar.js';
+import {
+  ServicioImportacion,
+  urlDeFotoPermitida,
+} from '../../../src/modules/importacion/application/importar.js';
 import { importaciones } from '../../../src/modules/importacion/infrastructure/schema.js';
 import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructure/schema.js';
-import { crearContextoDePrueba, prepararBase, type ContextoDePrueba } from '../../setup/contexto.js';
+import {
+  crearContextoDePrueba,
+  prepararBase,
+  type ContextoDePrueba,
+} from '../../setup/contexto.js';
 import { fotoDePrueba, vaciarCatalogo } from '../../setup/fixtures.js';
 
 let p: ContextoDePrueba;
@@ -44,8 +51,10 @@ afterAll(async () => {
 });
 
 const csv = (filas: string[]) => Buffer.from(filas.join('\n'));
-const ENCABEZADO = 'sku,marca,nombre,medida,amperaje_ah,cca,gama,descripcion,precio_lista,stock,fotos,fuente';
-const productosPorSku = async (sku: string) => p.ctx.db.select().from(productos).where(eq(productos.sku, sku));
+const ENCABEZADO =
+  'sku,marca,nombre,medida,amperaje_ah,cca,gama,descripcion,precio_lista,stock,fotos,fuente';
+const productosPorSku = async (sku: string) =>
+  p.ctx.db.select().from(productos).where(eq(productos.sku, sku));
 
 describe('importación de productos (FR-046, FR-070)', () => {
   test('US5-01: 20 filas, 2 con medida inválida → 18 cargadas y el informe dice fila y motivo', async () => {
@@ -53,9 +62,20 @@ describe('importación de productos (FR-046, FR-070)', () => {
       const medida = i === 3 || i === 11 ? '12x999' : '12x65';
       return `HB-${i},Herbo,Herbo ${medida} n${i},${medida},65,450,economica,,120000,3,,herbo.com`;
     });
-    const r = await importacion.importar('productos', 'herbo.csv', csv([ENCABEZADO, ...filas]), null);
+    const r = await importacion.importar(
+      'productos',
+      'herbo.csv',
+      csv([ENCABEZADO, ...filas]),
+      null,
+    );
 
-    expect(r).toMatchObject({ filasTotal: 20, filasOk: 18, filasError: 2, creados: 18, actualizados: 0 });
+    expect(r).toMatchObject({
+      filasTotal: 20,
+      filasOk: 18,
+      filasError: 2,
+      creados: 18,
+      actualizados: 0,
+    });
     expect(r.errores).toEqual([
       { fila: 5, campo: 'medida', motivo: 'La medida 12x999 no existe' },
       { fila: 13, campo: 'medida', motivo: 'La medida 12x999 no existe' },
@@ -63,15 +83,31 @@ describe('importación de productos (FR-046, FR-070)', () => {
     const cargados = await p.ctx.db.select().from(productos);
     expect(cargados).toHaveLength(18);
     expect(cargados.every((c) => c.estado === 'a_revisar')).toBe(true);
-    const [registro] = await p.ctx.db.select().from(importaciones).where(eq(importaciones.id, r.importacionId));
+    const [registro] = await p.ctx.db
+      .select()
+      .from(importaciones)
+      .where(eq(importaciones.id, r.importacionId));
     expect(registro).toMatchObject({ tipo: 'productos', filasOk: 18, filasError: 2 });
   });
 
   test('US5-02: un SKU existente se actualiza sin duplicarse y conserva su estado', async () => {
-    await importacion.importar('productos', 'a.csv', csv([ENCABEZADO, 'SM-1,Sermat,Sermat 12x65,12x65,65,,economica,Con 2 años de garantía,100000,4,,']), null);
+    await importacion.importar(
+      'productos',
+      'a.csv',
+      csv([
+        ENCABEZADO,
+        'SM-1,Sermat,Sermat 12x65,12x65,65,,economica,Con 2 años de garantía,100000,4,,',
+      ]),
+      null,
+    );
     await p.ctx.db.update(productos).set({ estado: 'activo' }).where(eq(productos.sku, 'SM-1'));
 
-    const r = await importacion.importar('productos', 'b.csv', csv([ENCABEZADO, 'SM-1,Sermat,Sermat 12x65,12x65,65,,economica,,110000.50,,,']), null);
+    const r = await importacion.importar(
+      'productos',
+      'b.csv',
+      csv([ENCABEZADO, 'SM-1,Sermat,Sermat 12x65,12x65,65,,economica,,110000.50,,,']),
+      null,
+    );
 
     expect(r).toMatchObject({ creados: 0, actualizados: 1, filasError: 0 });
     const [producto, ...otros] = await productosPorSku('SM-1');
@@ -83,13 +119,28 @@ describe('importación de productos (FR-046, FR-070)', () => {
       descripcion: 'Con 2 años de garantía',
       stock: 4,
     });
-    const revalidaciones = await p.ctx.db.select().from(outboxMensajes).where(eq(outboxMensajes.canal, 'revalidacion'));
-    expect(revalidaciones.at(-1)?.datos.etiquetas).toEqual(expect.arrayContaining(['catalogo', `producto:${producto?.slug}`]));
+    const revalidaciones = await p.ctx.db
+      .select()
+      .from(outboxMensajes)
+      .where(eq(outboxMensajes.canal, 'revalidacion'));
+    expect(revalidaciones.at(-1)?.datos.etiquetas).toEqual(
+      expect.arrayContaining(['catalogo', `producto:${producto?.slug}`]),
+    );
   });
 
   test('stock explícito en 0 sí se guarda', async () => {
-    await importacion.importar('productos', 'a.csv', csv([ENCABEZADO, 'SM-2,Sermat,Sermat 12x75,12x75,75,,reforzada,,,7,,']), null);
-    await importacion.importar('productos', 'b.csv', csv([ENCABEZADO, 'SM-2,Sermat,Sermat 12x75,12x75,75,,reforzada,,,0,,']), null);
+    await importacion.importar(
+      'productos',
+      'a.csv',
+      csv([ENCABEZADO, 'SM-2,Sermat,Sermat 12x75,12x75,75,,reforzada,,,7,,']),
+      null,
+    );
+    await importacion.importar(
+      'productos',
+      'b.csv',
+      csv([ENCABEZADO, 'SM-2,Sermat,Sermat 12x75,12x75,75,,reforzada,,,0,,']),
+      null,
+    );
     expect((await productosPorSku('SM-2'))[0]?.stock).toBe(0);
   });
 
@@ -121,41 +172,60 @@ describe('importación de productos (FR-046, FR-070)', () => {
   test('acepta encabezados en otro orden, mayúsculas, BOM de Excel y "Económica" con tilde', async () => {
     const contenido = Buffer.concat([
       Buffer.from([0xef, 0xbb, 0xbf]),
-      Buffer.from('Nombre,SKU,Marca,Medida,Gama,Amperaje_Ah\nEdna 12x90,ED-1,edna,12X90,Económica,90\n'),
+      Buffer.from(
+        'Nombre,SKU,Marca,Medida,Gama,Amperaje_Ah\nEdna 12x90,ED-1,edna,12X90,Económica,90\n',
+      ),
     ]);
     const r = await importacion.importar('productos', 'excel.csv', contenido, null);
     expect(r.filasOk).toBe(1);
-    expect((await productosPorSku('ED-1'))[0]).toMatchObject({ medida: '12x90', gama: 'economica' });
+    expect((await productosPorSku('ED-1'))[0]).toMatchObject({
+      medida: '12x90',
+      gama: 'economica',
+    });
   });
 
   test('si falta una columna obligatoria se rechaza la planilla entera', async () => {
-    await expect(importacion.importar('productos', 'x.csv', csv(['sku,marca,nombre', 'A,Herbo,Algo']), null)).rejects.toMatchObject({
+    await expect(
+      importacion.importar('productos', 'x.csv', csv(['sku,marca,nombre', 'A,Herbo,Algo']), null),
+    ).rejects.toMatchObject({
       tipo: 'validacion',
       campos: { archivo: 'Faltan las columnas: medida, amperaje_ah, gama' },
     });
   });
 
   test('fotos por ruta local y por URL, en orden y como de la marca; reimportar no las duplica', async () => {
-    const fila = 'HB-F,Herbo,Herbo con fotos,12x65,65,,economica,,,,fotos/herbo-12x65.jpg|https://herbo.test/a.jpg,';
+    const fila =
+      'HB-F,Herbo,Herbo con fotos,12x65,65,,economica,,,,fotos/herbo-12x65.jpg|https://herbo.test/a.jpg,';
     const r = await importacion.importar('productos', 'f.csv', csv([ENCABEZADO, fila]), null);
     expect(r.errores).toEqual([]);
     expect(descargadas).toEqual(['https://herbo.test/a.jpg']);
     const [producto] = await productosPorSku('HB-F');
-    const fotos = await p.ctx.db.select().from(productoFotos).where(eq(productoFotos.productoId, producto?.id ?? ''));
+    const fotos = await p.ctx.db
+      .select()
+      .from(productoFotos)
+      .where(eq(productoFotos.productoId, producto?.id ?? ''));
     expect(fotos.map((f) => [f.orden, f.origen])).toEqual([
       [0, 'marca'],
       [1, 'marca'],
     ]);
 
     await importacion.importar('productos', 'f.csv', csv([ENCABEZADO, fila]), null);
-    expect(await p.ctx.db.select().from(productoFotos).where(eq(productoFotos.productoId, producto?.id ?? ''))).toHaveLength(2);
+    expect(
+      await p.ctx.db
+        .select()
+        .from(productoFotos)
+        .where(eq(productoFotos.productoId, producto?.id ?? '')),
+    ).toHaveLength(2);
   });
 
   test('una foto que no se puede cargar no frena el producto y queda informada', async () => {
     const r = await importacion.importar(
       'productos',
       'f.csv',
-      csv([ENCABEZADO, 'HB-G,Herbo,Herbo sin foto,12x65,65,,economica,,,,../../etc/passwd|fotos/no-existe.jpg,']),
+      csv([
+        ENCABEZADO,
+        'HB-G,Herbo,Herbo sin foto,12x65,65,,economica,,,,../../etc/passwd|fotos/no-existe.jpg,',
+      ]),
       null,
     );
     expect(r).toMatchObject({ filasOk: 1, filasError: 0, creados: 1 });
@@ -164,7 +234,12 @@ describe('importación de productos (FR-046, FR-070)', () => {
   });
 
   test('la foto importada se guarda como WebP sin EXIF', async () => {
-    await importacion.importar('productos', 'f.csv', csv([ENCABEZADO, 'HB-H,Herbo,Herbo H,12x65,65,,economica,,,,fotos/herbo-12x65.jpg,']), null);
+    await importacion.importar(
+      'productos',
+      'f.csv',
+      csv([ENCABEZADO, 'HB-H,Herbo,Herbo H,12x65,65,,economica,,,,fotos/herbo-12x65.jpg,']),
+      null,
+    );
     const [archivo] = [...p.almacenamiento.archivos.values()].slice(-1);
     const meta = await sharp(archivo?.contenido).metadata();
     expect(meta.format).toBe('webp');
@@ -179,7 +254,11 @@ describe('importación de compatibilidades', () => {
     const r = await importacion.importar(
       'compatibilidades',
       'autos.csv',
-      csv([ENC, 'Volkswagen,Gol Trend,2008,2023,,12x65,herbo.com', 'Ford,Ranger,2012,2024,3.2 diésel,12x90|12x110,herbo.com']),
+      csv([
+        ENC,
+        'Volkswagen,Gol Trend,2008,2023,,12x65,herbo.com',
+        'Ford,Ranger,2012,2024,3.2 diésel,12x90|12x110,herbo.com',
+      ]),
       null,
     );
     expect(r).toMatchObject({ filasOk: 2, creados: 2 });
@@ -190,17 +269,35 @@ describe('importación de compatibilidades', () => {
   });
 
   test('reimportar el mismo auto reemplaza sus medidas sin duplicarlo', async () => {
-    await importacion.importar('compatibilidades', 'a.csv', csv([ENC, 'Fiat,Cronos,2018,2024,,12x65,']), null);
-    const r = await importacion.importar('compatibilidades', 'b.csv', csv([ENC, 'Fiat,Cronos,2018,2024,,12x75,']), null);
+    await importacion.importar(
+      'compatibilidades',
+      'a.csv',
+      csv([ENC, 'Fiat,Cronos,2018,2024,,12x65,']),
+      null,
+    );
+    const r = await importacion.importar(
+      'compatibilidades',
+      'b.csv',
+      csv([ENC, 'Fiat,Cronos,2018,2024,,12x75,']),
+      null,
+    );
     expect(r).toMatchObject({ creados: 0, actualizados: 1 });
-    expect((await p.ctx.servicios.buscador.compatibles('fiat', 'cronos', 2020)).medidas).toEqual(['12x75']);
+    expect((await p.ctx.servicios.buscador.compatibles('fiat', 'cronos', 2020)).medidas).toEqual([
+      '12x75',
+    ]);
   });
 
   test('años invertidos, fuera de rango o medida inexistente → error de esa fila', async () => {
     const r = await importacion.importar(
       'compatibilidades',
       'malos.csv',
-      csv([ENC, 'Fiat,Uno,2010,2005,,12x65,', 'Fiat,Uno,1900,2005,,12x65,', 'Fiat,Uno,2000,2005,,12x999,', 'Fiat,Palio,2000,2010,,12x65,']),
+      csv([
+        ENC,
+        'Fiat,Uno,2010,2005,,12x65,',
+        'Fiat,Uno,1900,2005,,12x65,',
+        'Fiat,Uno,2000,2005,,12x999,',
+        'Fiat,Palio,2000,2010,,12x65,',
+      ]),
       null,
     );
     expect(r).toMatchObject({ filasTotal: 4, filasOk: 1, filasError: 3 });
@@ -231,17 +328,37 @@ describe('compatibilidades sin años (clarify 2026-10-30)', () => {
   const ENC = 'marca_auto,modelo,anio_desde,anio_hasta,motor,medidas,fuente';
 
   test('sin columnas ni valores de años se cargan para todos los años', async () => {
-    const r = await importacion.importar('compatibilidades', 'sermat.csv', csv(['marca_auto,modelo,medidas', 'Fiat,Palio,12x65|12x70']), null);
+    const r = await importacion.importar(
+      'compatibilidades',
+      'sermat.csv',
+      csv(['marca_auto,modelo,medidas', 'Fiat,Palio,12x65|12x70']),
+      null,
+    );
     expect(r).toMatchObject({ filasOk: 1, creados: 1 });
     expect(await p.ctx.servicios.buscador.anios('fiat', 'palio')).toEqual([]);
-    expect((await p.ctx.servicios.buscador.compatibles('fiat', 'palio')).medidas).toEqual(['12x65', '12x70']);
+    expect((await p.ctx.servicios.buscador.compatibles('fiat', 'palio')).medidas).toEqual([
+      '12x65',
+      '12x70',
+    ]);
 
-    const otra = await importacion.importar('compatibilidades', 'sermat.csv', csv([ENC, 'Fiat,Palio,,,,12x65,']), null);
+    const otra = await importacion.importar(
+      'compatibilidades',
+      'sermat.csv',
+      csv([ENC, 'Fiat,Palio,,,,12x65,']),
+      null,
+    );
     expect(otra).toMatchObject({ creados: 0, actualizados: 1 });
   });
 
   test('un solo año cargado es un error de esa fila', async () => {
-    const r = await importacion.importar('compatibilidades', 'x.csv', csv([ENC, 'Fiat,Uno,2010,,,12x65,']), null);
-    expect(r.errores).toEqual([{ fila: 2, campo: 'anio_hasta', motivo: 'Cargá los dos años o ninguno' }]);
+    const r = await importacion.importar(
+      'compatibilidades',
+      'x.csv',
+      csv([ENC, 'Fiat,Uno,2010,,,12x65,']),
+      null,
+    );
+    expect(r.errores).toEqual([
+      { fila: 2, campo: 'anio_hasta', motivo: 'Cargá los dos años o ninguno' },
+    ]);
   });
 });

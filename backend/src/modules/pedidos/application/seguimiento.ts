@@ -39,7 +39,11 @@ export class ServicioSeguimiento {
     const pedido = await this.pedidoConToken(id, token);
     const [items, config, zona] = await Promise.all([
       this.db
-        .select({ nombre: pedidoItems.nombreProducto, cantidad: pedidoItems.cantidad, precioUnitario: pedidoItems.precioUnitario })
+        .select({
+          nombre: pedidoItems.nombreProducto,
+          cantidad: pedidoItems.cantidad,
+          precioUnitario: pedidoItems.precioUnitario,
+        })
         .from(pedidoItems)
         .where(eq(pedidoItems.pedidoId, id))
         .orderBy(asc(pedidoItems.nombreProducto)),
@@ -76,7 +80,10 @@ export class ServicioSeguimiento {
       pagoEnVerificacion: esMp && pendiente && retorno === 'approved',
       pagoRechazado: esMp && pendiente && (retorno === 'rejected' || retorno === 'failure'),
       puedeReintentarPago: esMp && pendiente && vigente,
-      whatsapp: enlaceWhatsapp(config.whatsapp, `Hola, tengo una consulta por mi pedido #${pedido.numero}`),
+      whatsapp: enlaceWhatsapp(
+        config.whatsapp,
+        `Hola, tengo una consulta por mi pedido #${pedido.numero}`,
+      ),
     };
   }
 
@@ -85,7 +92,11 @@ export class ServicioSeguimiento {
     const pedido = await this.pedidoConToken(id, token);
     const vigente = !pedido.venceEn || pedido.venceEn > this.reloj.ahora();
     if (pedido.medioPago !== 'mercadopago' || pedido.estado !== 'pendiente_pago' || !vigente) {
-      throw new ErrorDeDominio('regla_de_negocio', 'NO_SE_PUEDE_REINTENTAR', 'Este pedido ya no se puede pagar. Escribinos por WhatsApp.');
+      throw new ErrorDeDominio(
+        'regla_de_negocio',
+        'NO_SE_PUEDE_REINTENTAR',
+        'Este pedido ya no se puede pagar. Escribinos por WhatsApp.',
+      );
     }
     const contacto = await this.compradores.contacto(this.db, id);
     return { initPoint: await this.pedidosSrv.preferencia(id, contacto?.email ?? '') };

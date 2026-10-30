@@ -24,7 +24,9 @@ export const pagos = pgTable(
   },
   (t) => [
     // Idempotencia del webhook: el mismo pago de MP se registra una sola vez (FR-025).
-    uniqueIndex('pagos_medio_externo_unico').on(t.medio, t.idExterno).where(sql`${t.idExterno} is not null`),
+    uniqueIndex('pagos_medio_externo_unico')
+      .on(t.medio, t.idExterno)
+      .where(sql`${t.idExterno} is not null`),
     index('pagos_pedido_idx').on(t.pedidoId),
   ],
 );

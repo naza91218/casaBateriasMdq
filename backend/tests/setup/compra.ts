@@ -30,12 +30,29 @@ export async function prepararCompra(): Promise<EscenarioCompra> {
   const p = crearContextoDePrueba();
   await sembrarBase(p.ctx.db, { mailAdmin: 'admin@tienda.test' });
   await sembrarCatalogo(p.ctx.db);
-  const [zona] = await p.ctx.db.select().from(zonasColocacion).where(eq(zonasColocacion.nombre, 'Mar del Plata'));
-  const producto = await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x65', gama: 'economica', precio: 100_000, stock: 5 });
-  return { ...p, pasarela: p.ctx.pasarela as PasarelaFalsa, zonaMdp: zona?.id ?? '', productoId: producto.id };
+  const [zona] = await p.ctx.db
+    .select()
+    .from(zonasColocacion)
+    .where(eq(zonasColocacion.nombre, 'Mar del Plata'));
+  const producto = await crearProducto(p.ctx.db, {
+    marca: 'Sermat',
+    medida: '12x65',
+    gama: 'economica',
+    precio: 100_000,
+    stock: 5,
+  });
+  return {
+    ...p,
+    pasarela: p.ctx.pasarela as PasarelaFalsa,
+    zonaMdp: zona?.id ?? '',
+    productoId: producto.id,
+  };
 }
 
-export function solicitud(e: EscenarioCompra, cambios: Partial<SolicitudPedido> = {}): SolicitudPedido {
+export function solicitud(
+  e: EscenarioCompra,
+  cambios: Partial<SolicitudPedido> = {},
+): SolicitudPedido {
   return {
     items: [{ productoId: e.productoId, cantidad: 1 }],
     entrega: 'retiro',
@@ -46,6 +63,9 @@ export function solicitud(e: EscenarioCompra, cambios: Partial<SolicitudPedido> 
 }
 
 export async function stockDe(e: EscenarioCompra, productoId: string): Promise<number> {
-  const [p] = await e.ctx.db.select({ stock: productos.stock }).from(productos).where(eq(productos.id, productoId));
+  const [p] = await e.ctx.db
+    .select({ stock: productos.stock })
+    .from(productos)
+    .where(eq(productos.id, productoId));
   return p?.stock ?? -1;
 }

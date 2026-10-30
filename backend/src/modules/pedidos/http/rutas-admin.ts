@@ -1,4 +1,9 @@
-import { CambioEstadoAdmin, FiltroPedidosAdmin, ListaPedidosAdmin, PedidoDetalleAdmin } from '@casa/shared';
+import {
+  CambioEstadoAdmin,
+  FiltroPedidosAdmin,
+  ListaPedidosAdmin,
+  PedidoDetalleAdmin,
+} from '@casa/shared';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { usuarioActual } from '../../../http/plugins/sesion.js';
@@ -20,8 +25,10 @@ export function rutasAdminPedidos(deps: {
     const params = z.object({ id: z.string().uuid('Pedido inválido') });
     const accion = { tags, params, response: { 200: PedidoDetalleAdmin } };
 
-    app.get('/pedidos', { schema: { tags, querystring: FiltroPedidosAdmin, response: { 200: ListaPedidosAdmin } } }, (req) =>
-      deps.panel.listar(req.query),
+    app.get(
+      '/pedidos',
+      { schema: { tags, querystring: FiltroPedidosAdmin, response: { 200: ListaPedidosAdmin } } },
+      (req) => deps.panel.listar(req.query),
     );
 
     app.get('/pedidos/:id', { schema: accion }, (req) => deps.panel.detalle(req.params.id));
@@ -36,10 +43,14 @@ export function rutasAdminPedidos(deps: {
       return deps.panel.detalle(req.params.id);
     });
 
-    app.post('/pedidos/:id/estado', { schema: { ...accion, body: CambioEstadoAdmin } }, async (req) => {
-      await deps.panel.moverEstado(req.params.id, req.body, usuarioActual(req).id);
-      return deps.panel.detalle(req.params.id);
-    });
+    app.post(
+      '/pedidos/:id/estado',
+      { schema: { ...accion, body: CambioEstadoAdmin } },
+      async (req) => {
+        await deps.panel.moverEstado(req.params.id, req.body, usuarioActual(req).id);
+        return deps.panel.detalle(req.params.id);
+      },
+    );
 
     // Cuando el comprador pide que se borren sus datos (FR-061).
     app.post('/pedidos/:id/anonimizar', { schema: accion }, async (req) => {

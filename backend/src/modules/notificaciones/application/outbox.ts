@@ -99,7 +99,9 @@ export class Outbox {
       const listos = await tx
         .select()
         .from(outboxMensajes)
-        .where(and(eq(outboxMensajes.estado, 'pendiente'), lte(outboxMensajes.proximoIntentoEn, ahora)))
+        .where(
+          and(eq(outboxMensajes.estado, 'pendiente'), lte(outboxMensajes.proximoIntentoEn, ahora)),
+        )
         .orderBy(asc(outboxMensajes.creadoEn))
         .limit(limite)
         .for('update', { skipLocked: true });

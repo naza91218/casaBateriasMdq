@@ -34,8 +34,14 @@ export default tseslint.config(
         'error',
         {
           patterns: [
-            { group: ['**/infrastructure/**', '**/http/**', '**/adapters/**', '**/platform/**'], message: 'El dominio no puede depender de infraestructura.' },
-            { group: ['fastify', 'drizzle-orm', 'drizzle-orm/*', 'postgres'], message: 'El dominio no puede depender de frameworks ni de la base.' },
+            {
+              group: ['**/infrastructure/**', '**/http/**', '**/adapters/**', '**/platform/**'],
+              message: 'El dominio no puede depender de infraestructura.',
+            },
+            {
+              group: ['fastify', 'drizzle-orm', 'drizzle-orm/*', 'postgres'],
+              message: 'El dominio no puede depender de frameworks ni de la base.',
+            },
           ],
         },
       ],

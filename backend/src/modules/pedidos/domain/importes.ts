@@ -28,7 +28,9 @@ export function calcularImportes(entrada: {
   for (const l of entrada.lineas) {
     subtotal = subtotal.sumar(l.precioUnitario.por(l.cantidad));
     if (entrada.aplicaDescuento) {
-      descuento = descuento.sumar(l.precioUnitario.porcentaje(entrada.descuentoPct).por(l.cantidad));
+      descuento = descuento.sumar(
+        l.precioUnitario.porcentaje(entrada.descuentoPct).por(l.cantidad),
+      );
     }
   }
   return {

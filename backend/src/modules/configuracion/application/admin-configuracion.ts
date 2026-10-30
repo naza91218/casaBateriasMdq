@@ -37,15 +37,22 @@ export class ServicioAdminConfiguracion {
     if (e.comercio?.cuit !== undefined) c.comercioCuit = soloDigitos(e.comercio.cuit);
     if (e.comercio?.domicilio !== undefined) c.comercioDomicilio = e.comercio.domicilio;
     if (e.comercio?.telefono !== undefined) c.comercioTelefono = e.comercio.telefono;
-    if (e.comercio?.lat !== undefined) c.comercioLat = e.comercio.lat === null ? null : String(e.comercio.lat);
-    if (e.comercio?.lng !== undefined) c.comercioLng = e.comercio.lng === null ? null : String(e.comercio.lng);
+    if (e.comercio?.lat !== undefined)
+      c.comercioLat = e.comercio.lat === null ? null : String(e.comercio.lat);
+    if (e.comercio?.lng !== undefined)
+      c.comercioLng = e.comercio.lng === null ? null : String(e.comercio.lng);
     if (e.googleResenasUrl !== undefined) c.googleResenasUrl = e.googleResenasUrl;
 
     await this.db.transaction(async (tx) => {
-      if (Object.keys(c).length > 0) await tx.update(configuracion).set(c).where(eq(configuracion.id, 1));
+      if (Object.keys(c).length > 0)
+        await tx.update(configuracion).set(c).where(eq(configuracion.id, 1));
       // Los datos bancarios no se publican: solo regenera si cambió algo visible.
       const soloBanco = Object.keys(e).every((k) => k === 'banco');
-      if (!soloBanco) await this.outbox.revalidar(tx, ['configuracion', ...(e.descuentoPct !== undefined ? ['catalogo'] : [])]);
+      if (!soloBanco)
+        await this.outbox.revalidar(tx, [
+          'configuracion',
+          ...(e.descuentoPct !== undefined ? ['catalogo'] : []),
+        ]);
     });
     return this.obtener();
   }
@@ -67,7 +74,12 @@ export class ServicioAdminConfiguracion {
   }
 }
 
-const aZonaAdmin = (z: Zona): ZonaAdmin => ({ id: z.id, nombre: z.nombre, costoExtra: z.costoExtra.aNumero(), activa: z.activa });
+const aZonaAdmin = (z: Zona): ZonaAdmin => ({
+  id: z.id,
+  nombre: z.nombre,
+  costoExtra: z.costoExtra.aNumero(),
+  activa: z.activa,
+});
 
 function aAdmin(c: ConfiguracionCompleta): ConfiguracionAdmin {
   return {

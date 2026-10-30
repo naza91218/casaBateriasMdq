@@ -8,7 +8,11 @@ export function multipart(
   const limite = `----prueba${randomBytes(8).toString('hex')}`;
   const partes: Buffer[] = [];
   for (const [campo, valor] of Object.entries(campos)) {
-    partes.push(Buffer.from(`--${limite}\r\nContent-Disposition: form-data; name="${campo}"\r\n\r\n${valor}\r\n`));
+    partes.push(
+      Buffer.from(
+        `--${limite}\r\nContent-Disposition: form-data; name="${campo}"\r\n\r\n${valor}\r\n`,
+      ),
+    );
   }
   for (const a of archivos) {
     partes.push(
@@ -20,5 +24,8 @@ export function multipart(
     );
   }
   partes.push(Buffer.from(`--${limite}--\r\n`));
-  return { payload: Buffer.concat(partes), headers: { 'content-type': `multipart/form-data; boundary=${limite}` } };
+  return {
+    payload: Buffer.concat(partes),
+    headers: { 'content-type': `multipart/form-data; boundary=${limite}` },
+  };
 }

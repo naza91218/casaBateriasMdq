@@ -9,13 +9,21 @@ export function rutasAdminAlertas(deps: { alertas: ServicioAlertas }): FastifyPl
   return async (app) => {
     const tags = ['panel-pedidos'];
 
-    app.get('/alertas', { schema: { tags, querystring: FiltroAlertas, response: { 200: z.array(Alerta) } } }, (req) =>
-      deps.alertas.listar({ soloAbiertas: req.query.estado === 'abiertas' }),
+    app.get(
+      '/alertas',
+      { schema: { tags, querystring: FiltroAlertas, response: { 200: z.array(Alerta) } } },
+      (req) => deps.alertas.listar({ soloAbiertas: req.query.estado === 'abiertas' }),
     );
 
     app.post(
       '/alertas/:id/resolver',
-      { schema: { tags, params: z.object({ id: z.string().uuid('Alerta inválida') }), response: { 200: Alerta } } },
+      {
+        schema: {
+          tags,
+          params: z.object({ id: z.string().uuid('Alerta inválida') }),
+          response: { 200: Alerta },
+        },
+      },
       (req) => deps.alertas.resolver(req.params.id, usuarioActual(req).id),
     );
   };

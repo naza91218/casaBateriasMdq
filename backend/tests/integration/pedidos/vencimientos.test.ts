@@ -16,7 +16,10 @@ afterAll(async () => {
 });
 
 async function estado(id: string) {
-  const [p] = await e.ctx.db.select({ estado: pedidos.estado }).from(pedidos).where(eq(pedidos.id, id));
+  const [p] = await e.ctx.db
+    .select({ estado: pedidos.estado })
+    .from(pedidos)
+    .where(eq(pedidos.id, id));
   return p?.estado;
 }
 
@@ -34,7 +37,10 @@ describe('vencimientos (FR-034, clarify)', () => {
     expect(await e.ctx.servicios.vencimientos.cancelarVencidos()).toBe(1);
     expect(await estado(id)).toBe('cancelado');
     expect(await stockDe(e, e.productoId)).toBe(antes);
-    const mails = await e.ctx.db.select().from(outboxMensajes).where(eq(outboxMensajes.pedidoId, id));
+    const mails = await e.ctx.db
+      .select()
+      .from(outboxMensajes)
+      .where(eq(outboxMensajes.pedidoId, id));
     expect(mails.map((m) => m.evento)).toContain('cancelado');
   });
 
@@ -59,7 +65,9 @@ describe('vencimientos (FR-034, clarify)', () => {
     const antes = await stockDe(e, e.productoId);
     const { id } = await e.ctx.servicios.pedidos.crear(solicitud(e));
     await e.ctx.servicios.estados.cambiar({ pedidoId: id, a: 'cancelado', actor: 'sistema' });
-    await expect(e.ctx.servicios.estados.cambiar({ pedidoId: id, a: 'cancelado', actor: 'sistema' })).rejects.toMatchObject({
+    await expect(
+      e.ctx.servicios.estados.cambiar({ pedidoId: id, a: 'cancelado', actor: 'sistema' }),
+    ).rejects.toMatchObject({
       codigo: 'TRANSICION_INVALIDA',
     });
     expect(await stockDe(e, e.productoId)).toBe(antes);

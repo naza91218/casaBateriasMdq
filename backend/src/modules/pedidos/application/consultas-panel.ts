@@ -1,4 +1,9 @@
-import type { CambioEstadoAdmin, FiltroPedidosAdmin, ListaPedidosAdmin, PedidoDetalleAdmin } from '@casa/shared';
+import type {
+  CambioEstadoAdmin,
+  FiltroPedidosAdmin,
+  ListaPedidosAdmin,
+  PedidoDetalleAdmin,
+} from '@casa/shared';
 import { and, asc, count, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import type { BaseDeDatos } from '../../../platform/db.js';
 import { ErrorDeDominio, noEncontrado } from '../../../shared-kernel/errores.js';
@@ -31,7 +36,10 @@ function espera(estado: EstadoPedido, creadoEn: Date, ahora: Date) {
  * como un cambio de estado común.
  */
 function requiereAccionPropia(estado: EstadoPedido, a: EstadoPedido): boolean {
-  return (estado === 'pendiente_pago' && a === 'pagado') || (estado === 'a_pagar_en_local' && a === 'entregado');
+  return (
+    (estado === 'pendiente_pago' && a === 'pagado') ||
+    (estado === 'a_pagar_en_local' && a === 'entregado')
+  );
 }
 
 /** Lo que espera una acción del administrador: verificar una transferencia, preparar, cobrar. */
@@ -97,45 +105,50 @@ export class ServicioPanelPedidos {
     const [pedido] = await this.db.select().from(pedidos).where(eq(pedidos.id, id));
     if (!pedido) throw noEncontrado('No encontramos ese pedido');
 
-    const [items, comprador, zona, pagosDelPedido, eventos, alertasDelPedido, arrepentimientos] = await Promise.all([
-      this.db
-        .select({ nombre: pedidoItems.nombreProducto, cantidad: pedidoItems.cantidad, precioUnitario: pedidoItems.precioUnitario })
-        .from(pedidoItems)
-        .where(eq(pedidoItems.pedidoId, id))
-        .orderBy(asc(pedidoItems.nombreProducto)),
-      this.compradores.paraPanel(this.db, id),
-      pedido.zonaId ? this.zonas.obtener(pedido.zonaId) : Promise.resolve(null),
-      this.db
-        .select({
-          medio: pagos.medio,
-          estado: pagos.estado,
-          monto: pagos.monto,
-          idExterno: pagos.idExterno,
-          confirmadoPor: usuariosPanel.email,
-          creadoEn: pagos.creadoEn,
-        })
-        .from(pagos)
-        .leftJoin(usuariosPanel, eq(usuariosPanel.id, pagos.confirmadoPor))
-        .where(eq(pagos.pedidoId, id))
-        .orderBy(asc(pagos.creadoEn), asc(pagos.id)),
-      this.db
-        .select({
-          de: pedidoEventos.de,
-          a: pedidoEventos.a,
-          actor: pedidoEventos.actor,
-          email: usuariosPanel.email,
-          motivo: pedidoEventos.motivo,
-          rechazado: pedidoEventos.rechazado,
-          creadoEn: pedidoEventos.creadoEn,
-        })
-        .from(pedidoEventos)
-        // El actor es un id de usuario del panel o un nombre de sistema ('worker', 'mercadopago').
-        .leftJoin(usuariosPanel, eq(sql`${usuariosPanel.id}::text`, pedidoEventos.actor))
-        .where(eq(pedidoEventos.pedidoId, id))
-        .orderBy(asc(pedidoEventos.creadoEn), asc(pedidoEventos.id)),
-      this.alertas.listar({ soloAbiertas: false, pedidoIds: [id] }),
-      this.arrepentimientos.delPedido(this.db, id),
-    ]);
+    const [items, comprador, zona, pagosDelPedido, eventos, alertasDelPedido, arrepentimientos] =
+      await Promise.all([
+        this.db
+          .select({
+            nombre: pedidoItems.nombreProducto,
+            cantidad: pedidoItems.cantidad,
+            precioUnitario: pedidoItems.precioUnitario,
+          })
+          .from(pedidoItems)
+          .where(eq(pedidoItems.pedidoId, id))
+          .orderBy(asc(pedidoItems.nombreProducto)),
+        this.compradores.paraPanel(this.db, id),
+        pedido.zonaId ? this.zonas.obtener(pedido.zonaId) : Promise.resolve(null),
+        this.db
+          .select({
+            medio: pagos.medio,
+            estado: pagos.estado,
+            monto: pagos.monto,
+            idExterno: pagos.idExterno,
+            confirmadoPor: usuariosPanel.email,
+            creadoEn: pagos.creadoEn,
+          })
+          .from(pagos)
+          .leftJoin(usuariosPanel, eq(usuariosPanel.id, pagos.confirmadoPor))
+          .where(eq(pagos.pedidoId, id))
+          .orderBy(asc(pagos.creadoEn), asc(pagos.id)),
+        this.db
+          .select({
+            de: pedidoEventos.de,
+            a: pedidoEventos.a,
+            actor: pedidoEventos.actor,
+            email: usuariosPanel.email,
+            motivo: pedidoEventos.motivo,
+            rechazado: pedidoEventos.rechazado,
+            creadoEn: pedidoEventos.creadoEn,
+          })
+          .from(pedidoEventos)
+          // El actor es un id de usuario del panel o un nombre de sistema ('worker', 'mercadopago').
+          .leftJoin(usuariosPanel, eq(sql`${usuariosPanel.id}::text`, pedidoEventos.actor))
+          .where(eq(pedidoEventos.pedidoId, id))
+          .orderBy(asc(pedidoEventos.creadoEn), asc(pedidoEventos.id)),
+        this.alertas.listar({ soloAbiertas: false, pedidoIds: [id] }),
+        this.arrepentimientos.delPedido(this.db, id),
+      ]);
     if (!comprador) throw new Error(`El pedido ${id} no tiene comprador`);
 
     const visible = !comprador.anonimizado;
@@ -177,7 +190,11 @@ export class ServicioPanelPedidos {
         confirmadoPor: p.confirmadoPor ?? null,
         creadoEn: p.creadoEn.toISOString(),
       })),
-      eventos: eventos.map(({ email, ...e }) => ({ ...e, actor: email ?? e.actor, creadoEn: e.creadoEn.toISOString() })),
+      eventos: eventos.map(({ email, ...e }) => ({
+        ...e,
+        actor: email ?? e.actor,
+        creadoEn: e.creadoEn.toISOString(),
+      })),
       alertas: alertasDelPedido,
       arrepentimientos,
       puedeAnonimizar: puedeAnonimizar(pedido.estado, comprador.anonimizado),
@@ -185,7 +202,8 @@ export class ServicioPanelPedidos {
         (a) => !requiereAccionPropia(pedido.estado, a),
       ),
       acciones: {
-        confirmarTransferencia: pedido.medioPago === 'transferencia' && pedido.estado === 'pendiente_pago',
+        confirmarTransferencia:
+          pedido.medioPago === 'transferencia' && pedido.estado === 'pendiente_pago',
         registrarEfectivo: pedido.estado === 'a_pagar_en_local',
       },
       mapaUrl,
@@ -217,7 +235,12 @@ export class ServicioPanelPedidos {
             : 'Los pagos con Mercado Pago se confirman solos cuando Mercado Pago avisa';
       throw new ErrorDeDominio('regla_de_negocio', 'USAR_ACCION_DE_PAGO', mensaje);
     }
-    await this.estados.cambiar({ pedidoId: id, a: cambio.a, actor: usuarioId, ...(cambio.motivo ? { motivo: cambio.motivo } : {}) });
+    await this.estados.cambiar({
+      pedidoId: id,
+      a: cambio.a,
+      actor: usuarioId,
+      ...(cambio.motivo ? { motivo: cambio.motivo } : {}),
+    });
   }
 
   /** Contadores para el inicio del panel. */

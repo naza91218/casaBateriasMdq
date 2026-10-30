@@ -21,7 +21,11 @@ export function tareasDelWorker(ctx: Contexto): TareaPeriodica[] {
   return [
     { nombre: 'outbox', cadaMs: 10_000, ejecutar: () => ctx.outbox.procesarLote(despachar) },
     // Cancela pedidos impagos vencidos y devuelve stock (FR-034).
-    { nombre: 'vencimientos', cadaMs: MINUTO, ejecutar: () => ctx.servicios.vencimientos.cancelarVencidos() },
+    {
+      nombre: 'vencimientos',
+      cadaMs: MINUTO,
+      ejecutar: () => ctx.servicios.vencimientos.cancelarVencidos(),
+    },
   ];
 }
 
@@ -41,7 +45,10 @@ export function iniciarBucles(
           await tarea.ejecutar();
         } catch (error) {
           const limpio = errorSinDatosPersonales(error);
-          ctx.logger.error({ tarea: tarea.nombre, err: limpio.message }, 'falló una tarea del worker');
+          ctx.logger.error(
+            { tarea: tarea.nombre, err: limpio.message },
+            'falló una tarea del worker',
+          );
           reportar(limpio);
         }
         await new Promise((r) => setTimeout(r, tarea.cadaMs));
@@ -56,7 +63,8 @@ export function iniciarBucles(
   };
 }
 
-const esEntrada = process.argv[1]?.replaceAll('\\', '/').endsWith('/worker/main.ts') ||
+const esEntrada =
+  process.argv[1]?.replaceAll('\\', '/').endsWith('/worker/main.ts') ||
   process.argv[1]?.replaceAll('\\', '/').endsWith('/worker/main.js');
 
 if (esEntrada) {

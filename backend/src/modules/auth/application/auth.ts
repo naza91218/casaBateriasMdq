@@ -76,7 +76,9 @@ export class ServicioAuth {
 
       const idSesion = tokenAleatorio();
       const venceEn = new Date(ahora.getTime() + VIGENCIA_SESION);
-      await tx.insert(sesiones).values({ idHash: hashToken(idSesion), usuarioId: enlace.usuarioId, venceEn });
+      await tx
+        .insert(sesiones)
+        .values({ idHash: hashToken(idSesion), usuarioId: enlace.usuarioId, venceEn });
       return { idSesion, venceEn };
     });
   }

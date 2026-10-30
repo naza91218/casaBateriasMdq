@@ -1,6 +1,7 @@
 import { leerRobots, sePuede, type Reglas } from './robots.js';
 
-export const AGENTE = 'CasaDeLasBaterias-Catalogo/1.0 (carga inicial de catálogo; contacto: nazareno200406@gmail.com)';
+export const AGENTE =
+  'CasaDeLasBaterias-Catalogo/1.0 (carga inicial de catálogo; contacto: nazareno200406@gmail.com)';
 const ESPERA_MINIMA_MS = 2_000;
 
 /**
@@ -12,7 +13,11 @@ export class ClienteEducado {
   private readonly ultimoPedido = new Map<string, number>();
 
   constructor(
-    private readonly opciones: { esperaMs?: number; log?: (m: string) => void; fetch?: typeof fetch } = {},
+    private readonly opciones: {
+      esperaMs?: number;
+      log?: (m: string) => void;
+      fetch?: typeof fetch;
+    } = {},
   ) {}
 
   async texto(url: string): Promise<string> {
@@ -49,7 +54,10 @@ export class ClienteEducado {
   }
 
   private async esperarTurno(origen: string, reglas: Reglas): Promise<void> {
-    const espera = Math.max(this.opciones.esperaMs ?? ESPERA_MINIMA_MS, (reglas.esperaSegundos ?? 0) * 1000);
+    const espera = Math.max(
+      this.opciones.esperaMs ?? ESPERA_MINIMA_MS,
+      (reglas.esperaSegundos ?? 0) * 1000,
+    );
     const falta = (this.ultimoPedido.get(origen) ?? 0) + espera - Date.now();
     if (falta > 0) await new Promise((r) => setTimeout(r, falta));
     this.ultimoPedido.set(origen, Date.now());
@@ -57,7 +65,10 @@ export class ClienteEducado {
 
   private hacerFetch(url: string): Promise<Response> {
     return (this.opciones.fetch ?? fetch)(url, {
-      headers: { 'user-agent': AGENTE, accept: 'text/html,application/xml,image/*;q=0.9,*/*;q=0.5' },
+      headers: {
+        'user-agent': AGENTE,
+        accept: 'text/html,application/xml,image/*;q=0.9,*/*;q=0.5',
+      },
       signal: AbortSignal.timeout(30_000),
     });
   }

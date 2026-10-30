@@ -5,7 +5,11 @@ import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructu
 import { construirServidor } from '../../../src/http/server.js';
 import { DIA, MINUTO } from '../../../src/shared-kernel/reloj.js';
 import { sembrarBase } from '../../../db/seed/base.js';
-import { crearContextoDePrueba, prepararBase, type ContextoDePrueba } from '../../setup/contexto.js';
+import {
+  crearContextoDePrueba,
+  prepararBase,
+  type ContextoDePrueba,
+} from '../../setup/contexto.js';
 
 let p: ContextoDePrueba;
 let app: FastifyInstance;
@@ -40,7 +44,10 @@ async function ultimoToken(): Promise<string> {
 
 async function ingresar(): Promise<string> {
   await pedirEnlace('admin@tienda.test');
-  const r = await app.inject({ method: 'GET', url: `/api/v1/auth/verificar?token=${await ultimoToken()}` });
+  const r = await app.inject({
+    method: 'GET',
+    url: `/api/v1/auth/verificar?token=${await ultimoToken()}`,
+  });
   const cookie = r.cookies.find((c) => c.name === 'sesion');
   return cookie?.value ?? '';
 }
@@ -52,14 +59,20 @@ describe('ingreso al panel con enlace por mail', () => {
     expect(valido.statusCode).toBe(202);
     expect(invalido.statusCode).toBe(202);
     expect(invalido.body).toBe(valido.body);
-    const enlaces = await p.ctx.db.select().from(outboxMensajes).where(eq(outboxMensajes.evento, 'enlace_ingreso'));
+    const enlaces = await p.ctx.db
+      .select()
+      .from(outboxMensajes)
+      .where(eq(outboxMensajes.evento, 'enlace_ingreso'));
     expect(enlaces).toHaveLength(1);
     expect(enlaces[0]?.datos.email).toBe('admin@tienda.test');
   });
 
   test('el enlace crea una sesión de 30 días con cookie segura y redirige al panel', async () => {
     await pedirEnlace('admin@tienda.test');
-    const r = await app.inject({ method: 'GET', url: `/api/v1/auth/verificar?token=${await ultimoToken()}` });
+    const r = await app.inject({
+      method: 'GET',
+      url: `/api/v1/auth/verificar?token=${await ultimoToken()}`,
+    });
     expect(r.statusCode).toBe(302);
     expect(r.headers.location).toBe('http://tienda.test/panel');
     const cookie = r.cookies.find((c) => c.name === 'sesion');
@@ -72,7 +85,10 @@ describe('ingreso al panel con enlace por mail', () => {
     await pedirEnlace('admin@tienda.test');
     const token = await ultimoToken();
     await app.inject({ method: 'GET', url: `/api/v1/auth/verificar?token=${token}` });
-    const segunda = await app.inject({ method: 'GET', url: `/api/v1/auth/verificar?token=${token}` });
+    const segunda = await app.inject({
+      method: 'GET',
+      url: `/api/v1/auth/verificar?token=${token}`,
+    });
     expect(segunda.headers.location).toBe('http://tienda.test/panel/ingresar?error=enlace_vencido');
   });
 
@@ -88,7 +104,11 @@ describe('ingreso al panel con enlace por mail', () => {
     const sin = await app.inject({ method: 'GET', url: '/api/v1/auth/sesion' });
     expect(sin.statusCode).toBe(401);
     const id = await ingresar();
-    const con = await app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion: id } });
+    const con = await app.inject({
+      method: 'GET',
+      url: '/api/v1/auth/sesion',
+      cookies: { sesion: id },
+    });
     expect(con.statusCode).toBe(200);
     expect(con.json().usuario.email).toBe('admin@tienda.test');
   });
@@ -96,10 +116,16 @@ describe('ingreso al panel con enlace por mail', () => {
   test('la sesión vence a los 30 días y se puede cerrar', async () => {
     const id = await ingresar();
     await app.inject({ method: 'POST', url: '/api/v1/auth/salir', cookies: { sesion: id } });
-    expect((await app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion: id } })).statusCode).toBe(401);
+    expect(
+      (await app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion: id } }))
+        .statusCode,
+    ).toBe(401);
 
     const otra = await ingresar();
     p.reloj.avanzar(30 * DIA + 1000);
-    expect((await app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion: otra } })).statusCode).toBe(401);
+    expect(
+      (await app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion: otra } }))
+        .statusCode,
+    ).toBe(401);
   });
 });

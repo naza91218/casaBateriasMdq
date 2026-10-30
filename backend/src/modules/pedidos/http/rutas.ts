@@ -39,7 +39,14 @@ export function rutasPedidos(deps: {
 
     app.get(
       '/pedidos/:id',
-      { schema: { tags, params: idPedido, querystring: ConsultaSeguimiento, response: { 200: Seguimiento } } },
+      {
+        schema: {
+          tags,
+          params: idPedido,
+          querystring: ConsultaSeguimiento,
+          response: { 200: Seguimiento },
+        },
+      },
       (req) => deps.seguimiento.obtener(req.params.id, req.query.t, req.query.retorno),
     );
 

@@ -67,7 +67,10 @@ function celda(valor: string): string {
 
 /** CSV UTF-8 separado por comas, con BOM para que Excel muestre bien las tildes. */
 export function aCsv<T extends object>(columnas: (keyof T)[], filas: T[]): string {
-  const lineas = [columnas.join(','), ...filas.map((f) => columnas.map((c) => celda(String(f[c] ?? ''))).join(','))];
+  const lineas = [
+    columnas.join(','),
+    ...filas.map((f) => columnas.map((c) => celda(String(f[c] ?? ''))).join(',')),
+  ];
   return `${String.fromCharCode(0xfeff)}${lineas.join('\r\n')}\r\n`;
 }
 

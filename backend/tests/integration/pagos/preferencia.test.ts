@@ -24,7 +24,10 @@ describe('preferencia de Mercado Pago (FR-034b)', () => {
     expect(pref?.pedidoId).toBe(creado.id);
     expect(pref?.venceEn.getTime()).toBe(e.reloj.ahora().getTime() + 30 * MINUTO);
     expect(pref?.urlNotificacion).toBe('http://api.test/api/v1/webhooks/mercadopago');
-    expect(creado.pago).toEqual({ tipo: 'mercadopago', initPoint: expect.stringMatching(/^https:/) });
+    expect(creado.pago).toEqual({
+      tipo: 'mercadopago',
+      initPoint: expect.stringMatching(/^https:/),
+    });
   });
 
   test('si Mercado Pago falla, el pedido igual se crea y se puede reintentar', async () => {
@@ -35,9 +38,11 @@ describe('preferencia de Mercado Pago (FR-034b)', () => {
   });
 
   test('el adaptador real pide solo medios instantáneos, con vencimiento y referencia externa', async () => {
-    const fetchFalso = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(new Response(JSON.stringify({ id: 'p1', init_point: 'https://mp/checkout' }), { status: 201 }));
+    const fetchFalso = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ id: 'p1', init_point: 'https://mp/checkout' }), {
+        status: 201,
+      }),
+    );
     const pasarela = new PasarelaMercadoPago('TEST-token', 'secreto');
     const venceEn = new Date('2026-11-01T12:30:00Z');
     await pasarela.crearPreferencia({
@@ -52,7 +57,10 @@ describe('preferencia de Mercado Pago (FR-034b)', () => {
     expect(cuerpo.external_reference).toBe('pedido-1');
     expect(cuerpo.expires).toBe(true);
     expect(cuerpo.expiration_date_to).toBe(venceEn.toISOString());
-    expect(cuerpo.payment_methods.excluded_payment_types).toEqual([{ id: 'ticket' }, { id: 'atm' }]);
+    expect(cuerpo.payment_methods.excluded_payment_types).toEqual([
+      { id: 'ticket' },
+      { id: 'atm' },
+    ]);
     expect(cuerpo.items[0].unit_price).toBe(100_000);
   });
 });

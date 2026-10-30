@@ -17,7 +17,10 @@ export class ServicioAlertas {
     private readonly reloj: Reloj,
   ) {}
 
-  async listar(opciones: { soloAbiertas: boolean; pedidoIds?: string[]; id?: string }, ej: Ejecutor = this.db): Promise<Alerta[]> {
+  async listar(
+    opciones: { soloAbiertas: boolean; pedidoIds?: string[]; id?: string },
+    ej: Ejecutor = this.db,
+  ): Promise<Alerta[]> {
     const filtros = [
       opciones.soloAbiertas ? isNull(alertas.resueltaEn) : undefined,
       opciones.pedidoIds ? inArray(alertas.pedidoId, opciones.pedidoIds) : undefined,
@@ -48,7 +51,10 @@ export class ServicioAlertas {
   }
 
   async contarAbiertas(): Promise<number> {
-    const [fila] = await this.db.select({ n: count() }).from(alertas).where(isNull(alertas.resueltaEn));
+    const [fila] = await this.db
+      .select({ n: count() })
+      .from(alertas)
+      .where(isNull(alertas.resueltaEn));
     return fila?.n ?? 0;
   }
 
@@ -59,7 +65,10 @@ export class ServicioAlertas {
       .where(and(eq(alertas.id, id), isNull(alertas.resueltaEn)))
       .returning({ id: alertas.id });
     if (!resuelta) {
-      const [existe] = await this.db.select({ id: alertas.id }).from(alertas).where(eq(alertas.id, id));
+      const [existe] = await this.db
+        .select({ id: alertas.id })
+        .from(alertas)
+        .where(eq(alertas.id, id));
       if (!existe) throw noEncontrado('No encontramos esa alerta');
       throw new ErrorDeDominio('conflicto', 'ALERTA_YA_RESUELTA', 'Esa alerta ya estaba resuelta');
     }

@@ -64,7 +64,11 @@ export class ServicioAdminProductos {
     if (f.estado) condiciones.push(eq(productos.estado, f.estado));
     if (f.marca) condiciones.push(eq(marcas.slug, f.marca));
     if (f.q) {
-      const buscado = or(ilike(productos.nombre, textoLike(f.q)), ilike(productos.sku, textoLike(f.q)), eq(productos.medida, f.q));
+      const buscado = or(
+        ilike(productos.nombre, textoLike(f.q)),
+        ilike(productos.sku, textoLike(f.q)),
+        eq(productos.medida, f.q),
+      );
       if (buscado) condiciones.push(buscado);
     }
     const donde = and(...condiciones);
@@ -78,7 +82,11 @@ export class ServicioAdminProductos {
         .orderBy(asc(productos.estado), asc(productos.nombre))
         .limit(f.porPagina)
         .offset((f.pagina - 1) * f.porPagina),
-      this.db.select({ n: count() }).from(productos).innerJoin(marcas, eq(marcas.id, productos.marcaId)).where(donde),
+      this.db
+        .select({ n: count() })
+        .from(productos)
+        .innerJoin(marcas, eq(marcas.id, productos.marcaId))
+        .where(donde),
     ]);
     const fotos = await this.fotos.deProductos(filas.map((p) => p.id));
     return {
@@ -102,7 +110,10 @@ export class ServicioAdminProductos {
   /** Alta manual: queda pausado hasta tener precio y foto. */
   async crear(d: NuevoProducto): Promise<ProductoAdmin> {
     const id = await this.db.transaction(async (tx) => {
-      const [existe] = await tx.select({ id: productos.id }).from(productos).where(eq(productos.sku, d.sku));
+      const [existe] = await tx
+        .select({ id: productos.id })
+        .from(productos)
+        .where(eq(productos.sku, d.sku));
       if (existe) throw validacion({ sku: 'Ya existe un producto con ese código' });
       const [p] = await tx
         .insert(productos)
@@ -149,7 +160,11 @@ export class ServicioAdminProductos {
         const fotos = await this.fotos.deProducto(id, tx);
         const falta = faltaParaActivar(cambios.precioLista ?? actual.precioLista, fotos.length);
         if (falta.length > 0) {
-          throw new ErrorDeDominio('regla_de_negocio', 'NO_SE_PUEDE_ACTIVAR', `${falta.join(' y ')} para publicarlo`);
+          throw new ErrorDeDominio(
+            'regla_de_negocio',
+            'NO_SE_PUEDE_ACTIVAR',
+            `${falta.join(' y ')} para publicarlo`,
+          );
         }
       }
       await tx.update(productos).set(cambios).where(eq(productos.id, id));
@@ -177,7 +192,9 @@ export class ServicioAdminProductos {
     for (const id of r.ids) {
       try {
         if (r.accion === 'eliminar') {
-          const { resultado, claves } = await this.db.transaction((tx) => this.eliminarEnTx(tx, id));
+          const { resultado, claves } = await this.db.transaction((tx) =>
+            this.eliminarEnTx(tx, id),
+          );
           archivosABorrar.push(...claves);
           resultados.push({ id, resultado, motivo: null });
         } else {
@@ -193,26 +210,37 @@ export class ServicioAdminProductos {
   }
 
   async contarARevisar(): Promise<number> {
-    const [fila] = await this.db.select({ n: count() }).from(productos).where(eq(productos.estado, 'a_revisar'));
+    const [fila] = await this.db
+      .select({ n: count() })
+      .from(productos)
+      .where(eq(productos.estado, 'a_revisar'));
     return fila?.n ?? 0;
   }
 
-  private async habilitar(id: string): Promise<{ resultado: 'activo' | 'pausado'; motivo: string | null }> {
+  private async habilitar(
+    id: string,
+  ): Promise<{ resultado: 'activo' | 'pausado'; motivo: string | null }> {
     return this.db.transaction(async (tx) => {
       const actual = await bloquear(tx, id);
       const fotos = await this.fotos.deProducto(id, tx);
       const falta = faltaParaActivar(actual.precioLista, fotos.length);
       const estado = falta.length === 0 ? 'activo' : 'pausado';
       await tx.update(productos).set({ estado }).where(eq(productos.id, id));
-      if (estado === 'activo') await this.outbox.revalidar(tx, ['catalogo', `producto:${actual.slug}`]);
+      if (estado === 'activo')
+        await this.outbox.revalidar(tx, ['catalogo', `producto:${actual.slug}`]);
       return { resultado: estado, motivo: falta.length ? falta.join(' y ') : null };
     });
   }
 
   private async eliminarEnTx(tx: Transaccion, id: string) {
     const actual = await bloquear(tx, id);
-    const [usado] = await tx.select({ id: pedidoItems.id }).from(pedidoItems).where(eq(pedidoItems.productoId, id)).limit(1);
-    if (actual.estado === 'activo') await this.outbox.revalidar(tx, ['catalogo', `producto:${actual.slug}`]);
+    const [usado] = await tx
+      .select({ id: pedidoItems.id })
+      .from(pedidoItems)
+      .where(eq(pedidoItems.productoId, id))
+      .limit(1);
+    if (actual.estado === 'activo')
+      await this.outbox.revalidar(tx, ['catalogo', `producto:${actual.slug}`]);
     if (usado) {
       await tx.update(productos).set({ estado: 'archivado' }).where(eq(productos.id, id));
       return { resultado: 'archivado' as const, claves: [] };
@@ -279,14 +307,19 @@ export async function idMarca(ej: Ejecutor, marca: string): Promise<string> {
   const [m] = await ej
     .select({ id: marcas.id })
     .from(marcas)
-    .where(or(eq(marcas.slug, aSlug(marca)), sql`lower(${marcas.nombre}) = lower(${marca.trim()})`));
+    .where(
+      or(eq(marcas.slug, aSlug(marca)), sql`lower(${marcas.nombre}) = lower(${marca.trim()})`),
+    );
   if (!m) throw validacion({ marca: 'Elegí una de las marcas: Sermat, Herbo, Volta o Edna' });
   return m.id;
 }
 
 export async function medidaExistente(ej: Ejecutor, codigo: string): Promise<string> {
   const normal = codigo.trim().toLowerCase();
-  const [m] = await ej.select({ codigo: medidas.codigo }).from(medidas).where(eq(medidas.codigo, normal));
+  const [m] = await ej
+    .select({ codigo: medidas.codigo })
+    .from(medidas)
+    .where(eq(medidas.codigo, normal));
   if (!m) throw validacion({ medida: `La medida ${codigo} no existe. Elegí una de la lista` });
   return m.codigo;
 }

@@ -18,7 +18,7 @@ const CARGAS = [
   "' OR '1'='1",
   "' OR 1=1 --",
   "'; DROP TABLE pedidos; --",
-  "1; SELECT pg_sleep(3) --",
+  '1; SELECT pg_sleep(3) --',
   "' UNION SELECT dni_cifrado::text FROM pedido_compradores --",
   "%' OR '%'='",
   '" OR ""="',
@@ -75,18 +75,32 @@ describe.each(CARGAS)('carga %s', (carga) => {
   });
 
   test('en el login: no se envía ningún enlace', async () => {
-    const antes = await e.ctx.db.select().from(outboxMensajes).where(eq(outboxMensajes.evento, 'enlace_ingreso'));
+    const antes = await e.ctx.db
+      .select()
+      .from(outboxMensajes)
+      .where(eq(outboxMensajes.evento, 'enlace_ingreso'));
     for (const email of [carga, `admin@tienda.test${carga}`, `${carga}@tienda.test`]) {
-      const { r, ms } = await medir({ method: 'POST', url: '/api/v1/auth/enlace', payload: { email } });
+      const { r, ms } = await medir({
+        method: 'POST',
+        url: '/api/v1/auth/enlace',
+        payload: { email },
+      });
       expect([202, 400]).toContain(r.statusCode);
       expect(ms).toBeLessThan(DEMORA_MAXIMA_MS);
     }
-    const despues = await e.ctx.db.select().from(outboxMensajes).where(eq(outboxMensajes.evento, 'enlace_ingreso'));
+    const despues = await e.ctx.db
+      .select()
+      .from(outboxMensajes)
+      .where(eq(outboxMensajes.evento, 'enlace_ingreso'));
     expect(despues).toHaveLength(antes.length);
   });
 
   test('en el panel sin sesión: siempre 401', async () => {
-    const { r } = await medir({ method: 'GET', url: `/api/v1/admin/pedidos?estado=${q(carga)}`, cookies: { sesion: carga } });
+    const { r } = await medir({
+      method: 'GET',
+      url: `/api/v1/admin/pedidos?estado=${q(carga)}`,
+      cookies: { sesion: carga },
+    });
     expect(r.statusCode).toBe(401);
   });
 
@@ -99,12 +113,20 @@ describe.each(CARGAS)('carga %s', (carga) => {
         entrega: 'colocacion',
         zonaId: e.zonaMdp,
         medioPago: 'transferencia',
-        comprador: { ...COMPRADOR, nombre: `Ana ${carga}`, calle: `Colón ${carga}`.slice(0, 120), referencias: carga },
+        comprador: {
+          ...COMPRADOR,
+          nombre: `Ana ${carga}`,
+          calle: `Colón ${carga}`.slice(0, 120),
+          referencias: carga,
+        },
       },
     });
     expect(r.statusCode).toBe(201);
     expect(ms).toBeLessThan(DEMORA_MAXIMA_MS);
-    const [c] = await e.ctx.db.select().from(pedidoCompradores).where(eq(pedidoCompradores.pedidoId, r.json().id));
+    const [c] = await e.ctx.db
+      .select()
+      .from(pedidoCompradores)
+      .where(eq(pedidoCompradores.pedidoId, r.json().id));
     expect(c).toMatchObject({ nombre: `Ana ${carga}`, referencias: carga });
   });
 
@@ -112,7 +134,12 @@ describe.each(CARGAS)('carga %s', (carga) => {
     const r = await app.inject({
       method: 'POST',
       url: '/api/v1/pedidos',
-      payload: { items: [{ productoId: e.productoId, cantidad: 1 }], entrega: 'retiro', medioPago: 'transferencia', comprador: { ...COMPRADOR, dni: carga } },
+      payload: {
+        items: [{ productoId: e.productoId, cantidad: 1 }],
+        entrega: 'retiro',
+        medioPago: 'transferencia',
+        comprador: { ...COMPRADOR, dni: carga },
+      },
     });
     expect(r.statusCode).toBe(400);
   });
@@ -121,10 +148,18 @@ describe.each(CARGAS)('carga %s', (carga) => {
     const { r } = await medir({
       method: 'POST',
       url: '/api/v1/consultas-canje',
-      payload: { nombre: `Juan ${carga}`, telefono: '223 400 1122', bateriaUsada: carga, localidad: 'Mar del Plata' },
+      payload: {
+        nombre: `Juan ${carga}`,
+        telefono: '223 400 1122',
+        bateriaUsada: carga,
+        localidad: 'Mar del Plata',
+      },
     });
     expect(r.statusCode).toBe(201);
-    const filas = await e.ctx.db.select().from(consultasCanje).where(eq(consultasCanje.nombre, `Juan ${carga}`));
+    const filas = await e.ctx.db
+      .select()
+      .from(consultasCanje)
+      .where(eq(consultasCanje.nombre, `Juan ${carga}`));
     expect(filas).toEqual([expect.objectContaining({ bateriaUsada: carga })]);
   });
 });
@@ -132,7 +167,9 @@ describe.each(CARGAS)('carga %s', (carga) => {
 describe('después de todas las cargas', () => {
   test('las tablas siguen ahí y con datos', async () => {
     const [p] = await e.ctx.db.execute<{ n: number }>(sql`select count(*)::int as n from pedidos`);
-    const [prod] = await e.ctx.db.execute<{ n: number }>(sql`select count(*)::int as n from productos`);
+    const [prod] = await e.ctx.db.execute<{ n: number }>(
+      sql`select count(*)::int as n from productos`,
+    );
     expect(p?.n).toBeGreaterThan(0);
     expect(prod?.n).toBeGreaterThan(0);
   });

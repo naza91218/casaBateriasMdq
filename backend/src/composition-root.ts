@@ -98,9 +98,16 @@ export interface Reemplazos {
 }
 
 function elegirAlmacenamiento(config: Config): Almacenamiento {
-  const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL } = config;
+  const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL } =
+    config;
   if (R2_ACCOUNT_ID && R2_ACCESS_KEY_ID && R2_SECRET_ACCESS_KEY && R2_BUCKET && R2_PUBLIC_URL) {
-    return new AlmacenamientoR2(R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL);
+    return new AlmacenamientoR2(
+      R2_ACCOUNT_ID,
+      R2_ACCESS_KEY_ID,
+      R2_SECRET_ACCESS_KEY,
+      R2_BUCKET,
+      R2_PUBLIC_URL,
+    );
   }
   return new AlmacenamientoDisco(config.UPLOADS_DIR, config.API_PUBLIC_URL);
 }
@@ -129,7 +136,11 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     (config.NODE_ENV === 'development' || config.NODE_ENV === 'test'
       ? revalidadorNulo
       : new RevalidadorFrontend(config.FRONTEND_URL, config.REVALIDATE_SECRET));
-  if (!config.MP_ACCESS_TOKEN && !reemplazos.pasarela && (config.NODE_ENV === 'staging' || config.NODE_ENV === 'production')) {
+  if (
+    !config.MP_ACCESS_TOKEN &&
+    !reemplazos.pasarela &&
+    (config.NODE_ENV === 'staging' || config.NODE_ENV === 'production')
+  ) {
     throw new Error('Falta MP_ACCESS_TOKEN fuera de desarrollo');
   }
   // Sin credenciales (desarrollo), los pagos se simulan en memoria.
@@ -173,7 +184,13 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     urlApi: config.API_PUBLIC_URL,
   });
   const alertas = new ServicioAlertas(db, reloj);
-  const arrepentimientos = new ServicioArrepentimientos(db, compradores, configuracion, outbox, panel);
+  const arrepentimientos = new ServicioArrepentimientos(
+    db,
+    compradores,
+    configuracion,
+    outbox,
+    panel,
+  );
   const fotos = new ServicioFotos(db, almacenamiento, outbox);
   const servicios = {
     auth: new ServicioAuth(db, outbox, reloj, config.API_PUBLIC_URL),
@@ -182,17 +199,35 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     catalogo,
     buscador: new ServicioBuscador(repoCompatibilidad, catalogo, configuracion),
     paginaVehiculo: new ServicioPaginaVehiculo(repoCompatibilidad, catalogo, configuracion, zonas),
-    indiceSeo: new ServicioIndiceSeo(repoCatalogo, () => repoCompatibilidad.modelosConCompatibilidad()),
+    indiceSeo: new ServicioIndiceSeo(repoCatalogo, () =>
+      repoCompatibilidad.modelosConCompatibilidad(),
+    ),
     stock,
     compradores,
     estados,
     pedidos,
-    seguimiento: new ServicioSeguimiento(db, firmador, configuracion, zonas, compradores, pedidos, reloj),
+    seguimiento: new ServicioSeguimiento(
+      db,
+      firmador,
+      configuracion,
+      zonas,
+      compradores,
+      pedidos,
+      reloj,
+    ),
     vencimientos: new ServicioVencimientos(db, estados, reloj),
     pagosMp: new ServicioPagosMercadoPago(db, pasarela, estados, outbox, panel.pedido),
     pagosManuales: new ServicioPagosManuales(db, estados),
     alertas,
-    panelPedidos: new ServicioPanelPedidos(db, estados, compradores, zonas, alertas, arrepentimientos, reloj),
+    panelPedidos: new ServicioPanelPedidos(
+      db,
+      estados,
+      compradores,
+      zonas,
+      alertas,
+      arrepentimientos,
+      reloj,
+    ),
     arrepentimientos,
     anonimizacion: new ServicioAnonimizacion(db, cifrador, arrepentimientos, outbox, reloj),
     canje: new ServicioCanje(db, configuracion, zonas, outbox, panel.canje()),
@@ -201,7 +236,9 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     adminVehiculos: new ServicioAdminVehiculos(db, outbox),
     adminConfiguracion: new ServicioAdminConfiguracion(db, configuracion, zonas, outbox),
     adminCanje: new ServicioAdminCanje(db),
-    importacion: new ServicioImportacion(db, fotos, outbox, reloj, { carpetaFotos: config.IMPORT_FOTOS_DIR }),
+    importacion: new ServicioImportacion(db, fotos, outbox, reloj, {
+      carpetaFotos: config.IMPORT_FOTOS_DIR,
+    }),
   };
 
   return {

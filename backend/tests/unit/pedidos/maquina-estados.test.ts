@@ -33,7 +33,9 @@ describe('máquina de estados del pedido (FR-032)', () => {
           const independiente = validas.some(
             ([d, x]) => d === de && x === a && !['en_camino', 'listo_para_retirar'].includes(x),
           );
-          expect(puedeTransicionar(de, a, entrega), `${de}→${a} (${entrega})`).toBe(esperada || independiente);
+          expect(puedeTransicionar(de, a, entrega), `${de}→${a} (${entrega})`).toBe(
+            esperada || independiente,
+          );
         }
       }
     }

@@ -9,11 +9,7 @@ import { noEncontrado } from '../../../shared-kernel/errores.js';
 import { Dinero } from '../../../shared-kernel/dinero.js';
 import { enlaceWhatsapp, mensajes } from '../../../shared-kernel/whatsapp.js';
 import type { ServicioConfiguracion } from '../../configuracion/application/configuracion.js';
-import {
-  calcularPrecios,
-  EXPLICACION_GAMA,
-  SERVICIO_INCLUIDO,
-} from '../domain/precios.js';
+import { calcularPrecios, EXPLICACION_GAMA, SERVICIO_INCLUIDO } from '../domain/precios.js';
 import type {
   FiltrosListado,
   FilaProducto,

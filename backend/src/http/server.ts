@@ -54,7 +54,10 @@ export async function construirServidor(
     loggerInstance: ctx.logger as FastifyBaseLogger,
     trustProxy: true, // detrás de Nginx: la IP real llega en X-Forwarded-For (rate limit)
   });
-  registrarManejoDeErrores(base, opciones.reportarError ? { reportar: opciones.reportarError } : {});
+  registrarManejoDeErrores(
+    base,
+    opciones.reportarError ? { reportar: opciones.reportarError } : {},
+  );
   base.setValidatorCompiler(validatorCompiler);
   base.setSerializerCompiler(serializerCompiler);
   base.decorateRequest('usuario', null);
@@ -86,7 +89,10 @@ export async function construirServidor(
         {
           schema: {
             tags: ['operacion'],
-            response: { 200: z.object({ estado: z.literal('ok') }), 503: z.object({ estado: z.literal('sin_base') }) },
+            response: {
+              200: z.object({ estado: z.literal('ok') }),
+              503: z.object({ estado: z.literal('sin_base') }),
+            },
           },
         },
         async (_req, reply) =>
@@ -99,7 +105,10 @@ export async function construirServidor(
       await api.register(rutasConfiguracion({ configuracion: ctx.servicios.configuracion }));
       await api.register(rutasCatalogo({ catalogo: ctx.servicios.catalogo }));
       await api.register(
-        rutasBuscador({ buscador: ctx.servicios.buscador, paginaVehiculo: ctx.servicios.paginaVehiculo }),
+        rutasBuscador({
+          buscador: ctx.servicios.buscador,
+          paginaVehiculo: ctx.servicios.paginaVehiculo,
+        }),
       );
       await api.register(rutasSeo({ indice: ctx.servicios.indiceSeo }));
       await api.register(
@@ -123,13 +132,24 @@ export async function construirServidor(
           admin.addHook('onRequest', requiereSesion(ctx.servicios.auth));
           const s = ctx.servicios;
           await admin.register(
-            rutasAdminResumen({ panel: s.panelPedidos, alertas: s.alertas, productos: s.adminProductos, canje: s.adminCanje }),
+            rutasAdminResumen({
+              panel: s.panelPedidos,
+              alertas: s.alertas,
+              productos: s.adminProductos,
+              canje: s.adminCanje,
+            }),
           );
           await admin.register(
-            rutasAdminPedidos({ panel: s.panelPedidos, pagosManuales: s.pagosManuales, anonimizacion: s.anonimizacion }),
+            rutasAdminPedidos({
+              panel: s.panelPedidos,
+              pagosManuales: s.pagosManuales,
+              anonimizacion: s.anonimizacion,
+            }),
           );
           await admin.register(rutasAdminAlertas({ alertas: s.alertas }));
-          await admin.register(rutasAdminProductos({ productos: s.adminProductos, fotos: s.fotos }));
+          await admin.register(
+            rutasAdminProductos({ productos: s.adminProductos, fotos: s.fotos }),
+          );
           await admin.register(rutasAdminImportacion({ importacion: s.importacion }));
           await admin.register(rutasAdminVehiculos({ vehiculos: s.adminVehiculos }));
           await admin.register(rutasAdminConfiguracion({ configuracion: s.adminConfiguracion }));
@@ -150,7 +170,9 @@ export async function construirServidor(
       if (!claveValida(clave)) return reply.code(404).send();
       try {
         const contenido = await almacenamiento.leer(clave);
-        return reply.header('content-type', clave.endsWith('.webp') ? 'image/webp' : 'image/jpeg').send(contenido);
+        return reply
+          .header('content-type', clave.endsWith('.webp') ? 'image/webp' : 'image/jpeg')
+          .send(contenido);
       } catch {
         return reply.code(404).send();
       }

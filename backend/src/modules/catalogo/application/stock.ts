@@ -45,7 +45,10 @@ export class ServicioStock {
         )
         .returning({ nombre: productos.nombre, precioLista: productos.precioLista });
       if (!fila) {
-        const [p] = await tx.select({ nombre: productos.nombre }).from(productos).where(eq(productos.id, l.productoId));
+        const [p] = await tx
+          .select({ nombre: productos.nombre })
+          .from(productos)
+          .where(eq(productos.id, l.productoId));
         throw new ErrorDeDominio(
           'conflicto',
           'STOCK_INSUFICIENTE',
@@ -54,7 +57,11 @@ export class ServicioStock {
           { productoId: l.productoId },
         );
       }
-      reservados.push({ ...l, nombre: fila.nombre, precioLista: Dinero.deCentavos(fila.precioLista) });
+      reservados.push({
+        ...l,
+        nombre: fila.nombre,
+        precioLista: Dinero.deCentavos(fila.precioLista),
+      });
     }
     return reservados;
   }
@@ -69,13 +76,25 @@ export class ServicioStock {
   }
 
   /** Productos activos con su precio vigente, para cotizar sin reservar. */
-  async vigentes(ids: string[]): Promise<Map<string, { nombre: string; precioLista: Dinero; stock: number }>> {
+  async vigentes(
+    ids: string[],
+  ): Promise<Map<string, { nombre: string; precioLista: Dinero; stock: number }>> {
     const filas = ids.length
       ? await this.db
-          .select({ id: productos.id, nombre: productos.nombre, precioLista: productos.precioLista, stock: productos.stock })
+          .select({
+            id: productos.id,
+            nombre: productos.nombre,
+            precioLista: productos.precioLista,
+            stock: productos.stock,
+          })
           .from(productos)
           .where(and(inArray(productos.id, ids), eq(productos.estado, 'activo')))
       : [];
-    return new Map(filas.map((f) => [f.id, { nombre: f.nombre, precioLista: Dinero.deCentavos(f.precioLista), stock: f.stock }]));
+    return new Map(
+      filas.map((f) => [
+        f.id,
+        { nombre: f.nombre, precioLista: Dinero.deCentavos(f.precioLista), stock: f.stock },
+      ]),
+    );
   }
 }

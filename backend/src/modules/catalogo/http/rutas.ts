@@ -1,4 +1,10 @@
-import { FichaProducto, FiltrosCatalogo, ListadoProductos, MarcaCatalogo, Medida } from '@casa/shared';
+import {
+  FichaProducto,
+  FiltrosCatalogo,
+  ListadoProductos,
+  MarcaCatalogo,
+  Medida,
+} from '@casa/shared';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { ServicioCatalogo } from '../application/catalogo.js';
@@ -7,8 +13,10 @@ export function rutasCatalogo(deps: { catalogo: ServicioCatalogo }): FastifyPlug
   return async (app) => {
     const tags = ['catalogo'];
 
-    app.get('/catalogo/marcas', { schema: { tags, response: { 200: z.array(MarcaCatalogo) } } }, () =>
-      deps.catalogo.marcas(),
+    app.get(
+      '/catalogo/marcas',
+      { schema: { tags, response: { 200: z.array(MarcaCatalogo) } } },
+      () => deps.catalogo.marcas(),
     );
 
     app.get('/catalogo/medidas', { schema: { tags, response: { 200: z.array(Medida) } } }, () =>

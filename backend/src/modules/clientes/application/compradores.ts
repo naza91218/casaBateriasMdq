@@ -37,7 +37,10 @@ export class ServicioCompradores {
   }
 
   /** Lo mínimo para mandar mails: nombre y mail. Nunca el DNI (FR-038). */
-  async contacto(ej: Ejecutor, pedidoId: string): Promise<{ nombre: string; email: string } | null> {
+  async contacto(
+    ej: Ejecutor,
+    pedidoId: string,
+  ): Promise<{ nombre: string; email: string } | null> {
     const [c] = await ej
       .select({ nombre: pedidoCompradores.nombre, email: pedidoCompradores.email })
       .from(pedidoCompradores)
@@ -47,7 +50,10 @@ export class ServicioCompradores {
 
   /** Solo para el panel del administrador. */
   async paraPanel(ej: Ejecutor, pedidoId: string): Promise<CompradorParaPanel | null> {
-    const [c] = await ej.select().from(pedidoCompradores).where(eq(pedidoCompradores.pedidoId, pedidoId));
+    const [c] = await ej
+      .select()
+      .from(pedidoCompradores)
+      .where(eq(pedidoCompradores.pedidoId, pedidoId));
     if (!c) return null;
     return {
       nombre: c.nombre,

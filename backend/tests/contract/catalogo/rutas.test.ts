@@ -13,7 +13,11 @@ import { sembrarBase } from '../../../db/seed/base.js';
 import { MEDIDAS, sembrarCatalogo } from '../../../db/seed/catalogo.js';
 import { construirServidor } from '../../../src/http/server.js';
 import { crearProducto, crearVehiculo } from '../../setup/fixtures.js';
-import { crearContextoDePrueba, prepararBase, type ContextoDePrueba } from '../../setup/contexto.js';
+import {
+  crearContextoDePrueba,
+  prepararBase,
+  type ContextoDePrueba,
+} from '../../setup/contexto.js';
 
 let p: ContextoDePrueba;
 let app: FastifyInstance;
@@ -24,8 +28,16 @@ beforeAll(async () => {
   p = crearContextoDePrueba();
   await sembrarBase(p.ctx.db, { mailAdmin: 'admin@tienda.test' });
   await sembrarCatalogo(p.ctx.db);
-  await crearVehiculo(p.ctx.db, { marca: 'Volkswagen', modelo: 'Gol Trend', desde: 2008, hasta: 2023, medidas: ['12x65'] });
-  slugProducto = (await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x65', gama: 'economica' })).slug;
+  await crearVehiculo(p.ctx.db, {
+    marca: 'Volkswagen',
+    modelo: 'Gol Trend',
+    desde: 2008,
+    hasta: 2023,
+    medidas: ['12x65'],
+  });
+  slugProducto = (
+    await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x65', gama: 'economica' })
+  ).slug;
   app = await construirServidor(p.ctx, { sinLimites: true });
   await app.ready();
 });
@@ -58,7 +70,8 @@ describe('contratos de catálogo y buscador', () => {
     const ficha = FichaProducto.parse(r.json());
     expect(ficha.slug).toBe(slugProducto);
     const crudo = r.json() as Record<string, unknown>;
-    for (const interno of ['stock', 'estado', 'sku', 'fuente', 'marcaId']) expect(crudo).not.toHaveProperty(interno);
+    for (const interno of ['stock', 'estado', 'sku', 'fuente', 'marcaId'])
+      expect(crudo).not.toHaveProperty(interno);
     expect((await get('/catalogo/productos/no-existe')).statusCode).toBe(404);
   });
 
@@ -66,10 +79,18 @@ describe('contratos de catálogo y buscador', () => {
     expect(z.array(OpcionVehiculo).parse((await get('/vehiculos/marcas')).json())).toEqual([
       { nombre: 'Volkswagen', slug: 'volkswagen' },
     ]);
-    expect(z.array(OpcionVehiculo).parse((await get('/vehiculos/modelos?marca=volkswagen')).json())).toHaveLength(1);
-    expect(z.array(z.number()).parse((await get('/vehiculos/anios?marca=volkswagen&modelo=gol-trend')).json())).toHaveLength(16);
+    expect(
+      z.array(OpcionVehiculo).parse((await get('/vehiculos/modelos?marca=volkswagen')).json()),
+    ).toHaveLength(1);
+    expect(
+      z
+        .array(z.number())
+        .parse((await get('/vehiculos/anios?marca=volkswagen&modelo=gol-trend')).json()),
+    ).toHaveLength(16);
     const r = await get('/vehiculos/compatibles?marca=volkswagen&modelo=gol-trend&anio=2015');
     expect(ResultadoCompatibles.parse(r.json()).grupos).toHaveLength(1);
-    expect((await get('/vehiculos/compatibles?marca=volkswagen&modelo=gol-trend&anio=abc')).statusCode).toBe(400);
+    expect(
+      (await get('/vehiculos/compatibles?marca=volkswagen&modelo=gol-trend&anio=abc')).statusCode,
+    ).toBe(400);
   });
 });

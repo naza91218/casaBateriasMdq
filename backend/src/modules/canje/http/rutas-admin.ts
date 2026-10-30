@@ -11,7 +11,13 @@ export function rutasAdminCanje(deps: { canje: ServicioAdminCanje }): FastifyPlu
     // Con formato=csv devuelve la planilla para abrir en Excel.
     app.get(
       '/consultas-canje',
-      { schema: { tags, querystring: FiltroConsultasCanje, response: { 200: z.union([z.array(ConsultaCanjeAdmin), z.string()]) } } },
+      {
+        schema: {
+          tags,
+          querystring: FiltroConsultasCanje,
+          response: { 200: z.union([z.array(ConsultaCanjeAdmin), z.string()]) },
+        },
+      },
       async (req, reply) => {
         if (req.query.formato === 'csv') {
           return reply

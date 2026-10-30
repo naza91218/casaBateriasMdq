@@ -37,7 +37,13 @@ export class ServicioPagosMercadoPago {
   ) {}
 
   async procesar(n: NotificacionMp): Promise<ResultadoNotificacion> {
-    if (!this.pasarela.verificarFirma({ idRecurso: n.idPago, requestId: n.requestId, cabeceraFirma: n.firma })) {
+    if (
+      !this.pasarela.verificarFirma({
+        idRecurso: n.idPago,
+        requestId: n.requestId,
+        cabeceraFirma: n.firma,
+      })
+    ) {
       throw new ErrorDeDominio('no_autorizado', 'FIRMA_INVALIDA', 'Firma inválida');
     }
     if (n.tipo !== 'payment') return 'ignorada';
@@ -47,7 +53,11 @@ export class ServicioPagosMercadoPago {
     if (!pago.referenciaExterna) return 'ignorada';
 
     return this.db.transaction(async (tx) => {
-      const [pedido] = await tx.select().from(pedidos).where(eq(pedidos.id, pago.referenciaExterna ?? '')).for('update');
+      const [pedido] = await tx
+        .select()
+        .from(pedidos)
+        .where(eq(pedidos.id, pago.referenciaExterna ?? ''))
+        .for('update');
       if (!pedido) return 'ignorada';
 
       // Idempotencia (FR-025): si ya teníamos este pago con el mismo estado, no se hace nada.
@@ -72,7 +82,10 @@ export class ServicioPagosMercadoPago {
 
       if (pago.estado !== 'approved') return 'registrado';
       if (pedido.estado === 'cancelado') {
-        await this.alertar(tx, pedido.id, 'pago_sobre_cancelado', { pagoId: pago.id, monto: Number(pago.montoCentavos) });
+        await this.alertar(tx, pedido.id, 'pago_sobre_cancelado', {
+          pagoId: pago.id,
+          monto: Number(pago.montoCentavos),
+        });
         return 'alerta_pago_sobre_cancelado';
       }
       if (pedido.estado !== 'pendiente_pago') return 'registrado';
@@ -100,9 +113,23 @@ export class ServicioPagosMercadoPago {
     tipo: 'monto_distinto' | 'pago_sobre_cancelado',
     detalle: Record<string, unknown>,
   ): Promise<void> {
-    const [alerta] = await tx.insert(alertas).values({ pedidoId, tipo, detalle }).returning({ id: alertas.id });
-    const [pedido] = await tx.select({ numero: pedidos.numero }).from(pedidos).where(eq(pedidos.id, pedidoId));
-    const datos = { tipo, numero: pedido?.numero, urlPanel: this.urlPanelPedido(pedidoId), ...detalle };
-    await this.outbox.encolar(tx, mail(MAILS.alertaDePago.admin, 'admin', String(alerta?.id), datos, pedidoId));
+    const [alerta] = await tx
+      .insert(alertas)
+      .values({ pedidoId, tipo, detalle })
+      .returning({ id: alertas.id });
+    const [pedido] = await tx
+      .select({ numero: pedidos.numero })
+      .from(pedidos)
+      .where(eq(pedidos.id, pedidoId));
+    const datos = {
+      tipo,
+      numero: pedido?.numero,
+      urlPanel: this.urlPanelPedido(pedidoId),
+      ...detalle,
+    };
+    await this.outbox.encolar(
+      tx,
+      mail(MAILS.alertaDePago.admin, 'admin', String(alerta?.id), datos, pedidoId),
+    );
   }
 }

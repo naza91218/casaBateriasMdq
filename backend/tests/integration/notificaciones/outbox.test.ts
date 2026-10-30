@@ -3,7 +3,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { MAX_INTENTOS } from '../../../src/modules/notificaciones/application/outbox.js';
 import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructure/schema.js';
 import { MINUTO } from '../../../src/shared-kernel/reloj.js';
-import { crearContextoDePrueba, prepararBase, type ContextoDePrueba } from '../../setup/contexto.js';
+import {
+  crearContextoDePrueba,
+  prepararBase,
+  type ContextoDePrueba,
+} from '../../setup/contexto.js';
 
 let p: ContextoDePrueba;
 
