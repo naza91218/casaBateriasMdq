@@ -29,6 +29,13 @@
       "when": 1793328555241,
       "tag": "0003_importaciones",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793330271593,
+      "tag": "0004_anios_opcionales",
+      "breakpoints": true
     }
   ]
 }

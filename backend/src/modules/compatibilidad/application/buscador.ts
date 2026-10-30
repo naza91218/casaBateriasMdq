@@ -25,16 +25,20 @@ export class ServicioBuscador {
     return this.repo.modelos(marcaSlug);
   }
 
-  /** Años cubiertos por algún rango cargado, del más nuevo al más viejo. */
+  /**
+   * Años cubiertos por algún rango cargado, del más nuevo al más viejo. Vacío = el modelo no
+   * distingue años y el buscador saltea ese paso (FR-010).
+   */
   async anios(marcaSlug: string, modeloSlug: string): Promise<number[]> {
     const anios = new Set<number>();
     for (const r of await this.repo.rangos(marcaSlug, modeloSlug)) {
+      if (r.desde === null || r.hasta === null) continue;
       for (let a = r.desde; a <= r.hasta; a++) anios.add(a);
     }
     return [...anios].sort((a, b) => b - a);
   }
 
-  async compatibles(marcaSlug: string, modeloSlug: string, anio: number): Promise<ResultadoCompatibles> {
+  async compatibles(marcaSlug: string, modeloSlug: string, anio?: number): Promise<ResultadoCompatibles> {
     const [filas, config] = await Promise.all([
       this.repo.vehiculosEnAnio(marcaSlug, modeloSlug, anio),
       this.configuracion.obtener(),
@@ -42,7 +46,7 @@ export class ServicioBuscador {
     const marca = filas[0]?.marca ?? desdeSlug(marcaSlug);
     const modelo = filas[0]?.modelo ?? desdeSlug(modeloSlug);
     const whatsapp = enlaceWhatsapp(config.whatsapp, mensajes.buscoAuto(marca, modelo, anio));
-    const vehiculo = { marca, modelo, anio };
+    const vehiculo = { marca, modelo, anio: anio ?? null };
 
     if (filas.length === 0) {
       return { vehiculo, medidas: [], grupos: [], sinResultados: 'auto_no_cargado', whatsapp };

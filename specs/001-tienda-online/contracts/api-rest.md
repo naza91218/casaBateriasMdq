@@ -29,8 +29,8 @@ los recursos, las reglas y los códigos; los nombres de campos detallados viven 
 | `GET /catalogo/productos/:slug` | Ficha completa: fotos, especificaciones, precios, autos compatibles, servicio incluido. 404 si no está `activo` | FR-006, FR-007, FR-008 |
 | `GET /vehiculos/marcas` | Marcas de autos con datos | FR-010 |
 | `GET /vehiculos/modelos?marca=` | Modelos de la marca | FR-010 |
-| `GET /vehiculos/anios?marca=&modelo=` | Años disponibles | FR-010 |
-| `GET /vehiculos/compatibles?marca=&modelo=&anio=` | `{ vehiculo, medidas, grupos: [{gama, productos}], sinResultados: null \| "auto_no_cargado" \| "sin_stock", whatsapp: { url, mensaje } }` | FR-011, FR-012 |
+| `GET /vehiculos/anios?marca=&modelo=` | Años disponibles. Lista vacía = el modelo no distingue años: saltear el paso | FR-010 |
+| `GET /vehiculos/compatibles?marca=&modelo=&anio=` (`anio` opcional) | `{ vehiculo, medidas, grupos: [{gama, productos}], sinResultados: null \| "auto_no_cargado" \| "sin_stock", whatsapp: { url, mensaje } }` | FR-011, FR-012 |
 | `GET /vehiculos/:marcaSlug/:modeloSlug` | Datos de la página de auto: medidas por rango de años, productos, preguntas frecuentes | FR-053, FR-072 |
 | `GET /configuracion/publica` | Descuento, WhatsApp, horarios, datos del comercio, zonas activas, URL de reseñas | FR-047, FR-057, FR-073 |
 | `GET /seo/indice` | Slugs de productos activos y modelos con compatibilidad, con fecha de actualización (para sitemap y `llms.txt`) | FR-055, FR-074 |

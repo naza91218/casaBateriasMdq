@@ -3,7 +3,10 @@ import { check, index, pgTable, primaryKey, smallint, text, uniqueIndex, uuid } 
 import { idUuid } from '../../../platform/columnas.js';
 import { medidas } from '../../catalogo/infrastructure/schema.js';
 
-/** Un auto y su rango de años. Motor null = cualquier motor (FR-009). */
+/**
+ * Un auto y su rango de años. Años null = todos los años; motor null = cualquier motor (FR-009,
+ * clarify 2026-10-30).
+ */
 export const vehiculos = pgTable(
   'vehiculos',
   {
@@ -12,18 +15,21 @@ export const vehiculos = pgTable(
     marcaSlug: text('marca_slug').notNull(),
     modelo: text('modelo').notNull(),
     modeloSlug: text('modelo_slug').notNull(),
-    anioDesde: smallint('anio_desde').notNull(),
-    anioHasta: smallint('anio_hasta').notNull(),
+    anioDesde: smallint('anio_desde'),
+    anioHasta: smallint('anio_hasta'),
     motor: text('motor'),
     fuente: text('fuente').notNull().default('manual'),
   },
   (t) => [
-    check('vehiculos_rango_anios', sql`${t.anioHasta} >= ${t.anioDesde}`),
+    check(
+      'vehiculos_rango_anios',
+      sql`(${t.anioDesde} is null and ${t.anioHasta} is null) or (${t.anioDesde} is not null and ${t.anioHasta} >= ${t.anioDesde})`,
+    ),
     uniqueIndex('vehiculos_unico').on(
       t.marcaSlug,
       t.modeloSlug,
-      t.anioDesde,
-      t.anioHasta,
+      sql`coalesce(${t.anioDesde}, 0)`,
+      sql`coalesce(${t.anioHasta}, 0)`,
       sql`coalesce(${t.motor}, '')`,
     ),
     index('vehiculos_marca_modelo_idx').on(t.marcaSlug, t.modeloSlug),

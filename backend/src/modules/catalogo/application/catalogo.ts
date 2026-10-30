@@ -23,8 +23,8 @@ import type {
 export interface AutoCompatible {
   marca: string;
   modelo: string;
-  anioDesde: number;
-  anioHasta: number;
+  anioDesde: number | null;
+  anioHasta: number | null;
 }
 
 export interface DependenciasCatalogo {

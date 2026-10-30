@@ -25,8 +25,8 @@ const COLUMNAS: Record<TipoImportacion, { obligatorias: string[]; opcionales: st
     opcionales: ['cca', 'descripcion', 'precio_lista', 'stock', 'fotos', 'fuente'],
   },
   compatibilidades: {
-    obligatorias: ['marca_auto', 'modelo', 'anio_desde', 'anio_hasta', 'medidas'],
-    opcionales: ['motor', 'fuente'],
+    obligatorias: ['marca_auto', 'modelo', 'medidas'],
+    opcionales: ['anio_desde', 'anio_hasta', 'motor', 'fuente'],
   },
 };
 
@@ -70,8 +70,9 @@ const filaCompatibilidad = (anioMaximo: number) => {
     .object({
       marca_auto: z.string().min(2, 'Falta la marca del auto').max(60),
       modelo: z.string().min(1, 'Falta el modelo').max(80),
-      anio_desde: anio,
-      anio_hasta: anio,
+      // Vacíos = el auto vale para todos sus años (clarify 2026-10-30).
+      anio_desde: opcional(anio),
+      anio_hasta: opcional(anio),
       motor: opcional(z.string().max(60)),
       medidas: z
         .string()
@@ -80,7 +81,14 @@ const filaCompatibilidad = (anioMaximo: number) => {
         .pipe(z.array(z.string().regex(/^\d+x\d+$/, 'Cada medida va como 12x65')).min(1, 'Falta la medida')),
       fuente: opcional(z.string().max(100)),
     })
-    .refine((f) => f.anio_hasta >= f.anio_desde, { path: ['anio_hasta'], message: 'El año hasta no puede ser menor que el desde' });
+    .refine((f) => (f.anio_desde === undefined) === (f.anio_hasta === undefined), {
+      path: ['anio_hasta'],
+      message: 'Cargá los dos años o ninguno',
+    })
+    .refine((f) => f.anio_desde === undefined || f.anio_hasta === undefined || f.anio_hasta >= f.anio_desde, {
+      path: ['anio_hasta'],
+      message: 'El año hasta no puede ser menor que el desde',
+    });
 };
 
 /** Para bajar fotos por URL: solo http(s) a direcciones públicas (evita que pidan al propio servidor). */
@@ -251,7 +259,7 @@ export class ServicioImportacion {
         const { creado } = await this.db.transaction((tx) =>
           guardarVehiculo(
             tx,
-            { marca: d.marca_auto, modelo: d.modelo, anioDesde: d.anio_desde, anioHasta: d.anio_hasta, motor: d.motor ?? null, medidas: d.medidas },
+            { marca: d.marca_auto, modelo: d.modelo, anioDesde: d.anio_desde ?? null, anioHasta: d.anio_hasta ?? null, motor: d.motor ?? null, medidas: d.medidas },
             d.fuente ?? 'planilla',
           ),
         );

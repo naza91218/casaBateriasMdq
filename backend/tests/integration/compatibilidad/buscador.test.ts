@@ -82,3 +82,31 @@ describe('buscador por auto (US1)', () => {
     expect(r.grupos.flatMap((g) => g.productos)).toHaveLength(2);
   });
 });
+
+describe('autos sin años (clarify 2026-10-30)', () => {
+  test('un modelo sin años no pide año y muestra el resultado directo', async () => {
+    await crearVehiculo(p.ctx.db, { marca: 'Fiat', modelo: 'Palio', medidas: ['12x65'] });
+    await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x65', gama: 'economica' });
+
+    expect(await buscador().anios('fiat', 'palio')).toEqual([]);
+    const r = await buscador().compatibles('fiat', 'palio');
+    expect(r.vehiculo).toEqual({ marca: 'Fiat', modelo: 'Palio', anio: null });
+    expect(r.medidas).toEqual(['12x65']);
+    expect(r.sinResultados).toBeNull();
+  });
+
+  test('si el modelo mezcla, los años salen de los rangos y lo cargado sin años vale para todos', async () => {
+    await crearVehiculo(p.ctx.db, { marca: 'Chevrolet', modelo: 'S10', medidas: ['12x75'] });
+    await crearVehiculo(p.ctx.db, { marca: 'Chevrolet', modelo: 'S10', desde: 2016, hasta: 2024, medidas: ['12x90'] });
+
+    expect(await buscador().anios('chevrolet', 's10')).toEqual([2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016]);
+    expect((await buscador().compatibles('chevrolet', 's10', 2020)).medidas).toEqual(['12x75', '12x90']);
+    expect((await buscador().compatibles('chevrolet', 's10', 2010)).medidas).toEqual(['12x75']);
+  });
+
+  test('sin año, el WhatsApp no menciona año', async () => {
+    const r = await buscador().compatibles('renault', 'twingo');
+    expect(r.sinResultados).toBe('auto_no_cargado');
+    expect(r.whatsapp.mensaje).toBe('Hola, busco batería para un Renault Twingo');
+  });
+});

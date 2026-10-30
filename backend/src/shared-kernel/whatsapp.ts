@@ -32,7 +32,7 @@ export function telefonoArgentino(telefono: string): string {
 }
 
 export const mensajes = {
-  buscoAuto: (marca: string, modelo: string, anio: number | string) =>
-    `Hola, busco batería para un ${marca} ${modelo} ${anio}`,
+  buscoAuto: (marca: string, modelo: string, anio?: number | string | null) =>
+    `Hola, busco batería para un ${marca} ${modelo}${anio ? ` ${anio}` : ''}`,
   consultaProducto: (nombre: string) => `Hola, quiero consultar por la batería ${nombre}`,
 };

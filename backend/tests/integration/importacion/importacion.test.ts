@@ -226,3 +226,22 @@ describe('fotos por URL: solo direcciones públicas', () => {
     expect(urlDeFotoPermitida(url)).toBe(permitida);
   });
 });
+
+describe('compatibilidades sin años (clarify 2026-10-30)', () => {
+  const ENC = 'marca_auto,modelo,anio_desde,anio_hasta,motor,medidas,fuente';
+
+  test('sin columnas ni valores de años se cargan para todos los años', async () => {
+    const r = await importacion.importar('compatibilidades', 'sermat.csv', csv(['marca_auto,modelo,medidas', 'Fiat,Palio,12x65|12x70']), null);
+    expect(r).toMatchObject({ filasOk: 1, creados: 1 });
+    expect(await p.ctx.servicios.buscador.anios('fiat', 'palio')).toEqual([]);
+    expect((await p.ctx.servicios.buscador.compatibles('fiat', 'palio')).medidas).toEqual(['12x65', '12x70']);
+
+    const otra = await importacion.importar('compatibilidades', 'sermat.csv', csv([ENC, 'Fiat,Palio,,,,12x65,']), null);
+    expect(otra).toMatchObject({ creados: 0, actualizados: 1 });
+  });
+
+  test('un solo año cargado es un error de esa fila', async () => {
+    const r = await importacion.importar('compatibilidades', 'x.csv', csv([ENC, 'Fiat,Uno,2010,,,12x65,']), null);
+    expect(r.errores).toEqual([{ fila: 2, campo: 'anio_hasta', motivo: 'Cargá los dos años o ninguno' }]);
+  });
+});

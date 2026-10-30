@@ -71,12 +71,12 @@ Reglas:
 | marca_slug | text | |
 | modelo | text | Ej. "Gol Trend" |
 | modelo_slug | text | |
-| anio_desde | smallint | |
-| anio_hasta | smallint | `CHECK (anio_hasta >= anio_desde)` |
+| anio_desde | smallint null | null = todos los años (clarify 2026-10-30) |
+| anio_hasta | smallint null | `CHECK` los dos null o los dos cargados con `anio_hasta >= anio_desde` |
 | motor | text | null = cualquier motor |
 | fuente | text | |
 
-UNIQUE `(marca_slug, modelo_slug, anio_desde, anio_hasta, coalesce(motor, ''))`.
+UNIQUE `(marca_slug, modelo_slug, coalesce(anio_desde, 0), coalesce(anio_hasta, 0), coalesce(motor, ''))`.
 
 ### `vehiculo_medidas`
 | Campo | Tipo | Reglas |
@@ -85,8 +85,9 @@ UNIQUE `(marca_slug, modelo_slug, anio_desde, anio_hasta, coalesce(motor, ''))`.
 | medida | text FK → medidas | PK compuesta |
 
 Búsqueda (FR-010, FR-011): marcas con datos → modelos de la marca → años del rango (unión de
-`anio_desde..anio_hasta`) → medidas del vehículo → productos `activo` con `stock > 0` de esas
-medidas, agrupados por gama (económica primero).
+`anio_desde..anio_hasta`; si no hay vehículos con años, el paso se saltea) → medidas de los
+vehículos que cubren ese año más los que no tienen años → productos `activo` con `stock > 0` de
+esas medidas, agrupados por gama (económica primero).
 
 ## Pedidos (`pedidos`)
 

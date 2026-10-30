@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, lte } from 'drizzle-orm';
+import { and, asc, eq, gte, isNotNull, isNull, lte, or } from 'drizzle-orm';
 import type { Ejecutor } from '../../../platform/db.js';
 import { vehiculoMedidas, vehiculos } from './schema.js';
 
@@ -28,11 +28,14 @@ export class RepositorioCompatibilidad {
       .selectDistinct({ desde: vehiculos.anioDesde, hasta: vehiculos.anioHasta })
       .from(vehiculos)
       .innerJoin(vehiculoMedidas, eq(vehiculoMedidas.vehiculoId, vehiculos.id))
-      .where(and(eq(vehiculos.marcaSlug, marcaSlug), eq(vehiculos.modeloSlug, modeloSlug)));
+      .where(and(eq(vehiculos.marcaSlug, marcaSlug), eq(vehiculos.modeloSlug, modeloSlug), isNotNull(vehiculos.anioDesde)));
   }
 
-  /** Vehículos del modelo que cubren ese año, con sus medidas. */
-  vehiculosEnAnio(marcaSlug: string, modeloSlug: string, anio: number) {
+  /**
+   * Vehículos del modelo que cubren ese año más los cargados sin años (valen para todos). Sin
+   * año, solo los que no distinguen años.
+   */
+  vehiculosEnAnio(marcaSlug: string, modeloSlug: string, anio?: number) {
     return this.db
       .select({
         marca: vehiculos.marca,
@@ -45,8 +48,9 @@ export class RepositorioCompatibilidad {
         and(
           eq(vehiculos.marcaSlug, marcaSlug),
           eq(vehiculos.modeloSlug, modeloSlug),
-          lte(vehiculos.anioDesde, anio),
-          gte(vehiculos.anioHasta, anio),
+          anio === undefined
+            ? isNull(vehiculos.anioDesde)
+            : or(isNull(vehiculos.anioDesde), and(lte(vehiculos.anioDesde, anio), gte(vehiculos.anioHasta, anio))),
         ),
       );
   }

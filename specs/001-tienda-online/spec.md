@@ -21,6 +21,16 @@
 
 ## Clarifications
 
+### Session 2026-10-30
+
+- Q: El catálogo oficial de Sermat dice qué batería lleva cada modelo pero casi nunca de qué
+  años. ¿Cómo se cargan esos autos? → A: Año opcional. Un vehículo sin años vale para todos sus
+  años; si el modelo no tiene ningún vehículo con años, el buscador saltea ese paso (FR-009,
+  FR-010).
+- Q: Sermat distingue borne alto/bajo y polo derecho/izquierdo ("12-75 BD"). ¿El buscador los
+  usa? → A: No por ahora: la compatibilidad sigue siendo por medida. El código del fabricante se
+  guarda como dato informativo y se verifica al colocar la batería.
+
 ### Session 2026-10-29
 
 - Q: ¿Cómo funciona el canje de la batería usada? → A: No se cotiza ni descuenta en la tienda
@@ -391,14 +401,17 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 
 #### Buscador por auto
 
-- **FR-009**: Cada vehículo MUST tener marca, modelo, año desde, año hasta y motor opcional, y
-  estar asociado a una o más medidas (R-BUS-01, R-BUS-02).
+- **FR-009**: Cada vehículo MUST tener marca, modelo, rango de años opcional (año desde y año
+  hasta, los dos o ninguno) y motor opcional, y estar asociado a una o más medidas. Un vehículo
+  sin años vale para todos sus años (R-BUS-01, R-BUS-02; clarify 2026-10-30).
 - **FR-010**: El buscador MUST pedir marca → modelo → año, en ese orden, mostrando en cada paso
-  solo opciones con datos (R-BUS-03).
+  solo opciones con datos (R-BUS-03). Si el modelo no tiene ningún vehículo con años, el paso del
+  año se saltea y se muestra el resultado directamente.
 - **FR-011**: El resultado MUST mostrar todos los productos activos con stock de las medidas
   compatibles, agrupados por gama, la económica primero (R-BUS-04).
 - **FR-012**: Si el auto no está cargado o no hay stock de su medida, MUST ofrecerse WhatsApp con
-  el mensaje "Hola, busco batería para un {marca} {modelo} {año}" (R-BUS-05).
+  el mensaje "Hola, busco batería para un {marca} {modelo} {año}" (sin el año si no se pidió)
+  (R-BUS-05).
 - **FR-013**: El buscador MUST estar en la portada, en el catálogo y accesible desde el encabezado
   de cada página en el celular (R-BUS-06).
 - **FR-014**: La tienda MUST recordar en el dispositivo el último auto elegido (R-BUS-08).
@@ -606,7 +619,7 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   ordenadas, fuente de los datos.
 - **Marca:** lista cerrada de fabricantes (Sermat, Herbo, Volta, Edna).
 - **Medida:** formato de batería (12x65…); es el puente entre autos y productos.
-- **Vehículo:** marca, modelo, rango de años y motor opcional; se asocia a una o más medidas.
+- **Vehículo:** marca, modelo, rango de años opcional y motor opcional; se asocia a una o más medidas.
 - **Pedido:** número correlativo, código privado de seguimiento, estado, forma de entrega, zona,
   medio de pago, subtotal, descuento, costo de zona, total, vencimiento, fecha.
 - **Ítem del pedido:** producto, cantidad y precio unitario al momento de la compra.

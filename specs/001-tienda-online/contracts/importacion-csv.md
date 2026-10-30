@@ -38,8 +38,8 @@ FR-070. El scraper (`tools/scraper/`) genera exactamente estos formatos.
 | :- | :- | :- |
 | `marca_auto` | sí | Ej. "Volkswagen" |
 | `modelo` | sí | Ej. "Gol Trend" |
-| `anio_desde` | sí | 1950–año actual + 1 |
-| `anio_hasta` | sí | ≥ `anio_desde` |
+| `anio_desde` | no | 1950–año actual + 1. Vacío junto con `anio_hasta` = todos los años |
+| `anio_hasta` | no | ≥ `anio_desde`. Se cargan los dos o ninguno |
 | `motor` | no | Ej. "1.6 nafta" |
 | `medidas` | sí | Una o más medidas existentes separadas por `\|` |
 | `fuente` | no | |

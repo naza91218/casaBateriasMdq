@@ -49,7 +49,7 @@ export async function crearProducto(
 
 export async function crearVehiculo(
   db: BaseDeDatos,
-  datos: { marca: string; modelo: string; desde: number; hasta: number; medidas: string[] },
+  datos: { marca: string; modelo: string; desde?: number | null; hasta?: number | null; medidas: string[] },
 ) {
   const [v] = await db
     .insert(vehiculos)
@@ -58,8 +58,8 @@ export async function crearVehiculo(
       marcaSlug: slug(datos.marca),
       modelo: datos.modelo,
       modeloSlug: slug(datos.modelo),
-      anioDesde: datos.desde,
-      anioHasta: datos.hasta,
+      anioDesde: datos.desde ?? null,
+      anioHasta: datos.hasta ?? null,
       fuente: 'test',
     })
     .returning();

@@ -120,8 +120,8 @@ export const VehiculoAdmin = z.object({
   id: z.string(),
   marca: z.string(),
   modelo: z.string(),
-  anioDesde: z.number().int(),
-  anioHasta: z.number().int(),
+  anioDesde: z.number().int().nullable(),
+  anioHasta: z.number().int().nullable(),
   motor: z.string().nullable(),
   medidas: z.array(z.string()),
   fuente: z.string(),
@@ -142,12 +142,20 @@ export const DatosVehiculo = z
   .object({
     marca: z.string().trim().min(2, 'Escribí la marca del auto').max(60),
     modelo: z.string().trim().min(1, 'Escribí el modelo').max(80),
-    anioDesde: anio,
-    anioHasta: anio,
+    // Sin años = vale para todos los años del modelo (clarify 2026-10-30).
+    anioDesde: anio.nullable().optional(),
+    anioHasta: anio.nullable().optional(),
     motor: vacioONulo(z.string().trim().max(60)).optional(),
     medidas: z.array(medida).min(1, 'Elegí al menos una medida'),
   })
-  .refine((v) => v.anioHasta >= v.anioDesde, { path: ['anioHasta'], message: 'El año hasta no puede ser menor que el desde' });
+  .refine((v) => (v.anioDesde == null) === (v.anioHasta == null), {
+    path: ['anioHasta'],
+    message: 'Cargá los dos años o ninguno',
+  })
+  .refine((v) => v.anioDesde == null || v.anioHasta == null || v.anioHasta >= v.anioDesde, {
+    path: ['anioHasta'],
+    message: 'El año hasta no puede ser menor que el desde',
+  });
 export type DatosVehiculo = z.infer<typeof DatosVehiculo>;
 
 // ── Configuración y zonas ────────────────────────────────────────────────────

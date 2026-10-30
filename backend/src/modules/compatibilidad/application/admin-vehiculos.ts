@@ -15,8 +15,9 @@ export const etiquetaVehiculo = (marca: string, modelo: string) => `vehiculo:${s
 export interface ClaveVehiculo {
   marca: string;
   modelo: string;
-  anioDesde: number;
-  anioHasta: number;
+  /** null = todos los años (clarify 2026-10-30). */
+  anioDesde?: number | null | undefined;
+  anioHasta?: number | null | undefined;
   motor?: string | null | undefined;
 }
 
@@ -135,8 +136,8 @@ function camposVehiculo(d: ClaveVehiculo) {
     marcaSlug: slug(d.marca),
     modelo: d.modelo.trim(),
     modeloSlug: slug(d.modelo),
-    anioDesde: d.anioDesde,
-    anioHasta: d.anioHasta,
+    anioDesde: d.anioDesde ?? null,
+    anioHasta: d.anioHasta ?? null,
     motor: d.motor?.trim() || null,
   };
 }
@@ -150,8 +151,8 @@ export async function buscarPorClave(ej: Ejecutor, c: ClaveVehiculo): Promise<st
       and(
         eq(vehiculos.marcaSlug, slug(c.marca)),
         eq(vehiculos.modeloSlug, slug(c.modelo)),
-        eq(vehiculos.anioDesde, c.anioDesde),
-        eq(vehiculos.anioHasta, c.anioHasta),
+        sql`coalesce(${vehiculos.anioDesde}, 0) = ${c.anioDesde ?? 0}`,
+        sql`coalesce(${vehiculos.anioHasta}, 0) = ${c.anioHasta ?? 0}`,
         sql`coalesce(${vehiculos.motor}, '') = ${c.motor?.trim() || ''}`,
       ),
     );

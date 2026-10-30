@@ -231,3 +231,20 @@ describe('consultas de canje (FR-004b)', () => {
     expect(csv.body).toContain(`"'=HYPERLINK(""http://malo"")"`);
   });
 });
+
+describe('autos sin años por HTTP (clarify 2026-10-30)', () => {
+  test('se cargan desde el panel y el buscador público responde sin año', async () => {
+    const alta = await api('POST', '/vehiculos', { marca: 'Renault', modelo: 'Kangoo', medidas: ['12x70'] });
+    expect(alta.statusCode).toBe(201);
+    expect(VehiculoAdmin.parse(alta.json())).toMatchObject({ anioDesde: null, anioHasta: null });
+
+    expect((await app.inject({ method: 'GET', url: '/api/v1/vehiculos/anios?marca=renault&modelo=kangoo' })).json()).toEqual([]);
+    const r = await app.inject({ method: 'GET', url: '/api/v1/vehiculos/compatibles?marca=renault&modelo=kangoo' });
+    expect(r.statusCode).toBe(200);
+    expect(r.json()).toMatchObject({ vehiculo: { anio: null }, medidas: ['12x70'] });
+
+    const mitad = await api('POST', '/vehiculos', { marca: 'Renault', modelo: 'Kangoo', anioDesde: 2010, medidas: ['12x70'] });
+    expect(mitad.statusCode).toBe(400);
+    expect(ErrorRespuesta.parse(mitad.json()).error.campos?.anioHasta).toBe('Cargá los dos años o ninguno');
+  });
+});

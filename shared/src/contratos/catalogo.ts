@@ -51,8 +51,9 @@ export const FichaProducto = ItemProducto.extend({
     z.object({
       marca: z.string(),
       modelo: z.string(),
-      anioDesde: z.number().int(),
-      anioHasta: z.number().int(),
+      /** null = todos los años (clarify 2026-10-30). */
+      anioDesde: z.number().int().nullable(),
+      anioHasta: z.number().int().nullable(),
     }),
   ),
   whatsapp: Whatsapp,
