@@ -103,13 +103,21 @@ describe('autos compatibles', () => {
     expect(fragmentar('Clio mio-palio 8v-Ford ka y Ecosport 1ra gen.')).toEqual(['Clio mio', 'palio 8v', 'Ford ka', 'Ecosport 1ra gen.']);
   });
 
-  test('un auto con varias medidas queda en una fila; lo no reconocido va al final sin marca', () => {
+  test('un auto con varias medidas queda en una fila; lo no reconocido va aparte sin marca', () => {
     const a = new AcumuladorCompatibilidades();
-    a.agregar(['VW Gol 1.0', 'Autoelevadores'], '12x65', 'herbo');
-    a.agregar(['VW.Gol 1.0'], '12x45', 'peiro');
-    const filas = a.resultado();
-    expect(filas[0]).toMatchObject({ marca_auto: 'Volkswagen', modelo: 'Gol', motor: '1.0', medidas: '12x45|12x65', anio_desde: '', fuente: 'herbo | peiro' });
-    expect(filas.at(-1)).toMatchObject({ marca_auto: '', modelo: 'Autoelevadores', medidas: '12x65' });
+    a.agregar(['VW Gol 1.0', 'Autoelevadores'], '12x65', 'https://www.herbobaterias.com/producto/compact/');
+    a.agregar(['VW.Gol 1.0'], '12x45', 'https://www.bateriaspeiro.com.ar/sermat.html');
+    expect(a.resultado()).toEqual([
+      expect.objectContaining({
+        marca_auto: 'Volkswagen',
+        modelo: 'Gol',
+        motor: '1.0',
+        medidas: '12x45|12x65',
+        anio_desde: '',
+        fuente: 'herbobaterias.com | bateriaspeiro.com.ar',
+      }),
+    ]);
+    expect(a.sinReconocerComoFilas()).toEqual([expect.objectContaining({ marca_auto: '', modelo: 'Autoelevadores', medidas: '12x65' })]);
   });
 });
 

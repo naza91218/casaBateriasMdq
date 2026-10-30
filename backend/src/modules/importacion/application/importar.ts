@@ -35,21 +35,26 @@ const opcional = <T extends z.ZodType>(t: T) => z.preprocess((v) => (v === '' ? 
 const entero = (mensaje: string) => z.string().regex(/^\d+$/, mensaje).transform(Number);
 const medida = z
   .string()
+  .min(1, 'Falta la medida, por ejemplo 12x65')
   .transform((m) => m.toLowerCase().replace(/\s/g, ''))
   .pipe(z.string().regex(/^\d+x\d+$/, 'La medida va como 12x65'));
 
 const FilaProducto = z.object({
-  sku: z.string().min(1, 'Falta el código').max(60),
+  sku: z.string().min(1, 'Falta el código').max(60, 'El código puede tener hasta 60 caracteres'),
   marca: z.string().min(1, 'Falta la marca'),
-  nombre: z.string().min(1, 'Falta el nombre').max(150),
+  nombre: z.string().min(1, 'Falta el nombre').max(150, 'El nombre puede tener hasta 150 caracteres'),
   medida,
-  amperaje_ah: entero('El amperaje es un número entero, por ejemplo 65').refine((n) => n > 0, 'El amperaje tiene que ser mayor a 0'),
+  amperaje_ah: z
+    .string()
+    .min(1, 'Falta el amperaje, por ejemplo 65')
+    .pipe(entero('El amperaje es un número entero, por ejemplo 65'))
+    .refine((n) => n > 0, 'El amperaje tiene que ser mayor a 0'),
   cca: opcional(entero('El CCA es un número entero, por ejemplo 450')),
   gama: z
     .string()
     .transform((g) => g.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''))
     .pipe(z.enum(['economica', 'reforzada'], 'La gama es "economica" o "reforzada"')),
-  descripcion: opcional(z.string().max(3000)),
+  descripcion: opcional(z.string().max(3000, 'La descripción puede tener hasta 3000 caracteres')),
   precio_lista: opcional(
     z
       .string()
@@ -58,7 +63,7 @@ const FilaProducto = z.object({
   ),
   stock: opcional(entero('El stock es un número entero, 0 o más')),
   fotos: opcional(z.string()),
-  fuente: opcional(z.string().max(100)),
+  fuente: opcional(z.string().max(100, 'La fuente puede tener hasta 100 caracteres')),
 });
 
 const filaCompatibilidad = (anioMaximo: number) => {
@@ -68,18 +73,18 @@ const filaCompatibilidad = (anioMaximo: number) => {
   );
   return z
     .object({
-      marca_auto: z.string().min(2, 'Falta la marca del auto').max(60),
-      modelo: z.string().min(1, 'Falta el modelo').max(80),
+      marca_auto: z.string().min(2, 'Falta la marca del auto').max(60, 'La marca puede tener hasta 60 caracteres'),
+      modelo: z.string().min(1, 'Falta el modelo').max(80, 'El modelo puede tener hasta 80 caracteres'),
       // Vacíos = el auto vale para todos sus años (clarify 2026-10-30).
       anio_desde: opcional(anio),
       anio_hasta: opcional(anio),
-      motor: opcional(z.string().max(60)),
+      motor: opcional(z.string().max(60, 'El motor puede tener hasta 60 caracteres')),
       medidas: z
         .string()
         .min(1, 'Falta la medida')
         .transform((m) => m.split('|').map((x) => x.trim().toLowerCase().replace(/\s/g, '')).filter(Boolean))
         .pipe(z.array(z.string().regex(/^\d+x\d+$/, 'Cada medida va como 12x65')).min(1, 'Falta la medida')),
-      fuente: opcional(z.string().max(100)),
+      fuente: opcional(z.string().max(100, 'La fuente puede tener hasta 100 caracteres')),
     })
     .refine((f) => (f.anio_desde === undefined) === (f.anio_hasta === undefined), {
       path: ['anio_hasta'],

@@ -231,8 +231,8 @@ cerrado y se refina en ese momento.
 - [X] T110 [US5] Implementar las rutas `/admin/productos*`, `/admin/productos/revision`, fotos, `/admin/importaciones`, `/admin/vehiculos*`, `/admin/configuracion`, `/admin/zonas*`, `/admin/consultas-canje*` en los `http/rutas-admin.ts` de cada módulo, y sumar contadores de productos a revisar y consultas pendientes a `GET /admin/resumen`
 - [X] T111 [P] [US5] Crear el scraper base (CLI, `robots.txt`, 1 pedido cada 2 s, User-Agent identificado, salida CSV con el formato de importación y fotos en `data/import/fotos/`, sin precios) en `tools/scraper/src/`
 - [X] T112 [US5] Implementar la fuente Herbo (catálogo, especificaciones, compatibilidades, fotos) en `tools/scraper/src/fuentes/herbo.ts`
-- [ ] T113 [US5] Implementar la fuente Sermat/Volta desde listas públicas de distribuidores (modelos y aplicaciones) en `tools/scraper/src/fuentes/sermat-volta.ts`
-- [ ] T114 [US5] Crear la planilla manual de Edna con el formato de importación en `tools/scraper/manual/edna.csv` y unificar las tres fuentes en `data/import/productos.csv` y `data/import/compatibilidades.csv`
+- [X] T113 [US5] Implementar la fuente Sermat/Volta desde el catálogo oficial en PDF que pasó el cliente (fichas técnicas y batería estándar/opcional por auto) en `tools/scraper/src/fuentes/sermat-pdf.ts`, con la lista pública de un distribuidor como respaldo en `tools/scraper/src/fuentes/sermat-volta.ts`
+- [X] T114 [US5] Crear la planilla manual de Edna con el formato de importación en `tools/scraper/manual/edna.csv` y unificar las tres fuentes en `data/import/productos.csv` y `data/import/compatibilidades.csv`
 
 **Checkpoint**: validaciones 9 y 10 de [quickstart.md](quickstart.md) pasan; planillas iniciales listas para que Juan las revise
 

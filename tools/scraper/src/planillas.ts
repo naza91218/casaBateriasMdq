@@ -18,8 +18,9 @@ export interface FilaProducto {
 }
 
 /**
- * Compatibilidad en borrador: las fuentes dan el modelo pero no los años. Juan completa
- * `anio_desde` y `anio_hasta` (y corrige la marca si hace falta) antes de importarla.
+ * Compatibilidad con el formato de importación. Los años quedan vacíos (= todos los años, clarify
+ * 2026-10-30) salvo que Juan los complete. `texto_original` y `revisar` son para él: la
+ * importación ignora esas columnas.
  */
 export interface FilaCompatibilidad {
   marca_auto: string;
@@ -30,6 +31,7 @@ export interface FilaCompatibilidad {
   medidas: string;
   fuente: string;
   texto_original: string;
+  revisar: string;
 }
 
 export const COLUMNAS_PRODUCTOS: (keyof FilaProducto)[] = [
@@ -56,6 +58,7 @@ export const COLUMNAS_COMPATIBILIDADES: (keyof FilaCompatibilidad)[] = [
   'medidas',
   'fuente',
   'texto_original',
+  'revisar',
 ];
 
 function celda(valor: string): string {

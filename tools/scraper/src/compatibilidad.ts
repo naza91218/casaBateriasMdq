@@ -96,28 +96,45 @@ export function fragmentar(texto: string): string[] {
 }
 
 /**
- * Junta los autos de todos los productos en filas de compatibilidad. Un mismo auto que aparece
+ * Junta los autos de todas las fuentes en filas de compatibilidad. Un mismo auto que aparece
  * con varias medidas queda en una sola fila con `medidas` "12x45|12x65", porque la importación
  * reemplaza las medidas del vehículo con las de su fila.
  */
 export class AcumuladorCompatibilidades {
-  private readonly filas = new Map<string, { auto: AutoDetectado; medidas: Set<string>; fuentes: Set<string>; textos: Set<string> }>();
+  private readonly filas = new Map<
+    string,
+    { auto: AutoDetectado; medidas: Set<string>; fuentes: Set<string>; textos: Set<string>; revisar: Set<string> }
+  >();
   readonly sinReconocer: { texto: string; medida: string; fuente: string }[] = [];
 
+  /** Texto libre: la marca sale del diccionario de modelos. */
   agregar(fragmentos: string[], medidaProducto: string, fuente: string): void {
     for (const f of fragmentos) {
       const auto = detectarAuto(f);
-      if (!auto) {
-        this.sinReconocer.push({ texto: f, medida: medidaProducto, fuente });
-        continue;
-      }
-      const clave = `${auto.marca}|${auto.modelo}|${auto.motor}`.toLowerCase();
-      const fila = this.filas.get(clave) ?? { auto, medidas: new Set<string>(), fuentes: new Set<string>(), textos: new Set<string>() };
-      if (medidaProducto) fila.medidas.add(medidaProducto);
-      fila.fuentes.add(fuente);
-      fila.textos.add(auto.textoOriginal);
-      this.filas.set(clave, fila);
+      if (!auto) this.sinReconocer.push({ texto: f, medida: medidaProducto, fuente });
+      else this.sumar(auto, medidaProducto ? [medidaProducto] : [], fuente, null);
     }
+  }
+
+  /** Fuente que ya trae la marca (el catálogo de Sermat, ordenado por marca). */
+  agregarConMarca(auto: AutoDetectado, medidas: string[], fuente: string, revisar: string | null): void {
+    this.sumar(auto, medidas, fuente, revisar);
+  }
+
+  private sumar(auto: AutoDetectado, medidas: string[], fuente: string, revisar: string | null): void {
+    const clave = `${normalizar(auto.marca)}|${normalizar(auto.modelo)}|${normalizar(auto.motor)}`;
+    const fila = this.filas.get(clave) ?? {
+      auto,
+      medidas: new Set<string>(),
+      fuentes: new Set<string>(),
+      textos: new Set<string>(),
+      revisar: new Set<string>(),
+    };
+    for (const m of medidas) fila.medidas.add(m);
+    fila.fuentes.add(fuente);
+    fila.textos.add(auto.textoOriginal);
+    if (revisar) fila.revisar.add(revisar);
+    this.filas.set(clave, fila);
   }
 
   resultado(): FilaCompatibilidad[] {
@@ -128,22 +145,39 @@ export class AcumuladorCompatibilidades {
       anio_hasta: '',
       motor: f.auto.motor,
       medidas: [...f.medidas].sort(porAmperes).join('|'),
-      fuente: [...f.fuentes].join(' | '),
+      fuente: fuenteCorta([...f.fuentes]),
       texto_original: [...f.textos].join(' | '),
+      revisar: [...f.revisar].join('; '),
     }));
-    // Lo no reconocido va al final, sin marca, para que Juan lo complete o lo borre.
-    const dudosas = this.sinReconocer.map((s) => ({
+    return listas.sort((a, b) => `${a.marca_auto} ${a.modelo}`.localeCompare(`${b.marca_auto} ${b.modelo}`, 'es'));
+  }
+
+  /** Lo no reconocido va aparte, sin marca, para que Juan lo complete o lo descarte. */
+  sinReconocerComoFilas(): FilaCompatibilidad[] {
+    return this.sinReconocer.map((s) => ({
       marca_auto: '',
       modelo: s.texto,
       anio_desde: '',
       anio_hasta: '',
       motor: '',
       medidas: s.medida,
-      fuente: s.fuente,
+      fuente: fuenteCorta([s.fuente]),
       texto_original: s.texto,
+      revisar: 'No se reconoció el auto: completá la marca o borrá la fila',
     }));
-    return [...listas.sort((a, b) => `${a.marca_auto} ${a.modelo}`.localeCompare(`${b.marca_auto} ${b.modelo}`, 'es')), ...dudosas];
   }
+}
+
+/** "https://www.herbobaterias.com/producto/x/" → "herbobaterias.com". La importación admite 100 caracteres. */
+export function fuenteCorta(fuentes: string[]): string {
+  const nombres = fuentes.map((f) => {
+    try {
+      return new URL(f).hostname.replace(/^www\./, '');
+    } catch {
+      return f;
+    }
+  });
+  return [...new Set(nombres)].join(' | ').slice(0, 100);
 }
 
 const porAmperes = (a: string, b: string) => Number(a.split('x')[1]) - Number(b.split('x')[1]);

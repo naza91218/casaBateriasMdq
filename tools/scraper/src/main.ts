@@ -6,6 +6,7 @@ import { parse } from 'csv-parse/sync';
 import { ClienteEducado } from './cliente.js';
 import { AcumuladorCompatibilidades, fragmentar } from './compatibilidad.js';
 import * as herbo from './fuentes/herbo.js';
+import * as sermatPdf from './fuentes/sermat-pdf.js';
 import * as sermatVolta from './fuentes/sermat-volta.js';
 import { aCsv, COLUMNAS_COMPATIBILIDADES, COLUMNAS_PRODUCTOS, type FilaProducto } from './planillas.js';
 
@@ -53,8 +54,56 @@ async function deHerbo(): Promise<void> {
   console.log(`Herbo: ${urls.length - descartados} baterías del rubro, ${descartados} descartadas (motos, solares, estacionarias…)`);
 }
 
+/**
+ * Catálogo oficial de Sermat en PDF (lo pasó el cliente): fichas técnicas de Sermat y Volta y la
+ * batería estándar y opcional de cada auto, ordenada por marca.
+ */
+async function deCatalogoSermat(ruta: string): Promise<void> {
+  console.log('Sermat y Volta: leyendo el catálogo oficial en PDF…');
+  const paginas = await sermatPdf.leerTextosPdf(ruta);
+  const fuente = 'Catálogo Sermat (PDF del cliente)';
+
+  const modelos = sermatPdf.leerModelos(paginas).filter((m) => !sermatPdf.esDeSeisVolts(m.codigo));
+  for (const m of modelos) {
+    const fila = sermatPdf.aFilaProducto(m, fuente);
+    if (!fila.medida) avisos.push(`${fila.nombre}: el catálogo no dice su amperaje; completalo en la planilla`);
+    productos.push(fila);
+  }
+
+  const filas = sermatPdf.leerCompatibilidades(paginas);
+  let sinMedida = 0;
+  for (const f of filas) {
+    const codigos = [f.estandar, f.opcional].filter((c): c is string => c !== null);
+    const medidas = codigos.map(sermatPdf.medidaDeCodigo).filter((m): m is string => m !== null);
+    if (medidas.length === 0) {
+      sinMedida++;
+      continue;
+    }
+    const revisar = [
+      sermatPdf.textoDudoso(f.modelos) ? 'El catálogo trae letras mal codificadas: revisá el nombre' : '',
+      /[*]/.test(f.modelos) ? 'Tiene notas al pie (*): revisá qué batería va con cada modelo' : '',
+      /[<>]\s*\d{4}/.test(f.modelos) ? 'Menciona años: completalos si corresponde' : '',
+    ]
+      .filter(Boolean)
+      .join('; ');
+    for (const a of sermatPdf.autosDeFila(f.modelos)) {
+      compat.agregarConMarca(
+        { marca: f.marca, modelo: a.modelo, motor: a.motor, textoOriginal: `${a.textoOriginal} → ${codigos.join(' / ')}` },
+        medidas,
+        fuente,
+        revisar || null,
+      );
+    }
+  }
+  console.log(
+    `Sermat y Volta: ${modelos.length} modelos de 12 V y ${filas.length} filas de autos (${sinMedida} solo con baterías NS o de 6 V, sin medida)`,
+  );
+}
+
 async function deSermatVolta(): Promise<void> {
-  console.log('Sermat y Volta: leyendo la lista del distribuidor…');
+  const pdf = join(SALIDA, 'fuentes', 'sermat-catalogo.pdf');
+  if (existsSync(pdf)) return deCatalogoSermat(pdf);
+  console.log('Sermat y Volta: no está el catálogo en PDF; leyendo la lista del distribuidor…');
   const modelos = sermatVolta.leerLista(await cliente.texto(sermatVolta.URL_SERMAT_VOLTA));
   for (const m of modelos) {
     const fila = sermatVolta.aFila(m);
@@ -97,11 +146,15 @@ for (const [nombre, correr] of Object.entries(fuentes)) {
 await mkdir(SALIDA, { recursive: true });
 await writeFile(join(SALIDA, 'productos.csv'), aCsv(COLUMNAS_PRODUCTOS, productos));
 const compatibilidades = compat.resultado();
-await writeFile(join(SALIDA, 'compatibilidades-a-completar.csv'), aCsv(COLUMNAS_COMPATIBILIDADES, compatibilidades));
+await writeFile(join(SALIDA, 'compatibilidades.csv'), aCsv(COLUMNAS_COMPATIBILIDADES, compatibilidades));
+const sinReconocer = compat.sinReconocerComoFilas();
+await writeFile(join(SALIDA, 'compatibilidades-sin-reconocer.csv'), aCsv(COLUMNAS_COMPATIBILIDADES, sinReconocer));
 
 console.log(`\nListo. En ${SALIDA}:`);
 console.log(`  productos.csv: ${productos.length} productos (${productos.filter((p) => !p.medida).length} sin medida)`);
+const paraRevisar = compatibilidades.filter((c) => c.revisar).length;
 console.log(
-  `  compatibilidades-a-completar.csv: ${compatibilidades.length} autos (${compat.sinReconocer.length} sin reconocer). Faltan los años: completalos antes de importar.`,
+  `  compatibilidades.csv: ${compatibilidades.length} autos (${paraRevisar} marcados en la columna "revisar"). Sin años = valen para todos los años.`,
 );
+console.log(`  compatibilidades-sin-reconocer.csv: ${sinReconocer.length} textos de las fuentes que no se pudieron leer como un auto.`);
 if (avisos.length) console.log(`\nAvisos (${avisos.length}):\n${avisos.map((a) => `  - ${a}`).join('\n')}`);
