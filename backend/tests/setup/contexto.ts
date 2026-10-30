@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { AlmacenamientoMemoria } from '../../src/adapters/almacenamiento.js';
 import { MailerFalso } from '../../src/adapters/mailer.js';
 import { crearContexto, type Contexto } from '../../src/composition-root.js';
 import { cargarConfig, type Config } from '../../src/platform/config.js';
@@ -48,16 +49,19 @@ export interface ContextoDePrueba {
   ctx: Contexto;
   mailer: MailerFalso;
   reloj: RelojFalso;
+  almacenamiento: AlmacenamientoMemoria;
 }
 
-/** Contexto real (base de pruebas) con mailer y reloj falsos. */
+/** Contexto real (base de pruebas) con mailer, reloj y almacenamiento de fotos falsos. */
 export function crearContextoDePrueba(extra: Record<string, string> = {}): ContextoDePrueba {
   const mailer = new MailerFalso();
   const reloj = new RelojFalso();
+  const almacenamiento = new AlmacenamientoMemoria();
   const ctx = crearContexto(configDePrueba(extra), {
     mailer,
     reloj,
+    almacenamiento,
     logger: crearLogger({ nivel: 'silent' }),
   });
-  return { ctx, mailer, reloj };
+  return { ctx, mailer, reloj, almacenamiento };
 }

@@ -113,10 +113,12 @@ export const CambioEstadoAdmin = z.object({
 });
 export type CambioEstadoAdmin = z.infer<typeof CambioEstadoAdmin>;
 
-/** Contadores del inicio del panel. US5 suma productos a revisar y consultas de canje. */
+/** Contadores del inicio del panel (FR-043, FR-070). */
 export const ResumenAdmin = z.object({
   pedidosPorAtender: z.number().int(),
   pedidosDestacados: z.number().int(),
   alertasAbiertas: z.number().int(),
+  productosARevisar: z.number().int(),
+  consultasCanjePendientes: z.number().int(),
 });
 export type ResumenAdmin = z.infer<typeof ResumenAdmin>;

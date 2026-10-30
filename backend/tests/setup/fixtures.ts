@@ -75,3 +75,12 @@ export async function vaciarCatalogo(db: BaseDeDatos): Promise<void> {
   await db.delete(vehiculos);
   await db.delete(productos);
 }
+
+/** Una foto JPG de prueba, con EXIF (para comprobar que se borra al subirla). */
+export async function fotoDePrueba(ancho = 800, alto = 600): Promise<Buffer> {
+  const { default: sharp } = await import('sharp');
+  return sharp({ create: { width: ancho, height: alto, channels: 3, background: { r: 200, g: 30, b: 30 } } })
+    .jpeg()
+    .withExif({ IFD0: { Copyright: 'Prueba', Artist: 'Celular de Juan' } })
+    .toBuffer();
+}

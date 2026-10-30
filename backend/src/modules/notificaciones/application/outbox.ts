@@ -1,5 +1,6 @@
 import { and, asc, eq, lte } from 'drizzle-orm';
 import type { BaseDeDatos, Ejecutor } from '../../../platform/db.js';
+import { uuidv7 } from '../../../platform/ids.js';
 import type { Reloj } from '../../../shared-kernel/reloj.js';
 import { MINUTO } from '../../../shared-kernel/reloj.js';
 import { outboxMensajes } from '../infrastructure/schema.js';
@@ -55,6 +56,22 @@ export class Outbox {
       .onConflictDoNothing({ target: outboxMensajes.clave })
       .returning({ id: outboxMensajes.id });
     return filas.length > 0;
+  }
+
+  /**
+   * Pide al frontend que regenere esas páginas (contracts/api-rest.md). Va por el outbox para
+   * reintentarse si el frontend no responde; cada cambio es un mensaje distinto.
+   */
+  async revalidar(ejecutor: Ejecutor, etiquetas: string[]): Promise<void> {
+    const unicas = [...new Set(etiquetas)];
+    if (unicas.length === 0) return;
+    await this.encolar(ejecutor, {
+      clave: `revalidacion:${uuidv7()}`,
+      canal: 'revalidacion',
+      evento: 'revalidar',
+      destinatario: 'sistema',
+      datos: { etiquetas: unicas },
+    });
   }
 
   /**

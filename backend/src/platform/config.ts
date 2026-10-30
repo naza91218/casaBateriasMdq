@@ -35,6 +35,10 @@ const esquema = z.object({
   R2_SECRET_ACCESS_KEY: opcional(),
   R2_BUCKET: opcional(),
   R2_PUBLIC_URL: opcional(),
+  // Sin R2 (desarrollo), las fotos se guardan en esta carpeta y la API las sirve en /uploads.
+  UPLOADS_DIR: z.string().default('uploads'),
+  // Fotos con ruta relativa en las planillas (las que baja el scraper).
+  IMPORT_FOTOS_DIR: z.string().default('../data/import'),
 
   SENTRY_DSN: opcional(),
 });

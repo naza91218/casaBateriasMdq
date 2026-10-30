@@ -19,6 +19,7 @@
     "test:contract": "vitest run --project contract"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1160.0",
     "@casa/shared": "workspace:*",
     "@fastify/cookie": "^11.0.0",
     "@fastify/multipart": "^9.0.0",
@@ -26,6 +27,7 @@
     "@fastify/swagger": "^9.9.2",
     "@fastify/swagger-ui": "^5.0.0",
     "@sentry/node": "^10.0.0",
+    "csv-parse": "^7.0.3",
     "drizzle-orm": "^0.45.4",
     "fastify": "^5.12.7",
     "fastify-type-provider-zod": "^7.0.0",
@@ -33,6 +35,7 @@
     "pino": "^9.0.0",
     "postgres": "^3.4.7",
     "resend": "^6.0.0",
+    "sharp": "^0.35.5",
     "zod": "^4.1.5"
   },
   "devDependencies": {

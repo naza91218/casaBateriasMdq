@@ -11,7 +11,13 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import { z } from 'zod';
+import { AlmacenamientoDisco, claveValida } from '../adapters/almacenamiento.js';
 import type { Contexto } from '../composition-root.js';
+import { rutasAdminCanje } from '../modules/canje/http/rutas-admin.js';
+import { rutasAdminProductos } from '../modules/catalogo/http/rutas-admin.js';
+import { rutasAdminVehiculos } from '../modules/compatibilidad/http/rutas-admin.js';
+import { rutasAdminConfiguracion } from '../modules/configuracion/http/rutas-admin.js';
+import { rutasAdminImportacion } from '../modules/importacion/http/rutas-admin.js';
 import { rutasAuth } from '../modules/auth/http/rutas.js';
 import { rutasCanje } from '../modules/canje/http/rutas.js';
 import { rutasCatalogo } from '../modules/catalogo/http/rutas.js';
@@ -108,16 +114,38 @@ export async function construirServidor(
         async (admin) => {
           // onRequest: la sesión se verifica antes de leer o validar el body (sin sesión siempre es 401).
           admin.addHook('onRequest', requiereSesion(ctx.servicios.auth));
-          const { panelPedidos, pagosManuales, alertas } = ctx.servicios;
-          await admin.register(rutasAdminResumen({ panel: panelPedidos, alertas }));
-          await admin.register(rutasAdminPedidos({ panel: panelPedidos, pagosManuales }));
-          await admin.register(rutasAdminAlertas({ alertas }));
+          const s = ctx.servicios;
+          await admin.register(
+            rutasAdminResumen({ panel: s.panelPedidos, alertas: s.alertas, productos: s.adminProductos, canje: s.adminCanje }),
+          );
+          await admin.register(rutasAdminPedidos({ panel: s.panelPedidos, pagosManuales: s.pagosManuales }));
+          await admin.register(rutasAdminAlertas({ alertas: s.alertas }));
+          await admin.register(rutasAdminProductos({ productos: s.adminProductos, fotos: s.fotos }));
+          await admin.register(rutasAdminImportacion({ importacion: s.importacion }));
+          await admin.register(rutasAdminVehiculos({ vehiculos: s.adminVehiculos }));
+          await admin.register(rutasAdminConfiguracion({ configuracion: s.adminConfiguracion }));
+          await admin.register(rutasAdminCanje({ canje: s.adminCanje }));
         },
         { prefix: '/admin' },
       );
     },
     { prefix: PREFIJO },
   );
+
+  // Desarrollo sin R2: la API sirve las fotos guardadas en disco.
+  const almacenamiento = ctx.almacenamiento;
+  if (almacenamiento instanceof AlmacenamientoDisco) {
+    app.get('/uploads/*', async (req, reply) => {
+      const clave = (req.params as { '*': string })['*'];
+      if (!claveValida(clave)) return reply.code(404).send();
+      try {
+        const contenido = await almacenamiento.leer(clave);
+        return reply.header('content-type', clave.endsWith('.webp') ? 'image/webp' : 'image/jpeg').send(contenido);
+      } catch {
+        return reply.code(404).send();
+      }
+    });
+  }
 
   return base;
 }

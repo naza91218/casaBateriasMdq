@@ -1,7 +1,14 @@
+import { AlmacenamientoDisco, AlmacenamientoR2 } from './adapters/almacenamiento.js';
 import { MailerDev, MailerResend } from './adapters/mailer.js';
 import { PasarelaFalsa, PasarelaMercadoPago } from './adapters/mercadopago.js';
 import { RevalidadorFrontend, revalidadorNulo } from './adapters/revalidador.js';
+import { ServicioAdminCanje } from './modules/canje/application/admin-consultas.js';
 import { ServicioCanje } from './modules/canje/application/consultas.js';
+import { ServicioAdminProductos } from './modules/catalogo/application/admin-productos.js';
+import { ServicioFotos } from './modules/catalogo/application/fotos.js';
+import { ServicioAdminVehiculos } from './modules/compatibilidad/application/admin-vehiculos.js';
+import { ServicioAdminConfiguracion } from './modules/configuracion/application/admin-configuracion.js';
+import { ServicioImportacion } from './modules/importacion/application/importar.js';
 import { ServicioStock } from './modules/catalogo/application/stock.js';
 import { ServicioCompradores } from './modules/clientes/application/compradores.js';
 import { ServicioAlertas } from './modules/pagos/application/alertas.js';
@@ -25,7 +32,7 @@ import { clavesDeCifrado, type Config } from './platform/config.js';
 import { crearCifrador, crearFirmadorSeguimiento, type Cifrador } from './platform/crypto.js';
 import { conectar, type BaseDeDatos, type ConexionDb } from './platform/db.js';
 import { crearLogger, type Logger } from './platform/logger.js';
-import type { Mailer, PasarelaPago, Revalidador } from './shared-kernel/puertos.js';
+import type { Almacenamiento, Mailer, PasarelaPago, Revalidador } from './shared-kernel/puertos.js';
 import { relojDelSistema, type Reloj } from './shared-kernel/reloj.js';
 
 /**
@@ -42,6 +49,7 @@ export interface Contexto {
   mailer: Mailer;
   revalidador: Revalidador;
   pasarela: PasarelaPago;
+  almacenamiento: Almacenamiento;
   outbox: Outbox;
   servicios: {
     auth: ServicioAuth;
@@ -60,6 +68,12 @@ export interface Contexto {
     alertas: ServicioAlertas;
     panelPedidos: ServicioPanelPedidos;
     canje: ServicioCanje;
+    fotos: ServicioFotos;
+    adminProductos: ServicioAdminProductos;
+    adminVehiculos: ServicioAdminVehiculos;
+    adminConfiguracion: ServicioAdminConfiguracion;
+    adminCanje: ServicioAdminCanje;
+    importacion: ServicioImportacion;
   };
   cerrar(): Promise<void>;
 }
@@ -70,7 +84,16 @@ export interface Reemplazos {
   mailer?: Mailer;
   revalidador?: Revalidador;
   pasarela?: PasarelaPago;
+  almacenamiento?: Almacenamiento;
   logger?: Logger;
+}
+
+function elegirAlmacenamiento(config: Config): Almacenamiento {
+  const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL } = config;
+  if (R2_ACCOUNT_ID && R2_ACCESS_KEY_ID && R2_SECRET_ACCESS_KEY && R2_BUCKET && R2_PUBLIC_URL) {
+    return new AlmacenamientoR2(R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL);
+  }
+  return new AlmacenamientoDisco(config.UPLOADS_DIR, config.API_PUBLIC_URL);
 }
 
 function elegirMailer(config: Config): Mailer {
@@ -106,6 +129,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     (config.MP_ACCESS_TOKEN
       ? new PasarelaMercadoPago(config.MP_ACCESS_TOKEN, config.MP_WEBHOOK_SECRET ?? '')
       : new PasarelaFalsa(config.MP_WEBHOOK_SECRET ?? 'secreto-webhook-de-prueba'));
+  const almacenamiento = reemplazos.almacenamiento ?? elegirAlmacenamiento(config);
   const outbox = new Outbox(db, reloj);
   const claveSeguimiento = clavesDeCifrado(config)[config.DNI_KEY_VERSION];
   if (!claveSeguimiento) throw new Error('Falta la clave de cifrado actual');
@@ -117,8 +141,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
   const catalogo = new ServicioCatalogo({
     repo: new RepositorioCatalogo(db),
     configuracion,
-    urlFoto: (clave) =>
-      config.R2_PUBLIC_URL ? `${config.R2_PUBLIC_URL}/${clave}` : `${config.API_PUBLIC_URL}/uploads/${clave}`,
+    urlFoto: (clave) => almacenamiento.urlPublica(clave),
     autosDeMedida: (medida) => repoCompatibilidad.vehiculosDeMedida(medida),
   });
   const stock = new ServicioStock(db);
@@ -139,6 +162,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     urlApi: config.API_PUBLIC_URL,
   });
   const alertas = new ServicioAlertas(db, reloj);
+  const fotos = new ServicioFotos(db, almacenamiento, outbox);
   const servicios = {
     auth: new ServicioAuth(db, outbox, reloj, config.API_PUBLIC_URL),
     zonas,
@@ -156,6 +180,12 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     alertas,
     panelPedidos: new ServicioPanelPedidos(db, estados, compradores, zonas, alertas, reloj),
     canje: new ServicioCanje(db, configuracion, zonas),
+    fotos,
+    adminProductos: new ServicioAdminProductos(db, fotos, outbox),
+    adminVehiculos: new ServicioAdminVehiculos(db, outbox),
+    adminConfiguracion: new ServicioAdminConfiguracion(db, configuracion, zonas, outbox),
+    adminCanje: new ServicioAdminCanje(db),
+    importacion: new ServicioImportacion(db, fotos, outbox, reloj, { carpetaFotos: config.IMPORT_FOTOS_DIR }),
   };
 
   return {
@@ -168,6 +198,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     mailer,
     revalidador,
     pasarela,
+    almacenamiento,
     outbox,
     servicios,
     cerrar: () => conexion.cerrar(),
