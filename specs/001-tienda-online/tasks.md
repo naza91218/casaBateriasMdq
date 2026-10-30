@@ -346,6 +346,8 @@ cerrado y se refina en ese momento.
 - [ ] T146 [P] Revisión de seguridad: secretos fuera del código, rate limits, cookies, cabeceras (`helmet`), dependencias con `pnpm audit`, en `backend/src/http/server.ts`
 - [ ] T147 Ejecutar todas las validaciones de [quickstart.md](quickstart.md) en staging y registrar el resultado
 - [ ] T148 [P] Actualizar `README.md` de la raíz con cómo levantar el proyecto (enlazando a quickstart) y el mapa de carpetas
+- [X] T149 [P] Tests de inyección: cargas típicas de SQL injection (y HTML en mails) en todos los endpoints públicos y en el login; deben responder 400/404 o guardarse como texto literal, nunca 500, nunca demorar ni filtrar datos, en `backend/tests/contract/seguridad/inyeccion.test.ts`
+- [ ] T150 Pruebas de carga con k6 contra staging en el VPS (depende de la fase 9): buscador con 100 usuarios simultáneos, ráfaga de compras sobre el mismo producto y ráfaga de avisos de Mercado Pago. Meta: p95 < 500 ms, 0 errores, sin sobreventa; registrar CPU/RAM para decidir si alcanzan los 4 GB. Scripts en `infra/carga/` y resultado en `infra/carga/RESULTADOS.md`
 
 ---
 
