@@ -4,8 +4,11 @@ import { RevalidadorFrontend, revalidadorNulo } from './adapters/revalidador.js'
 import { ServicioCanje } from './modules/canje/application/consultas.js';
 import { ServicioStock } from './modules/catalogo/application/stock.js';
 import { ServicioCompradores } from './modules/clientes/application/compradores.js';
+import { ServicioAlertas } from './modules/pagos/application/alertas.js';
+import { ServicioPagosManuales } from './modules/pagos/application/pagos-manuales.js';
 import { ServicioPagosMercadoPago } from './modules/pagos/application/procesar-pago.js';
 import { ServicioEstados } from './modules/pedidos/application/cambiar-estado.js';
+import { ServicioPanelPedidos } from './modules/pedidos/application/consultas-panel.js';
 import { ServicioPedidos } from './modules/pedidos/application/crear-pedido.js';
 import { DatosMailPedido } from './modules/pedidos/application/datos-mail.js';
 import { ServicioSeguimiento } from './modules/pedidos/application/seguimiento.js';
@@ -53,6 +56,9 @@ export interface Contexto {
     seguimiento: ServicioSeguimiento;
     vencimientos: ServicioVencimientos;
     pagosMp: ServicioPagosMercadoPago;
+    pagosManuales: ServicioPagosManuales;
+    alertas: ServicioAlertas;
+    panelPedidos: ServicioPanelPedidos;
     canje: ServicioCanje;
   };
   cerrar(): Promise<void>;
@@ -132,6 +138,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     logger,
     urlApi: config.API_PUBLIC_URL,
   });
+  const alertas = new ServicioAlertas(db, reloj);
   const servicios = {
     auth: new ServicioAuth(db, outbox, reloj, config.API_PUBLIC_URL),
     zonas,
@@ -145,6 +152,9 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     seguimiento: new ServicioSeguimiento(db, firmador, configuracion, zonas, compradores, pedidos, reloj),
     vencimientos: new ServicioVencimientos(db, estados, reloj),
     pagosMp: new ServicioPagosMercadoPago(db, pasarela, estados, outbox),
+    pagosManuales: new ServicioPagosManuales(db, estados),
+    alertas,
+    panelPedidos: new ServicioPanelPedidos(db, estados, compradores, zonas, alertas, reloj),
     canje: new ServicioCanje(db, configuracion, zonas),
   };
 

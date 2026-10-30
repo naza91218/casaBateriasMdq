@@ -186,18 +186,18 @@ cerrado y se refina en ese momento.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T087 [P] [US3] Tests de integración: US3-03 (confirmar transferencia → `pagado`, pago manual con `confirmado_por` y fecha, mail al comprador), US3-04 (registrar efectivo → `entregado`), US3-06 (`transicionesPermitidas` de un entregado vacía), US3-07 (transición inválida → 409 y evento rechazado) en `backend/tests/integration/pedidos/panel-pedidos.test.ts`
-- [ ] T088 [P] [US3] Tests de contrato de `/admin/pedidos*` y `/admin/alertas*` (401 sin sesión, DNI solo en el detalle, antigüedad en días de `a_pagar_en_local`, links a mapa y WhatsApp) en `backend/tests/contract/pedidos/admin-rutas.test.ts`
+- [X] T087 [P] [US3] Tests de integración: US3-03 (confirmar transferencia → `pagado`, pago manual con `confirmado_por` y fecha, mail al comprador), US3-04 (registrar efectivo → `entregado`), US3-06 (`transicionesPermitidas` de un entregado vacía), US3-07 (transición inválida → 409 y evento rechazado) en `backend/tests/integration/pedidos/panel-pedidos.test.ts`
+- [X] T088 [P] [US3] Tests de contrato de `/admin/pedidos*` y `/admin/alertas*` (401 sin sesión, DNI solo en el detalle, antigüedad en días de `a_pagar_en_local`, links a mapa y WhatsApp) en `backend/tests/contract/pedidos/admin-rutas.test.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T089 [US3] Implementar consultas del panel: listado por estado (nuevos primero, antigüedad en días, destacando `a_pagar_en_local` de más de 48 h) y detalle (comprador con DNI descifrado, pagos, eventos, alertas, `transicionesPermitidas`, URL de Google Maps y de WhatsApp) en `backend/src/modules/pedidos/application/consultas-panel.ts`
-- [ ] T090 [US3] Implementar `confirmarTransferencia` y `registrarEfectivo` sobre `cambiarEstado` con registro de pago manual en `backend/src/modules/pagos/application/pagos-manuales.ts`
-- [ ] T091 [US3] Implementar el servicio de alertas (listar abiertas, resolver con usuario y fecha) en `backend/src/modules/pagos/application/alertas.ts`
-- [ ] T092 [US3] Implementar `GET /admin/resumen` (pedidos nuevos, alertas abiertas; los contadores de productos y canje se suman en US5) en `backend/src/http/rutas-admin-resumen.ts`
-- [ ] T093 [P] [US3] Crear los contratos Zod del panel de pedidos en `shared/src/contratos/admin-pedidos.ts`
-- [ ] T094 [US3] Implementar las rutas `GET /admin/pedidos`, `GET /admin/pedidos/:id`, `POST .../confirmar-transferencia`, `POST .../registrar-efectivo`, `POST .../estado`, `GET /admin/alertas`, `POST /admin/alertas/:id/resolver` en `backend/src/modules/pedidos/http/rutas-admin.ts` y `backend/src/modules/pagos/http/rutas-admin.ts`
-- [ ] T095 [US3] Agregar las plantillas "en camino", "listo para retirar" y "entregado" (con enlace de reseñas de Google, FR-076) en `backend/src/modules/notificaciones/plantillas/`
+- [X] T089 [US3] Implementar consultas del panel: listado por estado (nuevos primero, antigüedad en días, destacando `a_pagar_en_local` de más de 48 h) y detalle (comprador con DNI descifrado, pagos, eventos, alertas, `transicionesPermitidas`, URL de Google Maps y de WhatsApp) en `backend/src/modules/pedidos/application/consultas-panel.ts`
+- [X] T090 [US3] Implementar `confirmarTransferencia` y `registrarEfectivo` sobre `cambiarEstado` con registro de pago manual en `backend/src/modules/pagos/application/pagos-manuales.ts`
+- [X] T091 [US3] Implementar el servicio de alertas (listar abiertas, resolver con usuario y fecha) en `backend/src/modules/pagos/application/alertas.ts`
+- [X] T092 [US3] Implementar `GET /admin/resumen` (pedidos nuevos, alertas abiertas; los contadores de productos y canje se suman en US5) en `backend/src/http/rutas-admin-resumen.ts`
+- [X] T093 [P] [US3] Crear los contratos Zod del panel de pedidos en `shared/src/contratos/admin-pedidos.ts`
+- [X] T094 [US3] Implementar las rutas `GET /admin/pedidos`, `GET /admin/pedidos/:id`, `POST .../confirmar-transferencia`, `POST .../registrar-efectivo`, `POST .../estado`, `GET /admin/alertas`, `POST /admin/alertas/:id/resolver` en `backend/src/modules/pedidos/http/rutas-admin.ts` y `backend/src/modules/pagos/http/rutas-admin.ts`
+- [X] T095 [US3] Agregar las plantillas "en camino", "listo para retirar" y "entregado" (con enlace de reseñas de Google, FR-076) en `backend/src/modules/notificaciones/plantillas/`
 
 **Checkpoint**: validación 6 de [quickstart.md](quickstart.md) pasa
 

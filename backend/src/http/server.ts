@@ -15,12 +15,15 @@ import type { Contexto } from '../composition-root.js';
 import { rutasAuth } from '../modules/auth/http/rutas.js';
 import { rutasCanje } from '../modules/canje/http/rutas.js';
 import { rutasCatalogo } from '../modules/catalogo/http/rutas.js';
+import { rutasAdminAlertas } from '../modules/pagos/http/rutas-admin.js';
 import { rutasWebhookMercadoPago } from '../modules/pagos/http/webhook.js';
+import { rutasAdminPedidos } from '../modules/pedidos/http/rutas-admin.js';
 import { rutasPedidos } from '../modules/pedidos/http/rutas.js';
 import { rutasBuscador } from '../modules/compatibilidad/http/rutas.js';
 import { rutasConfiguracion } from '../modules/configuracion/http/rutas.js';
 import { registrarManejoDeErrores } from './plugins/errores.js';
 import { requiereSesion } from './plugins/sesion.js';
+import { rutasAdminResumen } from './rutas-admin-resumen.js';
 
 export const PREFIJO = '/api/v1';
 
@@ -103,8 +106,12 @@ export async function construirServidor(
       // Panel: todo lo que está bajo /admin exige sesión.
       await api.register(
         async (admin) => {
-          admin.addHook('preHandler', requiereSesion(ctx.servicios.auth));
-          // Las rutas /admin de cada módulo se registran acá (fases 5 en adelante).
+          // onRequest: la sesión se verifica antes de leer o validar el body (sin sesión siempre es 401).
+          admin.addHook('onRequest', requiereSesion(ctx.servicios.auth));
+          const { panelPedidos, pagosManuales, alertas } = ctx.servicios;
+          await admin.register(rutasAdminResumen({ panel: panelPedidos, alertas }));
+          await admin.register(rutasAdminPedidos({ panel: panelPedidos, pagosManuales }));
+          await admin.register(rutasAdminAlertas({ alertas }));
         },
         { prefix: '/admin' },
       );

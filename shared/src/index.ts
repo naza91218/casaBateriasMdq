@@ -9,3 +9,4 @@ export * from './contratos/configuracion.js';
 export * from './contratos/catalogo.js';
 export * from './contratos/vehiculos.js';
 export * from './contratos/pedidos.js';
+export * from './contratos/admin-pedidos.js';

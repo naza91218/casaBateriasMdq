@@ -10,7 +10,7 @@ declare module 'fastify' {
 }
 
 /**
- * preHandler para todas las rutas /admin (FR-041): sin sesión válida responde 401.
+ * Hook onRequest para todas las rutas /admin (FR-041): sin sesión válida responde 401.
  * Deja el usuario en `request.usuario` para registrar quién hizo cada cambio.
  */
 export function requiereSesion(auth: ServicioAuth) {

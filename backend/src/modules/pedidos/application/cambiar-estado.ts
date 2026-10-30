@@ -50,10 +50,12 @@ export class ServicioEstados {
   async cambiar(s: SolicitudCambio): Promise<void> {
     const r = await this.db.transaction((tx) => this.cambiarEnTx(tx, s));
     if (!r.ok) {
+      const de = r.de.replaceAll('_', ' ');
       throw new ErrorDeDominio(
         'conflicto',
         'TRANSICION_INVALIDA',
-        `El pedido está ${r.de.replaceAll('_', ' ')} y no puede pasar a ${s.a.replaceAll('_', ' ')}`,
+        // Mismo estado: casi siempre es un doble toque o dos pestañas abiertas.
+        r.de === s.a ? `Este pedido ya está ${de}` : `El pedido está ${de} y no puede pasar a ${s.a.replaceAll('_', ' ')}`,
       );
     }
   }
