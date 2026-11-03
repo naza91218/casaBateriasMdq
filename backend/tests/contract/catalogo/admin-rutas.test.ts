@@ -302,6 +302,10 @@ describe('vehículos', () => {
       ).json(),
     );
     expect(editado).toMatchObject({ motor: '1.6', medidas: ['12x65', '12x75'] });
+    const porMedida = (m: string) =>
+      api('GET', `/vehiculos?medida=${m}`).then((r) => ListaVehiculosAdmin.parse(r.json()).items);
+    expect((await porMedida('12x75')).map((x) => x.id)).toContain(v.id);
+    expect((await porMedida('12x45')).map((x) => x.id)).not.toContain(v.id);
 
     expect(
       (

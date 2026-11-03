@@ -32,8 +32,23 @@ export class ServicioAdminVehiculos {
     private readonly outbox: Outbox,
   ) {}
 
-  async listar(f: { q?: string | undefined; pagina: number; porPagina: number }) {
+  async listar(f: {
+    q?: string | undefined;
+    medida?: string | undefined;
+    pagina: number;
+    porPagina: number;
+  }) {
     const condiciones: SQL[] = [];
+    if (f.medida)
+      condiciones.push(
+        inArray(
+          vehiculos.id,
+          this.db
+            .select({ id: vehiculoMedidas.vehiculoId })
+            .from(vehiculoMedidas)
+            .where(eq(vehiculoMedidas.medida, f.medida)),
+        ),
+      );
     if (f.q) {
       for (const palabra of f.q.split(/\s+/).filter(Boolean)) {
         const coincide = or(

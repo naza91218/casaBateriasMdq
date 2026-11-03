@@ -1,4 +1,4 @@
-import type { ProductoAdmin } from '@casa/shared';
+import type { ProductoAdmin, VehiculoAdmin } from '@casa/shared';
 import { ChevronLeft, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -9,6 +9,7 @@ import { ErrorApi } from '@/lib/api';
 import { pedirPanel } from '@/lib/panel';
 
 export const metadata = { title: 'Producto' };
+type Autos = { items: VehiculoAdmin[]; total: number };
 
 export default async function EditarProducto({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -36,6 +37,9 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
     if (e instanceof ErrorApi && (e.estado === 404 || e.estado === 400)) notFound();
     throw e;
   }
+  const autos = await pedirPanel<Autos>(
+    `/admin/vehiculos?medida=${encodeURIComponent(p.medida)}&porPagina=100`,
+  );
   return (
     <>
       <Volver />
@@ -66,6 +70,7 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
         <Tarjeta titulo="Datos">
           <FormProducto producto={p} />
         </Tarjeta>
+        <LeSirve medida={p.medida} autos={autos} />
       </div>
     </>
   );
@@ -80,5 +85,55 @@ function Volver() {
       <ChevronLeft aria-hidden size={22} />
       Productos
     </Link>
+  );
+}
+
+/** Solo lectura: la compatibilidad se carga en cada auto (auto → medida), no en el producto. */
+function LeSirve({ medida, autos }: { medida: string; autos: Autos }) {
+  const porMarca = new Map<string, VehiculoAdmin[]>();
+  for (const v of autos.items) porMarca.set(v.marca, [...(porMarca.get(v.marca) ?? []), v]);
+  return (
+    <Tarjeta titulo="Le sirve a estos autos">
+      <p className="-mt-2 mb-4 text-[15px] text-gris-600">
+        Los autos que llevan la medida <span className="num font-semibold">{medida}</span>. Para
+        cambiarlo, editá el auto en{' '}
+        <Link href="/panel/vehiculos" className="font-semibold text-rojo-texto underline">
+          Autos
+        </Link>
+        .
+      </p>
+      {autos.items.length === 0 ? (
+        <p className="font-semibold">
+          Ningún auto lleva esta medida todavía: no va a aparecer en el buscador por auto.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {[...porMarca].map(([marca, lista]) => (
+            <div key={marca}>
+              <h3 className="font-bold">{marca}</h3>
+              <ul className="mt-1 flex flex-wrap gap-2">
+                {lista.map((v) => (
+                  <li key={v.id}>
+                    <Link
+                      href={`/panel/vehiculos?q=${encodeURIComponent(`${v.marca} ${v.modelo}`)}`}
+                      className="num inline-flex min-h-11 items-center rounded-full border-2 border-gris-300 bg-blanco px-4 font-semibold text-negro no-underline hover:border-negro"
+                    >
+                      {v.modelo}
+                      {v.motor && ` · ${v.motor}`}
+                      <span className="ml-1.5 font-medium text-gris-600">
+                        {v.anioDesde ? `${v.anioDesde}–${v.anioHasta}` : 'todos los años'}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          {autos.total > autos.items.length && (
+            <p className="text-[15px] text-gris-600">Y {autos.total - autos.items.length} más.</p>
+          )}
+        </div>
+      )}
+    </Tarjeta>
   );
 }

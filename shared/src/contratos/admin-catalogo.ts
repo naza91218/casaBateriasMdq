@@ -134,6 +134,8 @@ export type VehiculoAdmin = z.infer<typeof VehiculoAdmin>;
 
 export const FiltroVehiculosAdmin = z.object({
   q: z.string().trim().max(100).optional(),
+  /** Solo los autos que llevan esta medida (la lista «Le sirve a estos autos» del producto). */
+  medida: z.string().trim().max(40).optional(),
   pagina: z.coerce.number().int().min(1).default(1),
   porPagina: z.coerce.number().int().min(1).max(100).default(50),
 });
