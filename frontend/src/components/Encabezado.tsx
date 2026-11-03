@@ -1,0 +1,56 @@
+import { MessageCircle, ShoppingCart } from 'lucide-react';
+import Link from 'next/link';
+import { Logo } from './marca/Logo';
+import { MenuMovil } from './MenuMovil';
+
+const ENLACES: [string, string][] = [
+  ['Baterías', '/buscar'],
+  ['Cómo funciona', '/#como-funciona'],
+  ['Quiénes somos', '/#historia'],
+  ['Contacto', '/#contacto'],
+];
+
+/** Encabezado blanco y fijo, con la acción principal siempre a mano. */
+export function Encabezado({ whatsappUrl }: { whatsappUrl: string }) {
+  return (
+    <header className="sticky top-0 z-40 border-b border-gris-200 bg-blanco">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-4 md:h-[72px] md:px-12">
+        <Logo />
+        <nav aria-label="Principal" className="ml-4 hidden gap-6 lg:flex">
+          {ENLACES.map(([texto, href]) => (
+            <Link
+              key={href}
+              href={href}
+              className="rounded-sm text-[17px] font-semibold text-negro no-underline transition-colors duration-150 hover:text-rojo-texto"
+            >
+              {texto}
+            </Link>
+          ))}
+        </nav>
+        <div className="ml-auto flex items-center gap-1 md:gap-3">
+          <a
+            href={whatsappUrl}
+            className="hidden items-center gap-2 rounded-sm px-2 text-[17px] font-semibold text-negro no-underline transition-colors duration-150 hover:text-rojo-texto md:inline-flex"
+          >
+            <MessageCircle aria-hidden size={22} strokeWidth={2} />
+            Consultanos
+          </a>
+          <Link
+            href="/#buscador"
+            className="boton boton-rojo hidden !min-h-12 !px-5 !text-[17px] md:inline-flex"
+          >
+            Buscar mi batería
+          </Link>
+          <Link
+            href="/carrito"
+            aria-label="Carrito, vacío"
+            className="grid size-12 place-items-center rounded-sm text-negro transition-colors duration-150 hover:bg-gris-100"
+          >
+            <ShoppingCart aria-hidden size={24} strokeWidth={2} />
+          </Link>
+          <MenuMovil enlaces={ENLACES} whatsappUrl={whatsappUrl} />
+        </div>
+      </div>
+    </header>
+  );
+}

@@ -1,0 +1,278 @@
+@import 'tailwindcss';
+
+/*
+ * Propuesta 2 (02/11/2026), con la skill ui-ux-pro-max: diseño plano de "confianza y conversión"
+ * para un servicio local. Colores e isotipo de la marca; sin degradés ni sombras; Barlow Condensed
+ * para titulares y Barlow para el texto (par "Sports" de la skill, con licencia libre para la web).
+ */
+@theme {
+  --color-*: initial;
+  --color-rojo: #ff2610;
+  --color-rojo-boton: #e01e08;
+  --color-rojo-hover: #c01805;
+  --color-naranja: #ff4e10;
+  --color-rojo-texto: #d41a00;
+  --color-campo: #ff4318;
+  --color-campo-rayo: #ff340d;
+  --color-negro: #0b0b0b;
+  --color-blanco: #ffffff;
+  --color-gris-900: #1c1c1c;
+  --color-gris-800: #333333;
+  --color-gris-600: #5c5c5c;
+  --color-gris-400: #a6a6a6;
+  --color-gris-300: #d9d9d9;
+  --color-gris-200: #ededed;
+  --color-gris-100: #f4f4f4;
+  --color-verde-ok: #187a33;
+  --color-whatsapp: #25d366;
+
+  --font-*: initial;
+  --font-sans: var(--font-barlow), 'Barlow', sans-serif;
+  --font-display: var(--font-condensada), 'Barlow Condensed', sans-serif;
+  --font-marca: 'Sport Headline Web', var(--font-condensada), sans-serif;
+
+  --breakpoint-*: initial;
+  --breakpoint-md: 53.75rem;
+  --breakpoint-lg: 75rem;
+
+  --ease-marca: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* El nombre en el logo sigue en Sport Headline (instalada); sin ella, Barlow Condensed itálica. */
+@font-face {
+  font-family: 'Sport Headline Web';
+  src: local('Sport Headline Black Italic'), local('SportHeadline-BlackItalic');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
+  html {
+    color: var(--color-negro);
+    background: var(--color-blanco);
+    accent-color: var(--color-rojo);
+    caret-color: var(--color-rojo);
+    scrollbar-color: var(--color-gris-600) var(--color-gris-100);
+    scroll-padding-top: 88px;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+  ::selection {
+    background: var(--color-rojo);
+    color: var(--color-blanco);
+  }
+  a {
+    text-underline-offset: 3px;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-negro);
+    outline-offset: 2px;
+  }
+  .oscuro :focus-visible {
+    outline-color: var(--color-blanco);
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Titular: Barlow Condensed en mayúsculas, derecho y firme. */
+  .titular {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0.005em;
+    text-wrap: balance;
+  }
+  /* Nombre de la marca en el logo (Sport Headline itálica). */
+  .marca {
+    font-family: var(--font-marca);
+    font-style: italic;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+  }
+
+  /* Paralelogramo de la marca, con el contenido contra-sesgado. */
+  .losa {
+    --sesgo: -10deg;
+    transform: skewX(var(--sesgo));
+  }
+  .losa > * {
+    transform: skewX(calc(var(--sesgo) * -1));
+  }
+
+  /* Campos con el patrón de rayos del isotipo (fondos del usuario pasados a vector). */
+  .rayos-negro {
+    background: var(--color-negro) url('/fondos/rayos-negro.svg') 0 0 / 168px 48px repeat;
+  }
+  .rayos-rojo {
+    background: var(--color-campo) url('/fondos/rayos-rojo.svg') 0 0 / 168px 48px repeat;
+  }
+  @media (width >= 53.75rem) {
+    .rayos-negro,
+    .rayos-rojo {
+      background-size: 210px 60px;
+    }
+  }
+
+  /* Botones planos: un color, sin sombra; el hover cambia el color en 150 ms. */
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 56px;
+    padding: 0 26px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.1;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .boton-rojo {
+    /* Un punto más oscuro que el rojo de marca: el texto blanco llega a 4,8:1. */
+    background: var(--color-rojo-boton);
+    color: var(--color-blanco);
+  }
+  .boton-rojo:hover {
+    background: var(--color-rojo-hover);
+  }
+  .boton-negro {
+    background: var(--color-negro);
+    color: var(--color-blanco);
+  }
+  .boton-negro:hover {
+    background: var(--color-gris-800);
+  }
+  .boton-claro {
+    background: var(--color-blanco);
+    color: var(--color-negro);
+  }
+  .boton-claro:hover {
+    background: var(--color-gris-200);
+  }
+  /* Contorno blanco, para fondos oscuros. */
+  .boton-fantasma {
+    background: transparent;
+    color: var(--color-blanco);
+    box-shadow: inset 0 0 0 2px var(--color-blanco);
+  }
+  .boton-fantasma:hover {
+    background: var(--color-blanco);
+    color: var(--color-negro);
+  }
+  /* Contorno negro, para fondos claros. */
+  .boton-borde {
+    background: var(--color-blanco);
+    color: var(--color-negro);
+    box-shadow: inset 0 0 0 2px var(--color-negro);
+  }
+  .boton-borde:hover {
+    background: var(--color-negro);
+    color: var(--color-blanco);
+  }
+
+  /* Selector del buscador: 60 px, borde de 2 px, flecha propia. */
+  .selector {
+    appearance: none;
+    width: 100%;
+    height: 60px;
+    padding: 0 46px 0 16px;
+    border: 2px solid var(--color-gris-300);
+    border-radius: 4px;
+    background: var(--color-blanco)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b0b0b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+      right 14px center / 22px no-repeat;
+    font: 600 18px/1.2 var(--font-sans);
+    color: var(--color-negro);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .selector:hover:not(:disabled) {
+    border-color: var(--color-gris-600);
+  }
+  .selector:focus-visible {
+    outline: none;
+    border-color: var(--color-negro);
+  }
+  [data-error] .selector {
+    border-color: var(--color-rojo-texto);
+  }
+  .selector:disabled {
+    background-color: var(--color-gris-100);
+    color: var(--color-gris-600);
+    cursor: not-allowed;
+  }
+
+  /* Batería del buscador: tres celdas que se cargan al elegir marca, modelo y año. */
+  .bateria {
+    position: relative;
+    display: flex;
+    gap: 3px;
+    width: 76px;
+    height: 30px;
+    padding: 3px;
+    border: 2.5px solid var(--color-negro);
+    border-radius: 5px;
+    flex: none;
+  }
+  .bateria::after {
+    content: '';
+    position: absolute;
+    right: -7px;
+    top: 7px;
+    width: 4px;
+    height: 11px;
+    border-radius: 0 2px 2px 0;
+    background: var(--color-negro);
+  }
+  .celda {
+    flex: 1;
+    border-radius: 2px;
+    background: var(--color-gris-200);
+    transform-origin: left;
+    transition: background-color 0.3s ease;
+  }
+  .celda[data-cargada='true'] {
+    background: var(--color-rojo);
+    animation: cargar 0.35s var(--ease-marca);
+  }
+}
+
+/* Línea de pasos: une los números cuando los pasos van en fila (4 columnas, huecos de 40 px). */
+@utility pasos-linea {
+  &::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    right: calc((100% - 120px) / 4 - 24px);
+    top: 23px;
+    height: 2px;
+    background: var(--color-negro);
+  }
+}
+
+@keyframes cargar {
+  from {
+    transform: scaleX(0.2);
+  }
+}

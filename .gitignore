@@ -33,3 +33,7 @@ backend/uploads/
 backend/.previews/
 *.log
 .turbo/
+
+# Capturas y registros de Playwright MCP
+.playwright-mcp/
+frontend/.impeccable/review/

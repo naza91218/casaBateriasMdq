@@ -328,7 +328,7 @@ cerrado y se refina en ese momento.
 `/speckit-tasks` cuando el diseño esté definido.
 
 - [ ] T135 Inicializar Next.js 16 con Tailwind y TypeScript en `frontend/`, consumiendo `@casa/shared`, y `frontend/Dockerfile`
-- [ ] T136 Implementar el cliente de la API (desde el servidor por red interna, desde el navegador a `/api/v1`) y `POST /api/revalidate` con secreto en `frontend/src/lib/api.ts` y `frontend/src/app/api/revalidate/route.ts`
+- [X] T136 Implementar el cliente de la API (desde el servidor por red interna, desde el navegador a `/api/v1`) y `POST /api/revalidate` con secreto en `frontend/src/lib/api.ts` y `frontend/src/app/api/revalidate/route.ts`
 - [ ] T137 [P] [US1] Portada con buscador, catálogo con filtros en la URL y ficha (375 px, 48 px, 17 px, WCAG AA) en `frontend/src/app/(tienda)/`
 - [ ] T138 [P] [US2] Carrito, checkout de una página, retorno de Mercado Pago y seguimiento en `frontend/src/app/(tienda)/checkout/` y `frontend/src/app/(tienda)/pedido/[id]/`
 - [ ] T139 [P] [US3] Panel: ingreso, pedidos, detalle, confirmaciones y alertas en `frontend/src/app/panel/`
