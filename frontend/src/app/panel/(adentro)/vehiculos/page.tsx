@@ -1,4 +1,4 @@
-import type { VehiculoAdmin } from '@casa/shared';
+import type { Medida, VehiculoAdmin } from '@casa/shared';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Vehiculos } from '@/components/panel/Vehiculos';
@@ -17,9 +17,10 @@ export default async function PaginaVehiculos({
   const pagina = Math.max(1, Number.parseInt(p.pagina ?? '1', 10) || 1);
   const q = new URLSearchParams({ pagina: String(pagina), porPagina: String(POR_PAGINA) });
   if (p.q?.trim()) q.set('q', p.q.trim());
-  const lista = await pedirPanel<{ items: VehiculoAdmin[]; total: number }>(
-    `/admin/vehiculos?${q}`,
-  );
+  const [lista, medidas] = await Promise.all([
+    pedirPanel<{ items: VehiculoAdmin[]; total: number }>(`/admin/vehiculos?${q}`),
+    pedirPanel<Medida[]>('/catalogo/medidas'),
+  ]);
   const paginas = Math.ceil(lista.total / POR_PAGINA);
   const url = (n: number) =>
     `/panel/vehiculos?${new URLSearchParams({ ...(p.q ? { q: p.q } : {}), pagina: String(n) })}`;
@@ -50,7 +51,7 @@ export default async function PaginaVehiculos({
         </button>
       </form>
       <p className="num mt-4 text-gris-600">{lista.total} autos</p>
-      <Vehiculos vehiculos={lista.items} />
+      <Vehiculos vehiculos={lista.items} medidas={medidas.map((m) => m.codigo)} />
       {paginas > 1 && (
         <nav aria-label="Páginas" className="mt-6 flex items-center justify-center gap-3">
           {pagina > 1 && (

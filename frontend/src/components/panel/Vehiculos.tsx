@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { enviar, ErrorApi } from '@/lib/api';
-import { Aviso, CampoPanel } from './Formulario';
+import { Aviso, CampoPanel, ErrorPanel } from './Formulario';
 
 type Datos = {
   marca: string;
@@ -13,7 +13,7 @@ type Datos = {
   anioDesde: string;
   anioHasta: string;
   motor: string;
-  medidas: string;
+  medidas: string[];
 };
 const vacio: Datos = {
   marca: '',
@@ -21,11 +21,18 @@ const vacio: Datos = {
   anioDesde: '',
   anioHasta: '',
   motor: '',
-  medidas: '',
+  medidas: [],
 };
 
 /** Autos y las medidas que llevan (FR-046). Sin años = vale para todos los años del modelo. */
-export function Vehiculos({ vehiculos }: { vehiculos: VehiculoAdmin[] }) {
+export function Vehiculos({
+  vehiculos,
+  medidas: todas,
+}: {
+  vehiculos: VehiculoAdmin[];
+  /** Las medidas que existen en el catálogo: se eligen, no se escriben. */
+  medidas: string[];
+}) {
   const router = useRouter();
   const [editando, setEditando] = useState<string | 'nuevo' | null>(null);
   const [d, setD] = useState<Datos>(vacio);
@@ -43,7 +50,7 @@ export function Vehiculos({ vehiculos }: { vehiculos: VehiculoAdmin[] }) {
             anioDesde: v.anioDesde ? String(v.anioDesde) : '',
             anioHasta: v.anioHasta ? String(v.anioHasta) : '',
             motor: v.motor ?? '',
-            medidas: v.medidas.join(', '),
+            medidas: v.medidas,
           }
         : vacio,
     );
@@ -58,10 +65,7 @@ export function Vehiculos({ vehiculos }: { vehiculos: VehiculoAdmin[] }) {
       anioDesde: d.anioDesde ? Number(d.anioDesde) : null,
       anioHasta: d.anioHasta ? Number(d.anioHasta) : null,
       motor: d.motor,
-      medidas: d.medidas
-        .split(/[,\s]+/)
-        .map((m) => m.trim().toLowerCase())
-        .filter(Boolean),
+      medidas: d.medidas,
     };
     try {
       if (editando === 'nuevo') await enviar('/admin/vehiculos', cuerpo);
@@ -135,15 +139,38 @@ export function Vehiculos({ vehiculos }: { vehiculos: VehiculoAdmin[] }) {
           onChange={set('anioHasta')}
           error={errores.anioHasta}
         />
-        <CampoPanel
-          id="v-medidas"
-          rotulo="Medidas"
-          ayuda="Separadas por coma: 12x65, 12x70."
-          value={d.medidas}
-          onChange={set('medidas')}
-          error={errores.medidas}
-        />
       </div>
+      <fieldset>
+        <legend className="text-[17px] font-bold">Medidas que lleva</legend>
+        <p className="text-[15px] text-gris-600">Tocá todas las que le sirven.</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {todas.map((m) => {
+            const elegida = d.medidas.includes(m);
+            return (
+              <label
+                key={m}
+                className={`num flex min-h-11 cursor-pointer items-center rounded-full border-2 px-4 font-semibold has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-negro ${elegida ? 'border-negro bg-negro text-blanco' : 'border-gris-300 bg-blanco hover:border-negro'}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={elegida}
+                  onChange={() =>
+                    setD((x) => ({
+                      ...x,
+                      medidas: elegida
+                        ? x.medidas.filter((y) => y !== m)
+                        : todas.filter((y) => y === m || x.medidas.includes(y)),
+                    }))
+                  }
+                  className="sr-only"
+                />
+                {m}
+              </label>
+            );
+          })}
+        </div>
+        <ErrorPanel id="v-medidas" error={errores.medidas} />
+      </fieldset>
       {aviso && <Aviso tipo="error">{aviso}</Aviso>}
       <div className="flex gap-2">
         <button type="button" onClick={guardar} className="boton boton-rojo !min-h-12">
