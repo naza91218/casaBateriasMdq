@@ -37,3 +37,7 @@ backend/.previews/
 # Capturas y registros de Playwright MCP
 .playwright-mcp/
 frontend/.impeccable/review/
+
+# Next.js
+*.tsbuildinfo
+next-env.d.ts
