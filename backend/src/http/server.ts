@@ -37,6 +37,17 @@ import { rutasAdminResumen } from './rutas-admin-resumen.js';
 
 export const PREFIJO = '/api/v1';
 
+/** Parámetros que dan acceso: el seguimiento de un pedido (`t`) y el enlace al panel (`token`). */
+const PARAMETROS_SECRETOS = ['t', 'token'];
+
+export function urlSinSecretos(url: string): string {
+  const [ruta, consulta] = url.split('?', 2);
+  if (!consulta) return url;
+  const params = new URLSearchParams(consulta);
+  for (const nombre of PARAMETROS_SECRETOS) if (params.has(nombre)) params.set(nombre, 'oculto');
+  return `${ruta}?${params.toString()}`;
+}
+
 export interface OpcionesServidor {
   reportarError?: (error: unknown) => void;
   /** Para tests: desactiva el rate limit global. */
@@ -56,6 +67,19 @@ export async function construirServidor(
     // Detrás de Nginx la IP real llega en X-Forwarded-For (rate limit). Solo se le cree a un
     // proxy de la máquina o de la red interna de Docker: si no, cualquiera inventa su IP.
     trustProxy: ['loopback', 'uniquelocal'],
+    // El registro automático guarda la URL completa, con el token del seguimiento (que no vence)
+    // o del ingreso al panel. Se registra a mano, con esos valores tapados.
+    disableRequestLogging: true,
+  });
+  base.addHook('onResponse', async (req, reply) => {
+    req.log.info(
+      {
+        req: { method: req.method, url: urlSinSecretos(req.url), remoteAddress: req.ip },
+        res: { statusCode: reply.statusCode },
+        responseTime: Math.round(reply.elapsedTime),
+      },
+      'request completed',
+    );
   });
   registrarManejoDeErrores(
     base,

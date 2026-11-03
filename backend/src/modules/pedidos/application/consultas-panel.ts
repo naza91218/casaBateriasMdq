@@ -21,7 +21,7 @@ import { transicionesPermitidas, type EstadoPedido } from '../domain/maquina-est
 import { pedidoEventos, pedidoItems, pedidos } from '../infrastructure/schema.js';
 import type { ServicioEstados } from './cambiar-estado.js';
 
-/** Los pedidos a pagar en el local no vencen solos; pasado este plazo se destacan (FR-034). */
+/** Los pedidos a pagar en el local vencen a los 7 días; pasado este plazo ya se destacan (FR-034). */
 const ESPERA_DESTACADA = 48 * HORA;
 
 function espera(estado: EstadoPedido, creadoEn: Date, ahora: Date) {

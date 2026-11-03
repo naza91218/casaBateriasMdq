@@ -73,6 +73,33 @@ describe('configuración desde el panel (FR-047)', () => {
     expect(despues).toBe(antes);
   });
 
+  test('si cambia el CBU o el alias, avisa por mail quién lo cambió y cómo quedó (auditoría)', async () => {
+    const avisos = () =>
+      e.ctx.db
+        .select()
+        .from(outboxMensajes)
+        .where(eq(outboxMensajes.evento, 'aviso_admin_datos_bancarios'));
+    const previos = (await avisos()).length;
+    await s().adminConfiguracion.editar(
+      { banco: { cbu: '0000003100099999999999', alias: 'casa.baterias.mdp' } },
+      'admin@tienda.test',
+    );
+    const nuevos = (await avisos()).slice(previos);
+    expect(nuevos).toHaveLength(1);
+    expect(nuevos[0]?.destinatario).toBe('admin');
+    // Solo el CBU cambió: el alias quedó igual.
+    expect(nuevos[0]?.datos).toEqual({
+      quien: 'admin@tienda.test',
+      cambios: [
+        { nombre: 'CBU', antes: '0110599520000001234567', despues: '0000003100099999999999' },
+      ],
+    });
+
+    // Cambiar otra cosa no avisa.
+    await s().adminConfiguracion.editar({ descuentoPct: 10 });
+    expect(await avisos()).toHaveLength(previos + 1);
+  });
+
   test('los cambios parciales no pisan lo demás', async () => {
     await s().adminConfiguracion.editar({
       whatsapp: '5492235000000',

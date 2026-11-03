@@ -1,5 +1,9 @@
+import type { LookupAddress } from 'node:dns';
+import { lookup as dnsLookup } from 'node:dns/promises';
 import { readFile } from 'node:fs/promises';
-import { isIP } from 'node:net';
+import http from 'node:http';
+import https from 'node:https';
+import { BlockList, isIP, type LookupFunction } from 'node:net';
 import { resolve, sep } from 'node:path';
 import type { InformeImportacion, TipoImportacion } from '@casa/shared';
 import { parse } from 'csv-parse/sync';
@@ -125,6 +129,53 @@ const filaCompatibilidad = (anioMaximo: number) => {
     );
 };
 
+/** Redes que no son internet: la máquina, la red interna, la nube (metadatos) y reservadas. */
+const NO_PUBLICAS = new BlockList();
+for (const [red, bits] of [
+  ['0.0.0.0', 8],
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.0.0.0', 24],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+  ['224.0.0.0', 3],
+] as const) {
+  NO_PUBLICAS.addSubnet(red, bits, 'ipv4');
+}
+// IPv6: sin especificar, la máquina, red interna, enlace local y multicast. Las que esconden una
+// IPv4 adentro (::ffff:127.0.0.1, 64:ff9b::7f00:1) se revisan por la IPv4 (ver ipPublica): BlockList
+// trata toda IPv4 como ::ffff:x.x.x.x, así que bloquear ese rango bloquearía todas.
+for (const [red, bits] of [
+  ['::', 127],
+  ['fc00::', 7],
+  ['fe80::', 10],
+  ['ff00::', 8],
+] as const) {
+  NO_PUBLICAS.addSubnet(red, bits, 'ipv6');
+}
+
+export function ipPublica(ip: string): boolean {
+  const version = isIP(ip);
+  if (!version) return false;
+  const v4 = version === 6 ? ipv4Escondida(ip) : null;
+  if (v4) return ipPublica(v4);
+  return !NO_PUBLICAS.check(ip, version === 4 ? 'ipv4' : 'ipv6');
+}
+
+/** La IPv4 escondida en una IPv6 mapeada (::ffff:a.b.c.d) o de NAT64 (64:ff9b::/96). */
+function ipv4Escondida(ip: string): string | null {
+  const m = ip
+    .toLowerCase()
+    .match(/^(?:::ffff:|64:ff9b::)(?:(\d+\.\d+\.\d+\.\d+)|([0-9a-f]{1,4}):([0-9a-f]{1,4}))$/);
+  if (!m) return null;
+  if (m[1]) return m[1];
+  const n = (parseInt(m[2]!, 16) << 16) | parseInt(m[3]!, 16);
+  return [24, 16, 8, 0].map((d) => (n >>> d) & 255).join('.');
+}
+
 /** Para bajar fotos por URL: solo http(s) a direcciones públicas (evita que pidan al propio servidor). */
 export function urlDeFotoPermitida(texto: string): boolean {
   let url: URL;
@@ -137,23 +188,54 @@ export function urlDeFotoPermitida(texto: string): boolean {
   const host = url.hostname.replace(/^\[|\]$/g, '').toLowerCase();
   if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.internal'))
     return false;
-  if (isIP(host)) {
-    return !/^(10\.|127\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$|fc|fd|fe80)/.test(
-      host,
-    );
-  }
-  return true;
+  return isIP(host) ? ipPublica(host) : true;
 }
 
-async function descargarFoto(url: string): Promise<Buffer> {
-  if (!urlDeFotoPermitida(url)) throw new Error('la dirección no está permitida');
-  const r = await fetch(url, { signal: AbortSignal.timeout(15_000), redirect: 'error' });
-  if (!r.ok) throw new Error(`respondió ${r.status}`);
-  const largo = Number(r.headers.get('content-length') ?? 0);
-  if (largo > MAX_BYTES_FOTO) throw new Error('pesa más de 10 MB');
-  const contenido = Buffer.from(await r.arrayBuffer());
-  if (contenido.length > MAX_BYTES_FOTO) throw new Error('pesa más de 10 MB');
-  return contenido;
+/**
+ * Resuelve el nombre y deja conectar solo si todas sus IPs son públicas. Se controla al
+ * conectarse, no antes: así un dominio que apunta a 127.0.0.1, o que cambia de IP entre el
+ * control y la descarga (DNS rebinding), no llega a la red interna.
+ */
+export const lookupPublico: LookupFunction = (hostname, opciones, listo) => {
+  dnsLookup(hostname, { all: true }).then(
+    (direcciones) => {
+      if (direcciones.length === 0 || !direcciones.every((d) => ipPublica(d.address))) {
+        listo(new Error('la dirección no está permitida'), '', 0);
+        return;
+      }
+      const [primera] = direcciones;
+      if (opciones.all) (listo as (e: null, d: LookupAddress[]) => void)(null, direcciones);
+      else listo(null, primera?.address ?? '', primera?.family ?? 4);
+    },
+    (error: NodeJS.ErrnoException) => listo(error, '', 0),
+  );
+};
+
+/** Sin seguir redirecciones (podrían llevar a la red interna) y cortando a los 10 MB. */
+function descargarFoto(url: string): Promise<Buffer> {
+  if (!urlDeFotoPermitida(url)) return Promise.reject(new Error('la dirección no está permitida'));
+  const cliente = url.startsWith('https:') ? https : http;
+  return new Promise((ok, mal) => {
+    const pedido = cliente.get(url, { lookup: lookupPublico, timeout: 15_000 }, (r) => {
+      const estado = r.statusCode ?? 0;
+      if (estado < 200 || estado > 299) {
+        r.resume();
+        mal(new Error(`respondió ${estado}`));
+        return;
+      }
+      const partes: Buffer[] = [];
+      let total = 0;
+      r.on('data', (parte: Buffer) => {
+        total += parte.length;
+        if (total > MAX_BYTES_FOTO) pedido.destroy(new Error('pesa más de 10 MB'));
+        else partes.push(parte);
+      });
+      r.on('end', () => ok(Buffer.concat(partes)));
+      r.on('error', mal);
+    });
+    pedido.on('timeout', () => pedido.destroy(new Error('tardó más de 15 segundos')));
+    pedido.on('error', mal);
+  });
 }
 
 export interface OpcionesImportacion {

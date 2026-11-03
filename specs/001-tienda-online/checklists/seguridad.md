@@ -33,6 +33,25 @@ anota qué hay, dónde y qué test lo cubre. Al final, lo que queda para el serv
 | **Errores** | Formato único, sin trazas ni mensajes internos hacia afuera (`ERROR_INTERNO`). |
 | **Documentación de la API** | Swagger está apagado en producción. |
 
+## Auditoría a fondo (02/11/2026)
+
+Segunda pasada, sobre la lógica del negocio y no solo la configuración.
+
+| Hallazgo | Riesgo | Corrección | Test |
+| :- | :- | :- | :- |
+| Pedidos sin pagar retienen stock sin límite | Cualquiera podía dejar el local "sin stock": cada pedido reserva stock (48 h la transferencia, el efectivo hasta que se cancela), con hasta 100 unidades por pedido repitiendo líneas | Hasta 10 baterías por pedido y sin repetir el producto; hasta 3 pedidos sin pagar por comprador, por mail o teléfono (`MAX_PEDIDOS_SIN_PAGAR`) | `integration/pedidos/crear-pedido.test.ts` |
+| Mercado Pago no cobraba el costo de la zona | No es de seguridad, pero rompía la compra: un pedido con colocación en una zona con costo extra cobraba de menos y quedaba como "monto distinto" | La zona va como una línea más y se verifica que la preferencia sume el total del pedido | `integration/pagos/preferencia.test.ts` |
+| Descarga de fotos controlada solo por el nombre | Un dominio que resuelve a una IP interna, o direcciones como `[::ffff:127.0.0.1]`, pasaban el control (SSRF; solo desde el panel) | Se controla la IP real al conectarse, con todas las redes no públicas de IPv4 e IPv6 | `integration/importacion/importacion.test.ts` |
+| Tokens en los registros | La URL completa quedaba registrada, con el token del seguimiento (no vence) y el del enlace al panel | Registro propio de cada pedido HTTP con `t` y `token` tapados | `contract/seguridad/registros.test.ts` |
+| Cambio de CBU sin aviso | Alguien que entrara al panel podía cambiar el CBU y quedarse con las transferencias sin que nadie se enterara | Mail al administrador con quién lo cambió y cómo quedó | `integration/configuracion/admin-configuracion.test.ts` |
+
+Revisado sin hallazgos: ingreso al panel (tokens con hash, de un solo uso y comparados en tiempo
+constante), sesiones, seguimiento y reintento de pago (exigen el token firmado), webhook (firma,
+consulta a la API, monto y estados), importes calculados en el servidor y subida de fotos.
+
+**Decidido el 02/11/2026:** los pedidos en efectivo, que antes no vencían, ahora vencen a los 7
+días (clarify 2026-11-02). Así ningún pedido retiene stock para siempre.
+
 ## Riesgos aceptados
 
 - **`esbuild` (moderado)**, dentro de `drizzle-kit`, que solo se usa en desarrollo para generar

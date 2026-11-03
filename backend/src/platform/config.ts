@@ -41,6 +41,9 @@ const esquema = z.object({
   IMPORT_FOTOS_DIR: z.string().default('../data/import'),
 
   SENTRY_DSN: opcional(),
+
+  // Pedidos sin pagar que puede tener abiertos un mismo comprador: cada uno retiene stock.
+  MAX_PEDIDOS_SIN_PAGAR: z.coerce.number().int().positive().default(3),
 });
 
 export type Config = z.infer<typeof esquema> & { esProduccion: boolean };

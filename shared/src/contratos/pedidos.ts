@@ -18,6 +18,8 @@ export const EstadoPedido = z.enum([
 ]);
 export type EstadoPedido = z.infer<typeof EstadoPedido>;
 
+export const MAX_UNIDADES_POR_PEDIDO = 10;
+
 export const ItemCarrito = z.object({
   productoId: z.string().uuid('Producto inválido'),
   cantidad: z
@@ -29,7 +31,17 @@ export const ItemCarrito = z.object({
 
 /** El navegador solo manda productos, cantidades y opciones: nunca precios (FR-019). */
 export const SolicitudCotizacion = z.object({
-  items: z.array(ItemCarrito).min(1, 'El carrito está vacío').max(10),
+  items: z
+    .array(ItemCarrito)
+    .min(1, 'El carrito está vacío')
+    .max(10)
+    // Un pedido reserva stock antes de pagarse: sin tope, se podría dejar el local sin stock.
+    .refine((items) => new Set(items.map((i) => i.productoId)).size === items.length, {
+      message: 'El mismo producto está dos veces en el carrito',
+    })
+    .refine((items) => items.reduce((t, i) => t + i.cantidad, 0) <= MAX_UNIDADES_POR_PEDIDO, {
+      message: `Para más de ${MAX_UNIDADES_POR_PEDIDO} baterías, escribinos por WhatsApp`,
+    }),
   entrega: Entrega,
   zonaId: z.string().uuid().optional(),
   medioPago: MedioPago,

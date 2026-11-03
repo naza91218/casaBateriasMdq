@@ -182,6 +182,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     reloj,
     logger,
     urlApi: config.API_PUBLIC_URL,
+    maxPedidosSinPagar: config.MAX_PEDIDOS_SIN_PAGAR,
   });
   const alertas = new ServicioAlertas(db, reloj);
   const arrepentimientos = new ServicioArrepentimientos(

@@ -10,17 +10,21 @@ import {
   type Datos,
 } from './layout.js';
 
-/** Ciclo del pedido para el comprador (FR-036). Reciben solo datos sin DNI (FR-038). */
-function DatosBancarios({ d }: { d: Datos }) {
-  const b = d.banco as Record<string, string> | null | undefined;
-  if (!b) return null;
-  const vence = d.venceEn
-    ? new Date(String(d.venceEn)).toLocaleString('es-AR', {
+/** "1/11/26, 12:00 p. m.", en la hora de Argentina. */
+const fecha = (iso: unknown) =>
+  iso
+    ? new Date(String(iso)).toLocaleString('es-AR', {
         timeZone: 'America/Argentina/Buenos_Aires',
         dateStyle: 'short',
         timeStyle: 'short',
       })
     : '';
+
+/** Ciclo del pedido para el comprador (FR-036). Reciben solo datos sin DNI (FR-038). */
+function DatosBancarios({ d }: { d: Datos }) {
+  const b = d.banco as Record<string, string> | null | undefined;
+  if (!b) return null;
+  const vence = fecha(d.venceEn);
   return (
     <>
       <Parrafo>
@@ -50,11 +54,17 @@ export const plantillasPedidos: Record<string, Plantilla> = {
         titulo="¡Recibimos tu pedido!"
         intro={
           d.medioPago === 'efectivo'
-            ? 'Gracias por tu compra. Lo pagás en el local cuando retirás o te la colocamos.'
+            ? 'Gracias por tu compra. La pagás en el local cuando pasás a retirarla.'
             : 'Gracias por tu compra. Ya tenemos tu pedido.'
         }
       >
         <DatosBancarios d={d} />
+        {d.medioPago === 'efectivo' && d.venceEn ? (
+          <Parrafo>
+            Te la guardamos hasta el {fecha(d.venceEn)}. Si no pasás a retirarla, el pedido se
+            cancela.
+          </Parrafo>
+        ) : null}
       </LayoutComprador>
     ),
   }),

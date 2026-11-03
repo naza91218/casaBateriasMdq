@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { mediosDisponibles, MEDIOS_PAGO } from '../../../src/modules/pagos/domain/medios-pago.js';
 import { calcularImportes } from '../../../src/modules/pedidos/domain/importes.js';
 import { Dinero } from '../../../src/shared-kernel/dinero.js';
-import { HORA, MINUTO } from '../../../src/shared-kernel/reloj.js';
+import { DIA, HORA, MINUTO } from '../../../src/shared-kernel/reloj.js';
 
 const pesos = (n: number) => Dinero.dePesos(n);
 
@@ -60,16 +60,18 @@ describe('medios de pago (FR-022, clarify)', () => {
     expect(mediosDisponibles('retiro')).toEqual(['mercadopago', 'transferencia', 'efectivo']);
   });
 
-  test('vencimientos: MP 30 min, transferencia 48 h, efectivo no vence', () => {
+  test('vencimientos: MP 30 min, transferencia 48 h, efectivo 7 días', () => {
     const creado = new Date('2026-11-01T12:00:00Z');
-    const plazos = { minutosVencMercadopago: 30, horasVencTransferencia: 48 };
+    const plazos = { minutosVencMercadopago: 30, horasVencTransferencia: 48, diasVencEfectivo: 7 };
     expect(MEDIOS_PAGO.mercadopago.vencimiento(creado, plazos)?.getTime()).toBe(
       creado.getTime() + 30 * MINUTO,
     );
     expect(MEDIOS_PAGO.transferencia.vencimiento(creado, plazos)?.getTime()).toBe(
       creado.getTime() + 48 * HORA,
     );
-    expect(MEDIOS_PAGO.efectivo.vencimiento(creado, plazos)).toBeNull();
+    expect(MEDIOS_PAGO.efectivo.vencimiento(creado, plazos).getTime()).toBe(
+      creado.getTime() + 7 * DIA,
+    );
     expect(MEDIOS_PAGO.efectivo.estadoInicial).toBe('a_pagar_en_local');
   });
 });

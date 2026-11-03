@@ -106,7 +106,7 @@ esas medidas, agrupados por gama (económica primero).
 | costo_zona | bigint | |
 | total | bigint | `subtotal - descuento + costo_zona` |
 | descuento_pct_aplicado | numeric(5,2) | Foto del valor usado |
-| vence_en | timestamptz | creado + 30 min (MP), + 48 h (transferencia), null (efectivo) |
+| vence_en | timestamptz | creado + 30 min (MP), + 48 h (transferencia), + 7 días (efectivo) |
 | creado_en / actualizado_en | timestamptz | |
 
 Índices: `(estado, vence_en)` para el worker; `(estado, creado_en desc)` para el panel.
@@ -236,6 +236,7 @@ UNIQUE `(evento, pedido_id, destinatario)` (FR-040: una sola vez por evento).
 | google_resenas_url | text | FR-076 |
 | horas_venc_transferencia | int | 48 |
 | minutos_venc_mercadopago | int | 30 |
+| dias_venc_efectivo | int | 7 (clarify 2026-11-02) |
 
 ## Legales y consultas (`legales`, `canje`)
 

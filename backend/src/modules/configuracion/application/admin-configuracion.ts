@@ -2,11 +2,20 @@ import type { ConfiguracionAdmin, EdicionConfiguracion, ZonaAdmin } from '@casa/
 import { eq } from 'drizzle-orm';
 import type { BaseDeDatos } from '../../../platform/db.js';
 import type { DatosZona, ServicioZonas, Zona } from '../../entregas/application/zonas.js';
+import { uuidv7 } from '../../../platform/ids.js';
+import { MAILS, mail } from '../../notificaciones/application/eventos.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
 import { configuracion } from '../infrastructure/schema.js';
 import type { ConfiguracionCompleta, ServicioConfiguracion } from './configuracion.js';
 
 const soloDigitos = (cuit: string) => cuit.replace(/\D/g, '');
+
+const CAMPOS_BANCARIOS = [
+  { campo: 'bancoTitular', nombre: 'Titular' },
+  { campo: 'bancoCbu', nombre: 'CBU' },
+  { campo: 'bancoAlias', nombre: 'Alias' },
+  { campo: 'bancoCuit', nombre: 'CUIT' },
+] as const;
 
 /**
  * Edición de la configuración desde el panel (FR-047). El descuento cambia los precios por
@@ -24,7 +33,12 @@ export class ServicioAdminConfiguracion {
     return aAdmin(await this.configuracion.obtener());
   }
 
-  async editar(e: EdicionConfiguracion): Promise<ConfiguracionAdmin> {
+  /**
+   * `quien` es el mail del usuario del panel. Si cambian los datos bancarios se avisa por mail:
+   * es lo que buscaría cambiar alguien que entró al panel sin permiso, para quedarse con las
+   * transferencias.
+   */
+  async editar(e: EdicionConfiguracion, quien = 'el panel'): Promise<ConfiguracionAdmin> {
     const c: Partial<typeof configuracion.$inferInsert> = {};
     if (e.descuentoPct !== undefined) c.descuentoPct = String(e.descuentoPct);
     if (e.banco?.titular !== undefined) c.bancoTitular = e.banco.titular;
@@ -44,8 +58,18 @@ export class ServicioAdminConfiguracion {
     if (e.googleResenasUrl !== undefined) c.googleResenasUrl = e.googleResenasUrl;
 
     await this.db.transaction(async (tx) => {
+      const antes = await this.configuracion.obtener(tx);
       if (Object.keys(c).length > 0)
         await tx.update(configuracion).set(c).where(eq(configuracion.id, 1));
+      const cambios = CAMPOS_BANCARIOS.filter(
+        ({ campo }) => c[campo] !== undefined && c[campo] !== antes[campo],
+      ).map(({ campo, nombre }) => ({ nombre, antes: antes[campo], despues: String(c[campo]) }));
+      if (cambios.length > 0) {
+        await this.outbox.encolar(
+          tx,
+          mail(MAILS.datosBancarios.admin, 'admin', uuidv7(), { quien, cambios }),
+        );
+      }
       // Los datos bancarios no se publican: solo regenera si cambió algo visible.
       const soloBanco = Object.keys(e).every((k) => k === 'banco');
       if (!soloBanco)

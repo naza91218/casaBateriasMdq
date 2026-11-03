@@ -202,6 +202,19 @@ describe('plantillas', () => {
     expect(eventosConPlantilla()).toEqual(expect.arrayContaining(todosLosEventosDeMail()));
   });
 
+  test('efectivo: dice que se paga al retirar y hasta cuándo se la guardamos (clarify 2026-11-02)', async () => {
+    const m = await renderizar('pedido_recibido', {
+      ...datos,
+      medioPago: 'efectivo',
+      entrega: 'retiro',
+      banco: null,
+      venceEn: '2026-11-08T15:00:00.000Z',
+    });
+    expect(m.texto).toContain('La pagás en el local cuando pasás a retirarla.');
+    expect(m.texto).toContain('Te la guardamos hasta el 8/11/26');
+    expect(m.texto).not.toContain('CBU');
+  });
+
   test.each(eventosConPlantilla())('"%s" se arma completa, en HTML y en texto', async (evento) => {
     const m = await renderizar(evento, datos);
     expect(m.asunto.length).toBeGreaterThan(5);

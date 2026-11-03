@@ -41,7 +41,7 @@ export const pedidos = pgTable(
     costoZona: centavos('costo_zona').notNull(),
     total: centavos('total').notNull(),
     descuentoPctAplicado: numeric('descuento_pct_aplicado', { precision: 5, scale: 2 }).notNull(),
-    // 30 min (MP), 48 h (transferencia), null (efectivo: no vence).
+    // 30 min (MP), 48 h (transferencia), 7 días (efectivo). null en pedidos anteriores al plazo.
     venceEn: fecha('vence_en'),
     creadoEn: creadoEn(),
     actualizadoEn: actualizadoEn(),

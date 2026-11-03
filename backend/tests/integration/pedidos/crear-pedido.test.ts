@@ -6,6 +6,8 @@ import { zonasColocacion } from '../../../src/modules/entregas/infrastructure/sc
 import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructure/schema.js';
 import { pedidos } from '../../../src/modules/pedidos/infrastructure/schema.js';
 import { construirServidor } from '../../../src/http/server.js';
+import { DIA } from '../../../src/shared-kernel/reloj.js';
+import { crearContextoDePrueba } from '../../setup/contexto.js';
 import { crearProducto } from '../../setup/fixtures.js';
 import {
   COMPRADOR,
@@ -148,12 +150,92 @@ describe('crear pedido como invitado (US2)', () => {
     expect(p?.estado).toBe('pendiente_pago');
   });
 
-  test('efectivo con retiro queda "a pagar en el local" y sin vencimiento', async () => {
+  test('efectivo con retiro queda "a pagar en el local" y vence a los 7 días', async () => {
     const r = await post('/pedidos', solicitud(e, { medioPago: 'efectivo' }));
     expect(r.statusCode).toBe(201);
     const [p] = await e.ctx.db.select().from(pedidos).where(eq(pedidos.id, r.json().id));
     expect(p?.estado).toBe('a_pagar_en_local');
-    expect(p?.venceEn).toBeNull();
+    expect(p?.venceEn?.getTime()).toBe(e.reloj.ahora().getTime() + 7 * DIA);
     expect(Number(p?.total)).toBe(9_000_000);
+  });
+});
+
+describe('nadie puede dejar el local sin stock con pedidos que no paga (auditoría)', () => {
+  test('hasta 10 baterías por pedido y sin repetir el producto en dos líneas', async () => {
+    const otro = await crearProducto(e.ctx.db, {
+      marca: 'Herbo',
+      medida: '12x65',
+      gama: 'reforzada',
+      stock: 50,
+    });
+    const repetido = await post(
+      '/pedidos',
+      solicitud(e, {
+        items: [
+          { productoId: e.productoId, cantidad: 1 },
+          { productoId: e.productoId, cantidad: 1 },
+        ],
+      }),
+    );
+    expect(repetido.statusCode).toBe(400);
+    expect(repetido.json().error.campos.items).toBe(
+      'El mismo producto está dos veces en el carrito',
+    );
+
+    const muchas = await post('/checkout/cotizar', {
+      items: [
+        { productoId: e.productoId, cantidad: 5 },
+        { productoId: otro.id, cantidad: 6 },
+      ],
+      entrega: 'retiro',
+      medioPago: 'transferencia',
+    });
+    expect(muchas.statusCode).toBe(400);
+    expect(muchas.json().error.campos.items).toBe(
+      'Para más de 10 baterías, escribinos por WhatsApp',
+    );
+  });
+
+  test('un mismo comprador puede tener hasta 3 pedidos sin pagar, por mail o por teléfono', async () => {
+    // Con el tope real (los demás tests lo suben porque reusan a la misma compradora).
+    const p = crearContextoDePrueba({ MAX_PEDIDOS_SIN_PAGAR: '3' });
+    try {
+      const producto = await crearProducto(e.ctx.db, {
+        marca: 'Sermat',
+        medida: '12x70',
+        gama: 'reforzada',
+        stock: 50,
+      });
+      const comprador = { ...COMPRADOR, email: 'acaparador@tienda.test', telefono: '223 400 9999' };
+      const pedir = (cambios: Partial<typeof comprador>) =>
+        p.ctx.servicios.pedidos.crear(
+          solicitud(e, {
+            items: [{ productoId: producto.id, cantidad: 1 }],
+            comprador: { ...comprador, ...cambios },
+          }),
+        );
+
+      const primero = await pedir({});
+      await pedir({});
+      await pedir({ email: 'otro-mail@tienda.test' }); // mismo teléfono
+      // El cuarto, con otro mail y el teléfono escrito distinto: es la misma persona.
+      await expect(
+        pedir({ email: 'tercero@tienda.test', telefono: '0223 15-400-9999' }),
+      ).rejects.toMatchObject({
+        codigo: 'PEDIDOS_SIN_PAGAR',
+        mensaje: expect.stringContaining('Ya tenés 3 pedidos sin pagar'),
+      });
+
+      // Cuando uno se cancela (o se paga), puede volver a comprar.
+      await p.ctx.servicios.estados.cambiar({
+        pedidoId: primero.id,
+        a: 'cancelado',
+        actor: 'worker',
+        motivo: 'vencido',
+      });
+      await expect(pedir({})).resolves.toMatchObject({ numero: expect.any(Number) });
+    } finally {
+      await p.ctx.cerrar();
+    }
   });
 });

@@ -54,10 +54,11 @@ describe('acciones del panel desde otro sitio (CSRF)', () => {
     });
 
   test('con Origin de otro sitio o Sec-Fetch-Site cross-site → 403, aunque haya sesión', async () => {
-    for (const headers of [
+    const desdeOtroSitio: Record<string, string>[] = [
       { origin: 'https://sitio-malicioso.example' },
       { 'sec-fetch-site': 'cross-site' },
-    ]) {
+    ];
+    for (const headers of desdeOtroSitio) {
       const r = await resolver(headers);
       expect(r.statusCode).toBe(403);
       expect(ErrorRespuesta.parse(r.json()).error.codigo).toBe('ORIGEN_NO_PERMITIDO');
@@ -65,7 +66,8 @@ describe('acciones del panel desde otro sitio (CSRF)', () => {
   });
 
   test('desde la tienda o sin Origin pasa el control (y responde según la alerta)', async () => {
-    for (const headers of [{ origin: 'http://tienda.test' }, {}]) {
+    const permitidos: Record<string, string>[] = [{ origin: 'http://tienda.test' }, {}];
+    for (const headers of permitidos) {
       expect((await resolver(headers)).statusCode).toBe(404);
     }
   });

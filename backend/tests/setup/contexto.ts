@@ -22,6 +22,8 @@ export function configDePrueba(extra: Record<string, string> = {}): Config {
     DNI_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString('base64'),
     MAIL_FROM: 'Tienda <pedidos@tienda.test>',
     MAIL_ADMIN: 'admin@tienda.test',
+    // Los tests crean muchos pedidos con la misma compradora; el tope se prueba aparte.
+    MAX_PEDIDOS_SIN_PAGAR: '1000',
     ...extra,
   });
 }

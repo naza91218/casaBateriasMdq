@@ -9,6 +9,8 @@ import { sembrarCatalogo } from '../../../db/seed/catalogo.js';
 import { productoFotos, productos } from '../../../src/modules/catalogo/infrastructure/schema.js';
 import {
   ServicioImportacion,
+  ipPublica,
+  lookupPublico,
   urlDeFotoPermitida,
 } from '../../../src/modules/importacion/application/importar.js';
 import { importaciones } from '../../../src/modules/importacion/infrastructure/schema.js';
@@ -319,8 +321,31 @@ describe('fotos por URL: solo direcciones públicas', () => {
     ['http://169.254.169.254/latest/meta-data', false],
     ['file:///etc/passwd', false],
     ['ftp://herbo.com/x.jpg', false],
+    // Formas escondidas de la misma máquina o de la red interna.
+    ['http://[::ffff:127.0.0.1]/x.jpg', false],
+    ['http://[::1]/x.jpg', false],
+    ['http://[::]/x.jpg', false],
+    ['http://[fd00::5]/x.jpg', false],
+    ['http://2130706433/x.jpg', false],
+    ['http://0x7f.1/x.jpg', false],
+    ['http://100.64.0.1/x.jpg', false],
+    ['http://8.8.8.8/x.jpg', true],
   ])('%s → %s', (url, permitida) => {
     expect(urlDeFotoPermitida(url)).toBe(permitida);
+  });
+
+  test('un dominio que apunta a la red interna se frena al conectarse, no solo por el nombre', async () => {
+    // Cualquier nombre que resuelva a la máquina (acá, localhost) se frena en la resolución,
+    // aunque el control por nombre lo hubiera dejado pasar.
+    const lookup = (host: string) =>
+      new Promise<unknown>((ok, mal) =>
+        lookupPublico(host, { all: true }, (error, direcciones) =>
+          error ? mal(error) : ok(direcciones),
+        ),
+      );
+    await expect(lookup('localhost')).rejects.toThrow('la dirección no está permitida');
+    expect(ipPublica('93.184.215.14')).toBe(true);
+    expect(ipPublica('::ffff:7f00:1')).toBe(false);
   });
 });
 

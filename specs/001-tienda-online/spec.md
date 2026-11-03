@@ -21,6 +21,14 @@
 
 ## Clarifications
 
+### Session 2026-11-02
+
+- Q: Un pedido a pagar en efectivo retiene stock sin vencer: ¿se mantiene así? → A: No. Vence a
+  los 7 días: si el comprador no pasa a retirarla, el pedido se cancela solo y el stock vuelve.
+  Reemplaza la respuesta del 2026-10-29. Además, un comprador puede tener hasta 3 pedidos sin
+  pagar y cada pedido lleva hasta 10 baterías (auditoría de seguridad: nadie puede dejar el
+  local sin stock con pedidos que no paga).
+
 ### Session 2026-10-30
 
 - Q: El catálogo oficial de Sermat dice qué batería lleva cada modelo pero casi nunca de qué
@@ -41,7 +49,8 @@
   Rapipago/Pago Fácil). Si el pago no se completa, la reserva vence a los 30 minutos. La
   transferencia mantiene 48 h.
 - Q: ¿Cuánto tiempo se guarda la batería de un pedido a pagar en efectivo en el local? → A: No
-  vence; el administrador lo cancela a mano si el comprador no viene.
+  vence; el administrador lo cancela a mano si el comprador no viene. *(Reemplazada el
+  2026-11-02: vence a los 7 días.)*
 - Q: ¿El pago en efectivo en el local tiene el mismo descuento que la transferencia? → A: Sí, el
   mismo porcentaje configurable ("precio por transferencia o efectivo").
 
@@ -474,10 +483,11 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 - **FR-033**: Todo cambio de estado MUST registrar estado anterior, nuevo, quién lo hizo y cuándo,
   y todo intento de transición inválida MUST rechazarse y quedar registrado (R-PED-08).
 - **FR-034**: Un pedido sin pago MUST cancelarse automáticamente y devolver su stock al vencer
-  su plazo: 30 minutos con Mercado Pago y 48 h con transferencia. El control MUST correr al
-  menos cada 5 minutos (R-PED-09, R-OPS-01). Los pedidos a pagar en el local MUST NOT vencer
-  solos: el administrador los cancela a mano, y el panel MUST mostrar hace cuántos días esperan,
-  destacando los de más de 48 h.
+  su plazo: 30 minutos con Mercado Pago, 48 h con transferencia y 7 días con efectivo al
+  retirar. El control MUST correr al menos cada 5 minutos (R-PED-09, R-OPS-01). El panel MUST
+  mostrar hace cuántos días esperan los pedidos a pagar en el local, destacando los de más de
+  48 h. Un comprador MUST NOT tener más de 3 pedidos sin pagar (por mail o teléfono) y un pedido
+  MUST NOT superar las 10 baterías.
 - **FR-034b**: El cobro con Mercado Pago MUST ofrecer solo medios de acreditación instantánea
   (tarjetas y dinero en cuenta), excluir medios en efectivo (Rapipago, Pago Fácil) y vencer el
   link de pago junto con la reserva.
@@ -680,7 +690,7 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 - **Descuento por transferencia:** configurable; valor inicial 10 % hasta que el cliente lo
   confirme (P9). Aplica igual al efectivo en el local (ver Clarifications).
 - **Plazos de reserva:** resueltos en Clarifications (Mercado Pago 30 min, transferencia 48 h,
-  pago en el local sin vencimiento).
+  efectivo en el local 7 días).
 - **Motor:** el buscador ignora el motor salvo que el vehículo lo tenga cargado; si un modelo
   necesita medidas distintas por motor, se cargan como vehículos separados.
 - **Catálogo y compatibilidades:** los proveedores no entregan catálogo (P4, respondida el

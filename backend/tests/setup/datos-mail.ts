@@ -29,6 +29,8 @@ export const DATOS_MAIL_DE_EJEMPLO: Record<string, unknown> = {
   },
   tipo: 'monto_distinto',
   codigo: 'ARR-7K2M',
+  quien: 'admin@lacasadelasbaterias.com.ar',
+  cambios: [{ nombre: 'CBU', antes: '0000003100012345678901', despues: '0000003100099999999999' }],
   telefono: '223 400 1122',
   auto: 'Gol Trend 2015',
   bateriaUsada: 'Moura 12x65',

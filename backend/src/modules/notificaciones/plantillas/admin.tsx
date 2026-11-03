@@ -100,6 +100,29 @@ export const plantillasAdmin: Record<string, Plantilla> = {
       </LayoutAdmin>
     ),
   }),
+  aviso_admin_datos_bancarios: (d) => ({
+    asunto: 'Cambiaron los datos bancarios de la tienda',
+    cuerpo: (
+      <LayoutAdmin titulo="Cambiaron los datos bancarios">
+        <Parrafo>
+          Desde {texto(d.quien)} se cambiaron los datos para las transferencias. Los compradores
+          nuevos van a ver estos datos:
+        </Parrafo>
+        <Caja>
+          {(
+            (d.cambios as { nombre: string; antes: string; despues: string }[] | undefined) ?? []
+          ).map((c) => (
+            <Linea key={c.nombre}>
+              {c.nombre}: {c.antes || '(vacío)'} → <strong>{c.despues || '(vacío)'}</strong>
+            </Linea>
+          ))}
+        </Caja>
+        <Parrafo>
+          Si no fuiste vos, entrá al panel, corregilos ya y avisale a quien mantiene la tienda.
+        </Parrafo>
+      </LayoutAdmin>
+    ),
+  }),
   enlace_ingreso: (d) => ({
     asunto: 'Tu enlace para entrar al panel',
     cuerpo: (

@@ -22,6 +22,7 @@ export const MAILS = {
   pedidoCreado: { comprador: 'pedido_recibido', admin: 'aviso_admin_pedido_nuevo' },
   alertaDePago: { admin: 'aviso_admin_alerta' },
   consultaCanje: { admin: 'aviso_admin_canje' },
+  datosBancarios: { admin: 'aviso_admin_datos_bancarios' },
   arrepentimiento: { comprador: 'arrepentimiento_recibido', admin: 'aviso_admin_arrepentimiento' },
 } as const;
 

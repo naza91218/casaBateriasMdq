@@ -4,6 +4,7 @@ import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructu
 import { pedidos } from '../../../src/modules/pedidos/infrastructure/schema.js';
 import { DIA, HORA, MINUTO } from '../../../src/shared-kernel/reloj.js';
 import { prepararCompra, solicitud, stockDe, type EscenarioCompra } from '../../setup/compra.js';
+import { idDeAdmin } from '../../setup/sesion.js';
 
 let e: EscenarioCompra;
 
@@ -54,11 +55,27 @@ describe('vencimientos (FR-034, clarify)', () => {
     expect(await estado(id)).toBe('cancelado');
   });
 
-  test('efectivo en el local no vence nunca', async () => {
+  test('efectivo en el local: a los 7 días sin retirarla se cancela y el stock vuelve (clarify 2026-11-02)', async () => {
+    const antes = await stockDe(e, e.productoId);
     const { id } = await e.ctx.servicios.pedidos.crear(solicitud(e, { medioPago: 'efectivo' }));
-    e.reloj.avanzar(30 * DIA);
+    expect(await stockDe(e, e.productoId)).toBe(antes - 1);
+
+    e.reloj.avanzar(7 * DIA - HORA);
     await e.ctx.servicios.vencimientos.cancelarVencidos();
     expect(await estado(id)).toBe('a_pagar_en_local');
+
+    e.reloj.avanzar(2 * HORA);
+    await e.ctx.servicios.vencimientos.cancelarVencidos();
+    expect(await estado(id)).toBe('cancelado');
+    expect(await stockDe(e, e.productoId)).toBe(antes);
+  });
+
+  test('efectivo retirado y cobrado antes del plazo ya no se cancela', async () => {
+    const { id } = await e.ctx.servicios.pedidos.crear(solicitud(e, { medioPago: 'efectivo' }));
+    await e.ctx.servicios.pagosManuales.registrarEfectivo(id, await idDeAdmin(e.ctx));
+    e.reloj.avanzar(8 * DIA);
+    await e.ctx.servicios.vencimientos.cancelarVencidos();
+    expect(await estado(id)).toBe('entregado');
   });
 
   test('US2-17: cancelar dos veces devuelve el stock una sola vez', async () => {

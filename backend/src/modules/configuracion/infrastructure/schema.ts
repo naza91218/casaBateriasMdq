@@ -31,6 +31,8 @@ export const configuracion = pgTable(
     googleResenasUrl: text('google_resenas_url').notNull().default(''),
     horasVencTransferencia: integer('horas_venc_transferencia').notNull().default(48),
     minutosVencMercadopago: integer('minutos_venc_mercadopago').notNull().default(30),
+    // Pedidos a pagar en efectivo al retirar (clarify 2026-11-02).
+    diasVencEfectivo: integer('dias_venc_efectivo').notNull().default(7),
     actualizadoEn: actualizadoEn(),
   },
   (t) => [

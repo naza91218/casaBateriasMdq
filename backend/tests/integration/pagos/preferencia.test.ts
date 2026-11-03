@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 import { PasarelaMercadoPago } from '../../../src/adapters/mercadopago.js';
+import { zonasColocacion } from '../../../src/modules/entregas/infrastructure/schema.js';
 import { MINUTO } from '../../../src/shared-kernel/reloj.js';
 import { prepararCompra, solicitud, type EscenarioCompra } from '../../setup/compra.js';
 
@@ -27,6 +28,29 @@ describe('preferencia de Mercado Pago (FR-034b)', () => {
     expect(creado.pago).toEqual({
       tipo: 'mercadopago',
       initPoint: expect.stringMatching(/^https:/),
+    });
+  });
+
+  test('con colocación en una zona con costo extra, Mercado Pago cobra el total del pedido', async () => {
+    const [zona] = await e.ctx.db
+      .insert(zonasColocacion)
+      .values({ nombre: 'Batán', costoExtra: 500_000n })
+      .returning();
+    const creado = await e.ctx.servicios.pedidos.crear(
+      solicitud(e, { medioPago: 'mercadopago', entrega: 'colocacion', zonaId: zona?.id }),
+    );
+    const pref = e.pasarela.preferencias.at(-1);
+    const cobrado = pref?.items.reduce(
+      (t, i) => t + i.precioUnitarioCentavos * BigInt(i.cantidad),
+      0n,
+    );
+    // $100.000 de la batería más $5.000 de la zona: si no, el pago llega como "monto distinto".
+    expect(cobrado).toBe(BigInt(creado.total));
+    expect(creado.total).toBe(10_500_000);
+    expect(pref?.items.at(-1)).toEqual({
+      titulo: 'Colocación en Batán',
+      cantidad: 1,
+      precioUnitarioCentavos: 500_000n,
     });
   });
 

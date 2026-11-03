@@ -1,4 +1,4 @@
-import { HORA, MINUTO } from '../../../shared-kernel/reloj.js';
+import { DIA, HORA, MINUTO } from '../../../shared-kernel/reloj.js';
 import type { Entrega, EstadoPedido } from '../../pedidos/domain/maquina-estados.js';
 
 export type IdMedioPago = 'mercadopago' | 'transferencia' | 'efectivo';
@@ -6,6 +6,7 @@ export type IdMedioPago = 'mercadopago' | 'transferencia' | 'efectivo';
 export interface PlazosConfigurados {
   minutosVencMercadopago: number;
   horasVencTransferencia: number;
+  diasVencEfectivo: number;
 }
 
 /**
@@ -19,8 +20,8 @@ export interface MedioPago {
   /** Transferencia y efectivo tienen el mismo descuento (FR-023, clarify). */
   aplicaDescuento: boolean;
   estadoInicial: EstadoPedido;
-  /** Cuándo se cancela solo si no se paga. null = no vence (efectivo, clarify). */
-  vencimiento(creado: Date, plazos: PlazosConfigurados): Date | null;
+  /** Cuándo se cancela solo si no se paga (o no se retira, con efectivo). */
+  vencimiento(creado: Date, plazos: PlazosConfigurados): Date;
 }
 
 export const MEDIOS_PAGO: Record<IdMedioPago, MedioPago> = {
@@ -43,7 +44,8 @@ export const MEDIOS_PAGO: Record<IdMedioPago, MedioPago> = {
     disponiblePara: (entrega) => entrega === 'retiro',
     aplicaDescuento: true,
     estadoInicial: 'a_pagar_en_local',
-    vencimiento: () => null,
+    // Si no pasa a retirarla en 7 días, el pedido se cancela y el stock vuelve (clarify 2026-11-02).
+    vencimiento: (creado, p) => new Date(creado.getTime() + p.diasVencEfectivo * DIA),
   },
 };
 

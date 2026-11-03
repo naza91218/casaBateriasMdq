@@ -1,4 +1,4 @@
-import { and, eq, lte } from 'drizzle-orm';
+import { and, inArray, lte } from 'drizzle-orm';
 import type { BaseDeDatos } from '../../../platform/db.js';
 import { ErrorDeDominio } from '../../../shared-kernel/errores.js';
 import type { Reloj } from '../../../shared-kernel/reloj.js';
@@ -7,7 +7,7 @@ import type { ServicioEstados } from './cambiar-estado.js';
 
 /**
  * Cancela los pedidos impagos vencidos y devuelve su stock (FR-034): 30 min con Mercado Pago,
- * 48 h con transferencia. Los de efectivo no tienen vencimiento (vence_en null).
+ * 48 h con transferencia y 7 días con efectivo si no pasa a retirarla (clarify 2026-11-02).
  */
 export class ServicioVencimientos {
   constructor(
@@ -20,7 +20,12 @@ export class ServicioVencimientos {
     const vencidos = await this.db
       .select({ id: pedidos.id })
       .from(pedidos)
-      .where(and(eq(pedidos.estado, 'pendiente_pago'), lte(pedidos.venceEn, this.reloj.ahora())))
+      .where(
+        and(
+          inArray(pedidos.estado, ['pendiente_pago', 'a_pagar_en_local']),
+          lte(pedidos.venceEn, this.reloj.ahora()),
+        ),
+      )
       .limit(limite);
 
     let cancelados = 0;

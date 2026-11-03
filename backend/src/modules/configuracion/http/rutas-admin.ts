@@ -7,6 +7,7 @@ import {
 } from '@casa/shared';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
+import { usuarioActual } from '../../../http/plugins/sesion.js';
 import type { ServicioAdminConfiguracion } from '../application/admin-configuracion.js';
 
 /** Configuración y zonas de colocación en el panel (FR-047). Bajo /admin, que ya exige sesión. */
@@ -23,7 +24,7 @@ export function rutasAdminConfiguracion(deps: {
     app.patch(
       '/configuracion',
       { schema: { tags, body: EdicionConfiguracion, response: { 200: ConfiguracionAdmin } } },
-      (req) => deps.configuracion.editar(req.body),
+      (req) => deps.configuracion.editar(req.body, usuarioActual(req).email),
     );
 
     app.get('/zonas', { schema: { tags, response: { 200: z.array(ZonaAdmin) } } }, () =>
