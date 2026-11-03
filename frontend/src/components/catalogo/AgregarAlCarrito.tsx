@@ -1,6 +1,6 @@
 'use client';
 
-import { MAX_UNIDADES_POR_PEDIDO } from '@casa/shared';
+import { MAX_UNIDADES_POR_PEDIDO } from '@casa/shared/limites';
 import { Check, Minus, Plus, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';

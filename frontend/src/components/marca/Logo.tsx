@@ -8,6 +8,8 @@ export function Logo({
   tono?: 'claro' | 'oscuro';
   grande?: boolean;
 }) {
+  // Sobre blanco va el rojo para texto (4,5:1); sobre negro, el rojo de la marca.
+  const rojo = tono === 'claro' ? 'text-rojo-texto' : 'text-rojo';
   return (
     <Link
       href="/"
@@ -25,9 +27,9 @@ export function Logo({
       <span
         className={`marca ${tono === 'claro' ? 'text-negro' : 'text-blanco'} ${grande ? 'text-[22px]' : 'text-[16px] md:text-[18px]'}`}
       >
-        La <span className="text-rojo">Casa</span> de las
+        La <span className={rojo}>Casa</span> de las
         <br />
-        <span className="text-rojo">Baterías</span>
+        <span className={rojo}>Baterías</span>
       </span>
     </Link>
   );

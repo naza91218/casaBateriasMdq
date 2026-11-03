@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_UNIDADES_POR_PEDIDO } from '../limites.ts';
 import { Importe, Whatsapp } from './comunes.ts';
 
 export const Entrega = z.enum(['colocacion', 'retiro']);
@@ -18,7 +19,7 @@ export const EstadoPedido = z.enum([
 ]);
 export type EstadoPedido = z.infer<typeof EstadoPedido>;
 
-export const MAX_UNIDADES_POR_PEDIDO = 10;
+export { MAX_UNIDADES_POR_PEDIDO };
 
 export const ItemCarrito = z.object({
   productoId: z.string().uuid('Producto inválido'),

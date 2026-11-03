@@ -336,7 +336,7 @@ cerrado y se refina en ese momento.
 - [X] T141 [P] [US6] Quiénes somos, contacto, botón flotante de WhatsApp, páginas `/auto/[marca]/[modelo]` con FAQ, datos estructurados `Product`, `AutoPartsStore` y `FAQPage`, `sitemap.ts`, `robots.ts` (rastreadores de IA permitidos), `llms.txt`, GA4 y Meta Pixel sin datos personales con UTM en `frontend/src/app/`
 - [X] T142 [P] [US7] Pie con legales, datos del comercio y botón de arrepentimiento; páginas legales en `frontend/src/app/(tienda)/legales/`
 - [ ] T143 Tests punta a punta con Playwright de la compra completa en staging con sandbox de Mercado Pago, en `frontend/tests/e2e/compra.spec.ts`
-- [ ] T144 Auditorías de rendimiento, accesibilidad y SEO ≥ 90 en portada, ficha y página de auto (SC-008)
+- [X] T144 Auditorías de rendimiento, accesibilidad y SEO ≥ 90 en portada, ficha y página de auto (SC-008)
 
 ---
 
