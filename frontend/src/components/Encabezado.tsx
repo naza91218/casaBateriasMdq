@@ -1,5 +1,6 @@
-import { MessageCircle, ShoppingCart } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import { BotonCarrito } from './BotonCarrito';
 import { Logo } from './marca/Logo';
 import { MenuMovil } from './MenuMovil';
 
@@ -41,13 +42,7 @@ export function Encabezado({ whatsappUrl }: { whatsappUrl: string }) {
           >
             Buscar mi batería
           </Link>
-          <Link
-            href="/carrito"
-            aria-label="Carrito, vacío"
-            className="grid size-12 place-items-center rounded-sm text-negro transition-colors duration-150 hover:bg-gris-100"
-          >
-            <ShoppingCart aria-hidden size={24} strokeWidth={2} />
-          </Link>
+          <BotonCarrito />
           <MenuMovil enlaces={ENLACES} whatsappUrl={whatsappUrl} />
         </div>
       </div>

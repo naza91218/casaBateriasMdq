@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { Importe, paginado, Whatsapp } from './comunes.js';
-import { Entrega, EstadoPedido, MedioPago } from './pedidos.js';
+import { Importe, paginado, Whatsapp } from './comunes.ts';
+import { Entrega, EstadoPedido, MedioPago } from './pedidos.ts';
 
 /** Contratos del panel de pedidos (US3). Solo el detalle lleva el DNI (FR-043, FR-059). */
 

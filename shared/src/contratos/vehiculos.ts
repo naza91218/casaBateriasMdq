@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { Gama, ItemProducto } from './catalogo.js';
-import { Whatsapp } from './comunes.js';
+import { Gama, ItemProducto } from './catalogo.ts';
+import { Whatsapp } from './comunes.ts';
 
 export const OpcionVehiculo = z.object({ nombre: z.string(), slug: z.string() });
 export type OpcionVehiculo = z.infer<typeof OpcionVehiculo>;

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Importe, Whatsapp } from './comunes.js';
+import { Importe, Whatsapp } from './comunes.ts';
 
 export const Entrega = z.enum(['colocacion', 'retiro']);
 export type Entrega = z.infer<typeof Entrega>;

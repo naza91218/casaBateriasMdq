@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Importe, Paginacion, paginado, Whatsapp } from './comunes.js';
+import { Importe, Paginacion, paginado, Whatsapp } from './comunes.ts';
 
 export const Gama = z.enum(['economica', 'reforzada']);
 export type Gama = z.infer<typeof Gama>;

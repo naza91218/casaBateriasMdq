@@ -4,10 +4,10 @@ import { z } from 'zod';
 // Mensajes de validación en español para todos los esquemas.
 z.config(z.locales.es());
 
-export * from './contratos/comunes.js';
-export * from './contratos/configuracion.js';
-export * from './contratos/catalogo.js';
-export * from './contratos/vehiculos.js';
-export * from './contratos/pedidos.js';
-export * from './contratos/admin-pedidos.js';
-export * from './contratos/admin-catalogo.js';
+export * from './contratos/comunes.ts';
+export * from './contratos/configuracion.ts';
+export * from './contratos/catalogo.ts';
+export * from './contratos/vehiculos.ts';
+export * from './contratos/pedidos.ts';
+export * from './contratos/admin-pedidos.ts';
+export * from './contratos/admin-catalogo.ts';

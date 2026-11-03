@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Importe, paginado, Whatsapp } from './comunes.js';
+import { Importe, paginado, Whatsapp } from './comunes.ts';
 
 /**
  * Contratos del panel de catálogo, importación, vehículos, configuración, zonas y canje (US5).

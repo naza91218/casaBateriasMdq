@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Importe } from './comunes.js';
+import { Importe } from './comunes.ts';
 
 export const ConfiguracionPublica = z.object({
   descuentoPct: z.number(),
