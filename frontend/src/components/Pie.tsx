@@ -32,7 +32,7 @@ export function Pie({ datos, whatsappUrl }: { datos: DatosTienda; whatsappUrl: s
           <Link className={enlace} href="/#buscador">
             Buscar por auto
           </Link>
-          <Link className={enlace} href="/buscar">
+          <Link className={enlace} href="/baterias">
             Todas las baterías
           </Link>
           <Link className={enlace} href="/#historia">

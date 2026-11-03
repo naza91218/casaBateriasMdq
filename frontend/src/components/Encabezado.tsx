@@ -5,7 +5,7 @@ import { Logo } from './marca/Logo';
 import { MenuMovil } from './MenuMovil';
 
 const ENLACES: [string, string][] = [
-  ['Baterías', '/buscar'],
+  ['Baterías', '/baterias'],
   ['Cómo funciona', '/#como-funciona'],
   ['Quiénes somos', '/#historia'],
   ['Contacto', '/#contacto'],
