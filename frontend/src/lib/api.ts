@@ -1,4 +1,4 @@
-import type { ConfiguracionPublica, OpcionVehiculo } from '@casa/shared';
+import type { ConfiguracionPublica, ErrorRespuesta, OpcionVehiculo } from '@casa/shared';
 
 /**
  * Cliente de la API. Desde el servidor de Next va por la red interna (API_INTERNAL_URL);
@@ -13,12 +13,33 @@ export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
     mensaje: string,
+    /** Código del cuerpo de error de la API (VALIDACION, SIN_STOCK, PEDIDOS_SIN_PAGAR…). */
+    readonly codigo?: string,
+    /** Mensaje por campo, con la ruta del dato ("comprador.dni"). */
+    readonly campos: Record<string, string> = {},
   ) {
     super(mensaje);
   }
 }
 
-type Opciones = { etiquetas?: string[]; segundos?: number; senal?: AbortSignal };
+async function comoError(r: Response, ruta: string): Promise<ErrorApi> {
+  const cuerpo = (await r.json().catch(() => null)) as Partial<ErrorRespuesta> | null;
+  const e = cuerpo?.error;
+  return new ErrorApi(
+    r.status,
+    e?.mensaje ?? `La API respondió ${r.status} en ${ruta}`,
+    e?.codigo,
+    e?.campos,
+  );
+}
+
+type Opciones = {
+  etiquetas?: string[];
+  segundos?: number;
+  senal?: AbortSignal;
+  /** Datos de una persona (seguimiento de un pedido): nunca van a la caché de Next. */
+  sinCache?: boolean;
+};
 
 export async function pedir<T>(ruta: string, o: Opciones = {}): Promise<T> {
   const r = await fetch(`${BASE}${ruta}`, {
@@ -26,10 +47,27 @@ export async function pedir<T>(ruta: string, o: Opciones = {}): Promise<T> {
     signal: o.senal,
     // Las etiquetas son las que usa el backend al pedir la revalidación (POST /api/revalidate).
     ...(typeof window === 'undefined'
-      ? { next: { revalidate: o.segundos ?? 300, tags: o.etiquetas ?? [] } }
+      ? o.sinCache
+        ? { cache: 'no-store' as const }
+        : { next: { revalidate: o.segundos ?? 300, tags: o.etiquetas ?? [] } }
       : {}),
   });
-  if (!r.ok) throw new ErrorApi(r.status, `La API respondió ${r.status} en ${ruta}`);
+  if (!r.ok) throw await comoError(r, ruta);
+  return (await r.json()) as T;
+}
+
+/** POST a la API desde el navegador (cotizar, crear el pedido, reintentar el pago). */
+export async function enviar<T>(ruta: string, cuerpo?: unknown, senal?: AbortSignal): Promise<T> {
+  const r = await fetch(`${BASE}${ruta}`, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      ...(cuerpo ? { 'content-type': 'application/json' } : {}),
+    },
+    body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+    signal: senal,
+  });
+  if (!r.ok) throw await comoError(r, ruta);
   return (await r.json()) as T;
 }
 
