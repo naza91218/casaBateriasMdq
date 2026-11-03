@@ -1,13 +1,16 @@
 'use client';
 
 import { MessageCircle } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 /**
  * Botón flotante de WhatsApp. En el celular se corre mientras se ve el buscador, para no tapar
- * los selectores (el buscador ya tiene su propio enlace a WhatsApp).
+ * los selectores (el buscador ya tiene su propio enlace a WhatsApp). En el checkout no va
+ * (FR-052): tapa los botones de pago.
  */
 export function WhatsappFlotante({ url }: { url: string }) {
+  const ruta = usePathname();
   const [oculto, setOculto] = useState(false);
 
   useEffect(() => {
@@ -26,8 +29,9 @@ export function WhatsappFlotante({ url }: { url: string }) {
       obs.disconnect();
       celular.removeEventListener('change', actualizar);
     };
-  }, []);
+  }, [ruta]);
 
+  if (ruta.startsWith('/carrito')) return null;
   return (
     <a
       href={url}

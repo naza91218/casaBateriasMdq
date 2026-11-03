@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Barlow, Barlow_Condensed } from 'next/font/google';
+import { SITIO } from '@/lib/sitio';
 import './globals.css';
 
 const barlow = Barlow({
@@ -20,6 +21,7 @@ const condensada = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITIO),
   title: {
     default: 'La Casa de las Baterías · Baterías para tu auto en Mar del Plata',
     template: '%s · La Casa de las Baterías',

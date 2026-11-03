@@ -5,6 +5,7 @@ import { CircleAlert, Lock, MessageCircle, Minus, Plus, ShoppingCart, Trash2 } f
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { medir } from '@/lib/analitica';
 import { enlaceWhatsapp, enviar, ErrorApi } from '@/lib/api';
 import { cambiarCantidad, unidades, useCarrito, vaciar } from '@/lib/carrito';
 import { pesos } from '@/lib/formato';
@@ -93,6 +94,16 @@ export function Checkout({ datos }: { datos: DatosCheckout }) {
     e.preventDefault();
     setEnviando(true);
     setGeneral(null);
+    if (cotizacion)
+      medir(
+        'begin_checkout',
+        cotizacion.items.map((i) => ({
+          id: i.productoId,
+          nombre: i.nombre,
+          precio: i.precioUnitario,
+          cantidad: i.cantidad,
+        })),
+      );
     try {
       const pedido = await enviar<PedidoCreado>('/pedidos', {
         items: items.map(({ productoId, cantidad }) => ({ productoId, cantidad })),

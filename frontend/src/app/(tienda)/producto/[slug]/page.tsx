@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { Medir } from '@/components/Analitica';
 import { AgregarAlCarrito } from '@/components/catalogo/AgregarAlCarrito';
 import { ErrorApi, pedir } from '@/lib/api';
 import { pesos } from '@/lib/formato';
@@ -65,6 +66,10 @@ export default async function Ficha({ params }: Props) {
 
   return (
     <>
+      <Medir
+        evento="view_item"
+        items={[{ id: p.id, nombre: p.nombre, precio: p.precios.lista, cantidad: 1 }]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
@@ -127,7 +132,12 @@ export default async function Ficha({ params }: Props) {
                   </span>
                 </p>
                 <div className="mt-7">
-                  <AgregarAlCarrito productoId={p.id} slug={p.slug} nombre={p.nombre} />
+                  <AgregarAlCarrito
+                    productoId={p.id}
+                    slug={p.slug}
+                    nombre={p.nombre}
+                    precio={p.precios.lista}
+                  />
                 </div>
               </>
             ) : (

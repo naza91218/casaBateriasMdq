@@ -35,8 +35,11 @@ export function Pie({ datos, whatsappUrl }: { datos: DatosTienda; whatsappUrl: s
           <Link className={enlace} href="/baterias">
             Todas las baterías
           </Link>
-          <Link className={enlace} href="/#historia">
+          <Link className={enlace} href="/quienes-somos">
             Quiénes somos
+          </Link>
+          <Link className={enlace} href="/contacto">
+            Contacto
           </Link>
         </div>
         <div>
@@ -78,7 +81,7 @@ export function Pie({ datos, whatsappUrl }: { datos: DatosTienda; whatsappUrl: s
       <div className="mx-auto max-w-[1200px] px-4 pb-8 md:px-12">
         <p className="border-t border-gris-800 pt-6 text-sm text-gris-400">
           © La Casa de las Baterías · {datos.razonSocial ?? '[Razón social]'} · CUIT{' '}
-          <span className="num">{datos.cuit ?? '[número]'}</span> · Mar del Plata
+          <span className="num">{datos.cuit ?? '[número]'}</span> · {datos.domicilio}
         </p>
       </div>
     </footer>

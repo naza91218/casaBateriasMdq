@@ -4,16 +4,20 @@ import { MAX_UNIDADES_POR_PEDIDO } from '@casa/shared';
 import { Check, Minus, Plus, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { medir } from '@/lib/analitica';
 import { agregar, unidades, useCarrito } from '@/lib/carrito';
 
 export function AgregarAlCarrito({
   productoId,
   slug,
   nombre,
+  precio,
 }: {
   productoId: string;
   slug: string;
   nombre: string;
+  /** Centavos, solo para medir (el precio que se cobra lo calcula el servidor). */
+  precio: number;
 }) {
   const carrito = useCarrito();
   const [cantidad, setCantidad] = useState(1);
@@ -87,6 +91,7 @@ export function AgregarAlCarrito({
         type="button"
         onClick={() => {
           agregar({ productoId, slug, nombre, cantidad });
+          medir('add_to_cart', [{ id: productoId, nombre, precio, cantidad }]);
           setAgregado(true);
           setCantidad(1);
         }}

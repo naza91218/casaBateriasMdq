@@ -3,6 +3,7 @@ import { Check, CircleAlert, Clock, MessageCircle, XCircle } from 'lucide-react'
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Medir } from '@/components/Analitica';
 import { Copiar } from '@/components/checkout/Copiar';
 import { ReintentarPago } from '@/components/checkout/ReintentarPago';
 import { ErrorApi, pedir } from '@/lib/api';
@@ -89,8 +90,23 @@ export default async function PaginaPedido({ params, searchParams }: Props) {
         ? '¡Listo, ya la tenés!'
         : '¡Gracias por tu compra!';
 
+  // La compra se mide solo con el pago confirmado (FR-056), no al crear el pedido.
+  const pagado = ['pagado', 'en_camino', 'listo_para_retirar', 'entregado'].includes(s.estado);
+
   return (
     <div className="mx-auto max-w-[900px] px-4 py-10 md:px-12 md:py-14">
+      {pagado && (
+        <Medir
+          evento="purchase"
+          pedido={String(s.numero)}
+          items={s.items.map((i) => ({
+            id: i.nombre,
+            nombre: i.nombre,
+            precio: i.precioUnitario,
+            cantidad: i.cantidad,
+          }))}
+        />
+      )}
       <p className="num text-[17px] font-semibold text-gris-600">Pedido #{s.numero}</p>
       <h1 className="titular mt-1 text-[44px] md:text-[60px]">{titulo}</h1>
 

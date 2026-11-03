@@ -33,3 +33,6 @@ export const MENSAJE_CONSULTA = 'Hola, quiero consultar por una batería para mi
 export function whatsappDe(d: DatosTienda, mensaje = MENSAJE_CONSULTA): string {
   return enlaceWhatsapp(d.whatsapp, mensaje);
 }
+
+/** La etiqueta con la que el backend pide regenerar la página de un auto. */
+export const etiquetaAuto = (marca: string, modelo: string) => `vehiculo:${marca}/${modelo}`;
