@@ -331,7 +331,7 @@ cerrado y se refina en ese momento.
 - [X] T136 Implementar el cliente de la API (desde el servidor por red interna, desde el navegador a `/api/v1`) y `POST /api/revalidate` con secreto en `frontend/src/lib/api.ts` y `frontend/src/app/api/revalidate/route.ts`
 - [X] T137 [P] [US1] Portada con buscador, catálogo con filtros en la URL y ficha (375 px, 48 px, 17 px, WCAG AA) en `frontend/src/app/(tienda)/`
 - [X] T138 [P] [US2] Carrito, checkout de una página, retorno de Mercado Pago y seguimiento en `frontend/src/app/(tienda)/checkout/` y `frontend/src/app/(tienda)/pedido/[id]/`
-- [ ] T139 [P] [US3] Panel: ingreso, pedidos, detalle, confirmaciones y alertas en `frontend/src/app/panel/`
+- [X] T139 [P] [US3] Panel: ingreso, pedidos, detalle, confirmaciones y alertas en `frontend/src/app/panel/`
 - [ ] T140 [P] [US5] Panel: productos, revisión en lote, fotos, importación, vehículos, configuración, zonas y consultas de canje en `frontend/src/app/panel/`
 - [ ] T141 [P] [US6] Quiénes somos, contacto, botón flotante de WhatsApp, páginas `/auto/[marca]/[modelo]` con FAQ, datos estructurados `Product`, `AutoPartsStore` y `FAQPage`, `sitemap.ts`, `robots.ts` (rastreadores de IA permitidos), `llms.txt`, GA4 y Meta Pixel sin datos personales con UTM en `frontend/src/app/`
 - [ ] T142 [P] [US7] Pie con legales, datos del comercio y botón de arrepentimiento; páginas legales en `frontend/src/app/(tienda)/legales/`

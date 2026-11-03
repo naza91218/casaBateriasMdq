@@ -205,8 +205,8 @@ export default async function PaginaPedido({ params, searchParams }: Props) {
         {s.estado === 'a_pagar_en_local' && (
           <Caja icono={<Check aria-hidden size={26} />}>
             <p>
-              Te la guardamos {s.venceEn ? `hasta el ${dia(s.venceEn)}` : 'unos días'}. La pagás
-              en el local cuando pasás a retirarla.
+              Te la guardamos {s.venceEn ? `hasta el ${dia(s.venceEn)}` : 'unos días'}. La pagás en
+              el local cuando pasás a retirarla.
             </p>
           </Caja>
         )}

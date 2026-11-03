@@ -39,11 +39,13 @@ type Opciones = {
   senal?: AbortSignal;
   /** Datos de una persona (seguimiento de un pedido): nunca van a la caché de Next. */
   sinCache?: boolean;
+  /** Solo el panel, desde el servidor: la cookie de sesión del navegador. */
+  cookie?: string;
 };
 
 export async function pedir<T>(ruta: string, o: Opciones = {}): Promise<T> {
   const r = await fetch(`${BASE}${ruta}`, {
-    headers: { accept: 'application/json' },
+    headers: { accept: 'application/json', ...(o.cookie ? { cookie: o.cookie } : {}) },
     signal: o.senal,
     // Las etiquetas son las que usa el backend al pedir la revalidación (POST /api/revalidate).
     ...(typeof window === 'undefined'
