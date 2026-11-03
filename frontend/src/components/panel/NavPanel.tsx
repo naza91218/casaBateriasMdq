@@ -1,7 +1,19 @@
 'use client';
 
 import type { ResumenAdmin } from '@casa/shared';
-import { Bell, ClipboardList, House, LogOut, Menu, Package, Settings, X } from 'lucide-react';
+import {
+  Bell,
+  Car,
+  ClipboardList,
+  House,
+  LogOut,
+  Menu,
+  Package,
+  Recycle,
+  Settings,
+  Upload,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -22,16 +34,12 @@ export function NavPanel({ email, resumen }: { email: string; resumen: ResumenAd
       n: resumen.pedidosPorAtender,
     },
     { href: '/panel/alertas', texto: 'Alertas', icono: Bell, n: resumen.alertasAbiertas },
-    // T140: productos y configuración llegan en la próxima tarea.
-    {
-      href: '/panel/productos',
-      texto: 'Productos',
-      icono: Package,
-      n: resumen.productosARevisar,
-      pronto: true,
-    },
-    { href: '/panel/configuracion', texto: 'Configuración', icono: Settings, n: 0, pronto: true },
-  ];
+    { href: '/panel/productos', texto: 'Productos', icono: Package, n: resumen.productosARevisar },
+    { href: '/panel/vehiculos', texto: 'Autos', icono: Car, n: 0 },
+    { href: '/panel/importar', texto: 'Importar', icono: Upload, n: 0 },
+    { href: '/panel/canje', texto: 'Canje', icono: Recycle, n: resumen.consultasCanjePendientes },
+    { href: '/panel/configuracion', texto: 'Configuración', icono: Settings, n: 0 },
+  ] as { href: string; texto: string; icono: typeof House; n: number; pronto?: boolean }[];
   const activo = (href: string) => (href === '/panel' ? ruta === '/panel' : ruta.startsWith(href));
 
   async function salir() {

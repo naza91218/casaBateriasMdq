@@ -58,19 +58,28 @@ export async function pedir<T>(ruta: string, o: Opciones = {}): Promise<T> {
   return (await r.json()) as T;
 }
 
-/** POST a la API desde el navegador (cotizar, crear el pedido, reintentar el pago). */
-export async function enviar<T>(ruta: string, cuerpo?: unknown, senal?: AbortSignal): Promise<T> {
+/**
+ * Escritura en la API desde el navegador (POST por defecto; PATCH y DELETE en el panel). Con un
+ * FormData manda archivos (fotos, planillas) y el navegador arma el multipart.
+ */
+export async function enviar<T>(
+  ruta: string,
+  cuerpo?: unknown,
+  senal?: AbortSignal,
+  metodo: 'POST' | 'PATCH' | 'DELETE' = 'POST',
+): Promise<T> {
+  const esArchivo = cuerpo instanceof FormData;
   const r = await fetch(`${BASE}${ruta}`, {
-    method: 'POST',
+    method: metodo,
     headers: {
       accept: 'application/json',
-      ...(cuerpo ? { 'content-type': 'application/json' } : {}),
+      ...(cuerpo && !esArchivo ? { 'content-type': 'application/json' } : {}),
     },
-    body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+    body: esArchivo ? cuerpo : cuerpo ? JSON.stringify(cuerpo) : undefined,
     signal: senal,
   });
   if (!r.ok) throw await comoError(r, ruta);
-  return (await r.json()) as T;
+  return (r.status === 204 ? undefined : await r.json()) as T;
 }
 
 /** Para la portada: si la API no responde, la página igual se muestra con lo que haya. */

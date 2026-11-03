@@ -22,11 +22,16 @@ export default async function Inicio() {
       icono: Clock,
     },
     { n: r.alertasAbiertas, texto: 'Alertas de pago', href: '/panel/alertas', icono: Bell },
-    { n: r.productosARevisar, texto: 'Productos a revisar', href: null, icono: Package },
+    {
+      n: r.productosARevisar,
+      texto: 'Productos a revisar',
+      href: '/panel/productos?estado=a_revisar',
+      icono: Package,
+    },
     {
       n: r.consultasCanjePendientes,
       texto: 'Consultas de canje',
-      href: null,
+      href: '/panel/canje',
       icono: MessageSquare,
     },
   ];
