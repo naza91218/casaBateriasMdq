@@ -11,7 +11,10 @@ afterAll(async () => {
 async function salud(extra: Record<string, string> = {}) {
   const { ctx } = crearContextoDePrueba(extra);
   const app = await construirServidor(ctx);
-  cerrar.push(() => app.close(), () => ctx.cerrar());
+  cerrar.push(
+    () => app.close(),
+    () => ctx.cerrar(),
+  );
   return app.inject({ method: 'GET', url: '/api/v1/salud' });
 }
 
