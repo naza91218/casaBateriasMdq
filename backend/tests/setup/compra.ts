@@ -1,7 +1,7 @@
 import type { SolicitudPedido } from '@casa/shared';
 import { eq } from 'drizzle-orm';
-import { sembrarBase } from '../../db/seed/base.js';
-import { sembrarCatalogo } from '../../db/seed/catalogo.js';
+import { sembrarBase } from '../../src/platform/seed/base.js';
+import { sembrarCatalogo } from '../../src/platform/seed/catalogo.js';
 import type { PasarelaFalsa } from '../../src/adapters/mercadopago.js';
 import { productos } from '../../src/modules/catalogo/infrastructure/schema.js';
 import { zonasColocacion } from '../../src/modules/entregas/infrastructure/schema.js';

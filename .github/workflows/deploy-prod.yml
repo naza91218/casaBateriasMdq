@@ -1,0 +1,27 @@
+# Producción (T129, constitución VIII). Se lanza a mano desde Actions sobre main, después de
+# probar el mismo commit en staging. El entorno "produccion" de GitHub tiene revisores
+# obligatorios: el deploy espera la aprobación. Cuando exista la prueba de punta a punta contra
+# staging (T143), se suma acá como job previo y esto pasa a correr en cada push a main.
+name: Deploy producción
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rama:
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.ref != 'refs/heads/main'
+        run: echo "Producción solo se despliega desde main" && exit 1
+  tests:
+    needs: rama
+    uses: ./.github/workflows/ci.yml
+  despliegue:
+    needs: tests
+    uses: ./.github/workflows/despliegue.yml
+    with:
+      entorno: produccion
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write

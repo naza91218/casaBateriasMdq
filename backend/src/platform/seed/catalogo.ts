@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
-import type { BaseDeDatos } from '../../src/platform/db.js';
-import { marcas, medidas } from '../../src/modules/catalogo/infrastructure/schema.js';
-import { slug } from '../../src/shared-kernel/slug.js';
+import type { BaseDeDatos } from '../../platform/db.js';
+import { marcas, medidas } from '../../modules/catalogo/infrastructure/schema.js';
+import { slug } from '../../shared-kernel/slug.js';
 
 export const MARCAS = ['Sermat', 'Herbo', 'Volta', 'Edna'] as const; // FR-002
 /**

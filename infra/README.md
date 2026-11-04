@@ -1,7 +1,7 @@
 # Infraestructura
 
 Esta carpeta junta todo lo que hace falta para levantar la tienda: Docker de desarrollo, la base
-y, más adelante, el despliegue en el VPS (fase 9).
+y el despliegue en el VPS.
 
 ## Mails desde el dominio del negocio (FR-039, T118)
 
@@ -79,3 +79,203 @@ Repetir la prueba cada vez que se cambie de dominio, de proveedor de DNS o de re
 
 Para ver cómo quedan los mails sin hacer pedidos: `pnpm --filter backend mails:preview` y abrir
 `backend/.previews/index.html`.
+
+## Servidor (VPS): staging y producción (T131)
+
+Un solo VPS (Ubuntu 24.04; 2 GB de RAM alcanzan) corre los dos entornos con Docker. Nginx, en el
+propio servidor, recibe el tráfico, pone el HTTPS y lo pasa a los contenedores, que solo
+escuchan en `127.0.0.1`.
+
+```
+/srv/casa/
+├── scripts/            deploy.sh, backup.sh, restore.sh (los copia GitHub Actions)
+├── staging/            docker-compose.yml, .env, .tag-actual, .tag-anterior
+└── produccion/         ídem
+```
+
+| Archivo | Para qué |
+| :- | :- |
+| `docker-compose.yml` | base, API, worker y tienda de un entorno |
+| `env.servidor.example` | modelo del `.env` de cada entorno |
+| `nginx/` | `comun.conf` (rutas), `produccion.conf`, `staging.conf` (clave y noindex) |
+| `scripts/deploy.sh` | migraciones, cambio de contenedores, chequeo y vuelta atrás |
+| `scripts/backup.sh`, `restore.sh` | copias diarias a R2 y restauración |
+
+### 1. Preparación del servidor (una vez)
+
+```bash
+# Como root
+apt update && apt upgrade -y
+apt install -y nginx certbot python3-certbot-nginx apache2-utils rclone ufw
+curl -fsSL https://get.docker.com | sh
+ufw allow OpenSSH && ufw allow 'Nginx Full' && ufw enable
+
+# Usuario con el que despliega GitHub Actions
+adduser --disabled-password deploy
+usermod -aG docker deploy
+mkdir -p /srv/casa/{scripts,staging,produccion} && chown -R deploy:deploy /srv/casa
+```
+
+- **Clave SSH:**
+  - en la PC, `ssh-keygen -t ed25519 -f casa-deploy`;
+  - la clave pública va a `/home/deploy/.ssh/authorized_keys`;
+  - la privada va al secreto `SSH_KEY` de GitHub.
+- **Sin contraseñas:** poner `PasswordAuthentication no` en `/etc/ssh/sshd_config`.
+- **Acceso a GHCR:** para bajar las imágenes, entrar como `deploy` y correr `docker login ghcr.io -u <usuario>` con un token de GitHub que tenga solo `read:packages`.
+
+### 2. Nginx y HTTPS
+
+```bash
+mkdir -p /etc/nginx/casa /var/www/certbot
+cp infra/nginx/comun.conf /etc/nginx/casa/
+cp infra/nginx/produccion.conf /etc/nginx/sites-available/casa-produccion
+cp infra/nginx/staging.conf /etc/nginx/sites-available/casa-staging
+ln -s /etc/nginx/sites-available/casa-produccion /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/casa-staging /etc/nginx/sites-enabled/
+htpasswd -c /etc/nginx/casa/staging.htpasswd cliente
+certbot certonly --nginx -d lacasadelasbaterias.com.ar -d www.lacasadelasbaterias.com.ar
+certbot certonly --nginx -d staging.lacasadelasbaterias.com.ar
+nginx -t && systemctl reload nginx
+```
+
+Certbot renueva los certificados solo; para comprobarlo, `systemctl list-timers | grep certbot`. Los registros DNS `A` del dominio, de `www` y de `staging` apuntan a la IP del VPS.
+
+### 3. Variables por entorno
+
+Copiar `env.servidor.example` a `/srv/casa/<entorno>/.env`, completarlo y correr `chmod 600`. Esto es lo que cambia entre los dos entornos:
+
+| Variable | Staging | Producción |
+| :- | :- | :- |
+| `NODE_ENV` | `staging` | `production` |
+| `PUERTO_API` / `PUERTO_WEB` | 4001 / 3001 | 4000 / 3000 |
+| URLs | `https://staging.…` | `https://lacasadelasbaterias.com.ar` |
+| Mercado Pago | credenciales de prueba | credenciales reales |
+| `DNI_ENCRYPTION_KEY`, `REVALIDATE_SECRET`, `POSTGRES_PASSWORD` | propias | propias |
+
+Si falta alguna variable obligatoria, la API no arranca y el deploy vuelve solo a la versión anterior.
+
+En GitHub, en **Settings → Environments**, crear `staging` y `produccion` con:
+
+- **secretos:** `SSH_HOST`, `SSH_USER` (`deploy`), `SSH_KEY` y `SSH_KNOWN_HOSTS` (la salida de `ssh-keyscan <ip>`);
+- **variables:** `SITIO_URL`, `GA4_ID` y `META_PIXEL_ID`, que quedan fijas en la imagen de la tienda;
+- **solo en `produccion`:** **Required reviewers**, con quien aprueba los pases.
+
+### 4. Desplegar
+
+- **Staging:** cada push a `develop` corre los tests, construye las imágenes y despliega. Si algo
+  falla, staging queda como estaba (US8-02).
+- **Producción:** desde Actions → *Deploy producción* → *Run workflow* sobre `main`, después de
+  probar ese mismo commit en staging. Espera la aprobación.
+
+`deploy.sh` hace esto:
+
+1. Corre las migraciones con la imagen nueva **antes** de tocar los contenedores. Si fallan, no se cambia nada.
+2. Cambia los contenedores.
+3. Espera a que responda `/api/v1/salud`. Si no responde en 60 s, vuelve a la versión anterior.
+
+Para volver atrás a mano:
+
+```bash
+/srv/casa/scripts/deploy.sh produccion --rollback
+```
+
+El deploy aplica también los datos mínimos:
+
+- el usuario del panel (`MAIL_ADMIN`);
+- las marcas;
+- las medidas.
+
+Para entrar al panel se pide el enlace de ingreso a ese mail.
+
+### 5. Copias de seguridad (US8-01)
+
+En Cloudflare R2:
+
+1. Crear el bucket `casa-backups`, aparte del de las fotos.
+2. Crear un token con permiso solo sobre ese bucket.
+3. Como `deploy`, correr `rclone config` y crear el remoto `r2`:
+   - tipo *S3*;
+   - proveedor *Cloudflare*;
+   - endpoint `https://<account_id>.r2.cloudflarestorage.com`.
+
+```bash
+crontab -e   # usuario deploy
+15 4 * * * /srv/casa/scripts/backup.sh produccion >> /home/deploy/casa-backup.log 2>&1
+```
+
+Cada día queda un `pg_dump` comprimido en `r2:casa-backups/produccion/`, y se borran los de más
+de 30 días. Las fotos ya viven en R2 y no hace falta copiarlas.
+
+**Restauración probada (objetivo: menos de 2 horas).** Una vez por mes, y siempre antes de la
+entrega, restaurar la copia de producción en staging y revisar que estén los pedidos del día
+anterior:
+
+```bash
+/srv/casa/scripts/restore.sh staging
+```
+
+Sin otro argumento, toma la copia más reciente de producción.
+
+Si se pierde el servidor entero:
+
+1. Preparar un VPS nuevo con los pasos 1 a 3.
+2. Correr `deploy.sh produccion <tag>` con la última etiqueta buena.
+3. Correr `restore.sh produccion`.
+
+Hace falta la misma `DNI_ENCRYPTION_KEY`: guardarla en el gestor de contraseñas del negocio.
+
+### 6. Monitor de caídas (US8-03)
+
+En [UptimeRobot](https://uptimerobot.com) (gratis), crear un monitor **HTTP(s)**:
+
+- dirección: `https://lacasadelasbaterias.com.ar/api/v1/salud`;
+- frecuencia: cada **5 minutos**;
+- aviso al responsable por mail y por Telegram.
+
+La ruta responde 503 si la base no anda, así que el monitor avisa aunque la tienda cargue.
+
+### 7. Entrega de cuentas (US8-04)
+
+Al entregar, todas las cuentas quedan a nombre del negocio, con su mail, y el desarrollador queda
+como invitado. Acta para firmar:
+
+| Cuenta | Para qué | Titular | Acceso del desarrollador |
+| :- | :- | :- | :- |
+| Dominio (NIC Argentina) | dirección de la tienda | | |
+| DNS (Cloudflare u otro) | registros del dominio y del mail | | |
+| VPS | servidor | | |
+| GitHub (repositorio y GHCR) | código y despliegues | | |
+| Cloudflare R2 | fotos y copias | | |
+| Resend | mails | | |
+| Mercado Pago | cobros | | |
+| UptimeRobot | monitor | | |
+| Google Analytics / Search Console, Meta | mediciones | | |
+| Gestor de contraseñas | claves, incluida `DNI_ENCRYPTION_KEY` | | |
+
+### 8. Guía de soporte
+
+**La tienda no carga.**
+
+1. Mirar si UptimeRobot avisó.
+2. En el servidor, `cd /srv/casa/produccion && docker compose ps`. Si algún contenedor no está
+   *Up* o *healthy*, ver sus registros con `docker compose logs --tail 100 backend` (o `frontend`, o `db`).
+3. Si empezó con un deploy: `deploy.sh produccion --rollback`.
+4. Si el disco está lleno (`df -h`): `docker system prune -f`.
+
+**Un pago no se acreditó.**
+
+1. En el panel, ver el pedido y su estado.
+2. En Mercado Pago, buscar el pago por el número de pedido.
+3. Si Mercado Pago lo muestra aprobado y el pedido no, revisar `docker compose logs backend | grep webhook`.
+   Mercado Pago reintenta los avisos solo; si pasaron horas, marcar el pedido como pagado desde el panel.
+
+**Un mail no llegó.**
+
+1. Pedir al comprador que mire Spam y Promociones.
+2. En Resend → *Emails*, buscar la dirección: dice si se entregó, rebotó o quedó en cola.
+3. Si no figura, `docker compose logs worker`: los envíos fallidos se reintentan solos.
+
+**El stock no coincide.**
+
+1. Revisar en el panel los pedidos pendientes de ese producto: reservan stock hasta que vencen.
+2. Corregir el número en la ficha del producto. La tienda se actualiza sola en segundos.

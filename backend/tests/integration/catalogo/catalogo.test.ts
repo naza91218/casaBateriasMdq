@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { sembrarBase } from '../../../db/seed/base.js';
-import { sembrarCatalogo } from '../../../db/seed/catalogo.js';
+import { sembrarBase } from '../../../src/platform/seed/base.js';
+import { sembrarCatalogo } from '../../../src/platform/seed/catalogo.js';
 import { ErrorDeDominio } from '../../../src/shared-kernel/errores.js';
 import { crearProducto, crearVehiculo, vaciarCatalogo } from '../../setup/fixtures.js';
 import {

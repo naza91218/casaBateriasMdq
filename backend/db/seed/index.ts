@@ -2,8 +2,8 @@
 // En desarrollo y staging también carga datos de ejemplo; en producción, solo lo mínimo.
 import { cargarConfig } from '../../src/platform/config.js';
 import { conectar } from '../../src/platform/db.js';
-import { sembrarBase } from './base.js';
-import { sembrarCatalogo } from './catalogo.js';
+import { sembrarBase } from '../../src/platform/seed/base.js';
+import { sembrarCatalogo } from '../../src/platform/seed/catalogo.js';
 import { sembrarEjemplo } from './ejemplo.js';
 
 const config = cargarConfig();

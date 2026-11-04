@@ -4,8 +4,8 @@ import { join } from 'node:path';
 import { eq } from 'drizzle-orm';
 import sharp from 'sharp';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { sembrarBase } from '../../../db/seed/base.js';
-import { sembrarCatalogo } from '../../../db/seed/catalogo.js';
+import { sembrarBase } from '../../../src/platform/seed/base.js';
+import { sembrarCatalogo } from '../../../src/platform/seed/catalogo.js';
 import { productoFotos, productos } from '../../../src/modules/catalogo/infrastructure/schema.js';
 import {
   ServicioImportacion,

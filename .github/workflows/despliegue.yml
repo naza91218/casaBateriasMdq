@@ -1,0 +1,71 @@
+# Pasos comunes de deploy-staging y deploy-prod (T129): construye las dos imágenes, las sube a
+# GHCR con la etiqueta del commit y despliega por SSH. Si algo falla, el entorno queda como estaba.
+name: Despliegue
+
+on:
+  workflow_call:
+    inputs:
+      entorno:
+        type: string
+        required: true
+
+jobs:
+  imagenes:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.entorno }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Nombre de las imágenes
+        run: echo "IMAGEN=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/casa" >> "$GITHUB_ENV"
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: true
+          tags: ${{ env.IMAGEN }}-backend:${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+      # Las NEXT_PUBLIC_* van fijas en la imagen: por eso cada entorno tiene la suya.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: true
+          tags: ${{ env.IMAGEN }}-frontend-${{ inputs.entorno }}:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SITIO_URL=${{ vars.SITIO_URL }}
+            NEXT_PUBLIC_GA4_ID=${{ vars.GA4_ID }}
+            NEXT_PUBLIC_META_PIXEL_ID=${{ vars.META_PIXEL_ID }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+  desplegar:
+    needs: imagenes
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.entorno }}
+    concurrency: deploy-${{ inputs.entorno }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clave SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Copiar compose y scripts
+        run: |
+          D=${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+          scp infra/docker-compose.yml "$D:/srv/casa/${{ inputs.entorno }}/docker-compose.yml"
+          scp infra/scripts/*.sh "$D:/srv/casa/scripts/"
+      - name: Desplegar
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "/srv/casa/scripts/deploy.sh ${{ inputs.entorno }} ${{ github.sha }}"

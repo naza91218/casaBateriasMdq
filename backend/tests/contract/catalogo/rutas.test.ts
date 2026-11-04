@@ -9,8 +9,8 @@ import {
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { z } from 'zod';
-import { sembrarBase } from '../../../db/seed/base.js';
-import { MEDIDAS, sembrarCatalogo } from '../../../db/seed/catalogo.js';
+import { sembrarBase } from '../../../src/platform/seed/base.js';
+import { MEDIDAS, sembrarCatalogo } from '../../../src/platform/seed/catalogo.js';
 import { construirServidor } from '../../../src/http/server.js';
 import { crearProducto, crearVehiculo } from '../../setup/fixtures.js';
 import {

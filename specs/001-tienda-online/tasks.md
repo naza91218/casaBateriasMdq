@@ -287,17 +287,17 @@ cerrado y se refina en ese momento.
 
 ### Tests for User Story 8 ⚠️
 
-- [ ] T124 [P] [US8] Test de `GET /salud` (200 con base accesible, 503 sin base) en `backend/tests/contract/http/salud.test.ts`
+- [X] T124 [P] [US8] Test de `GET /salud` (200 con base accesible, 503 sin base) en `backend/tests/contract/http/salud.test.ts`
 
 ### Implementation for User Story 8
 
-- [ ] T125 [P] [US8] Crear el Dockerfile multi-stage del backend (Node 24 slim, usuario no root, entradas `api` y `worker`) en `backend/Dockerfile`
-- [ ] T126 [US8] Crear `infra/docker-compose.yml` con `backend`, `worker`, `db` (PostgreSQL 17 con volumen), `frontend` (perfil desactivado hasta la fase 11), límites de memoria y red interna, parametrizado por `.env` de cada entorno
-- [ ] T127 [P] [US8] Crear la configuración de Nginx para producción y staging (proxy `/api` al backend, resto al frontend, HTTP → HTTPS, staging con autenticación básica y `X-Robots-Tag: noindex`) en `infra/nginx/`
-- [ ] T128 [US8] Crear `infra/scripts/deploy.sh` (pull de imágenes por etiqueta, migraciones antes de cambiar contenedores, abortar si fallan, rollback a la etiqueta anterior)
-- [ ] T129 [US8] Crear `.github/workflows/deploy-staging.yml` (en `develop`) y `deploy-prod.yml` (en `main`): tests, build y push de imágenes a GHCR, deploy por SSH; si algo falla no se publica (US8-02). `deploy-prod.yml` MUST exigir aprobación manual y la prueba de punta a punta en staging en verde (T143, constitución VIII); hasta que exista el frontend, el job de producción queda deshabilitado
-- [ ] T130 [P] [US8] Crear `infra/scripts/backup.sh` (pg_dump diario comprimido a R2, retención 30 días) y `infra/scripts/restore.sh`, con el cron del VPS documentado
-- [ ] T131 [US8] Documentar en `infra/README.md`: preparación del VPS (Docker, Nginx, certbot, usuario de deploy), variables por entorno, restauración probada (US8-01, < 2 h), monitor UptimeRobot cada 5 min a `/api/v1/salud` (US8-03), acta de entrega de cuentas y guía de soporte (tienda caída, pago no acreditado, mail no recibido, stock desfasado) (US8-04)
+- [X] T125 [P] [US8] Crear el Dockerfile multi-stage del backend (Node 24 slim, usuario no root, entradas `api` y `worker`) en `backend/Dockerfile`
+- [X] T126 [US8] Crear `infra/docker-compose.yml` con `backend`, `worker`, `db` (PostgreSQL 17 con volumen), `frontend` (perfil desactivado hasta la fase 11), límites de memoria y red interna, parametrizado por `.env` de cada entorno
+- [X] T127 [P] [US8] Crear la configuración de Nginx para producción y staging (proxy `/api` al backend, resto al frontend, HTTP → HTTPS, staging con autenticación básica y `X-Robots-Tag: noindex`) en `infra/nginx/`
+- [X] T128 [US8] Crear `infra/scripts/deploy.sh` (pull de imágenes por etiqueta, migraciones antes de cambiar contenedores, abortar si fallan, rollback a la etiqueta anterior)
+- [X] T129 [US8] Crear `.github/workflows/deploy-staging.yml` (en `develop`) y `deploy-prod.yml` (en `main`): tests, build y push de imágenes a GHCR, deploy por SSH; si algo falla no se publica (US8-02). `deploy-prod.yml` MUST exigir aprobación manual y la prueba de punta a punta en staging en verde (T143, constitución VIII); hasta que exista el frontend, el job de producción queda deshabilitado
+- [X] T130 [P] [US8] Crear `infra/scripts/backup.sh` (pg_dump diario comprimido a R2, retención 30 días) y `infra/scripts/restore.sh`, con el cron del VPS documentado
+- [X] T131 [US8] Documentar en `infra/README.md`: preparación del VPS (Docker, Nginx, certbot, usuario de deploy), variables por entorno, restauración probada (US8-01, < 2 h), monitor UptimeRobot cada 5 min a `/api/v1/salud` (US8-03), acta de entrega de cuentas y guía de soporte (tienda caída, pago no acreditado, mail no recibido, stock desfasado) (US8-04)
 
 **Checkpoint**: staging funcionando con el backend completo y sandbox de Mercado Pago
 

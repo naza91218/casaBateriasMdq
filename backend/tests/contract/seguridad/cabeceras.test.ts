@@ -1,7 +1,7 @@
 import { ErrorRespuesta } from '@casa/shared';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { sembrarBase } from '../../../db/seed/base.js';
+import { sembrarBase } from '../../../src/platform/seed/base.js';
 import { construirServidor } from '../../../src/http/server.js';
 import {
   crearContextoDePrueba,

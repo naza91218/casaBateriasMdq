@@ -1,0 +1,19 @@
+# Cada push a develop: tests y, si pasan, staging (T129, US8-02).
+name: Deploy staging
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  tests:
+    uses: ./.github/workflows/ci.yml
+  despliegue:
+    needs: tests
+    uses: ./.github/workflows/despliegue.yml
+    with:
+      entorno: staging
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write

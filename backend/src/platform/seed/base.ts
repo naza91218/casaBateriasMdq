@@ -1,7 +1,7 @@
-import type { BaseDeDatos } from '../../src/platform/db.js';
-import { usuariosPanel } from '../../src/modules/auth/infrastructure/schema.js';
-import { configuracion } from '../../src/modules/configuracion/infrastructure/schema.js';
-import { zonasColocacion } from '../../src/modules/entregas/infrastructure/schema.js';
+import type { BaseDeDatos } from '../../platform/db.js';
+import { usuariosPanel } from '../../modules/auth/infrastructure/schema.js';
+import { configuracion } from '../../modules/configuracion/infrastructure/schema.js';
+import { zonasColocacion } from '../../modules/entregas/infrastructure/schema.js';
 
 /**
  * Datos mínimos para que el sistema funcione (idempotente). Las marcas y medidas se siembran en

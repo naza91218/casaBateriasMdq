@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructure/schema.js';
 import { construirServidor } from '../../../src/http/server.js';
 import { DIA, MINUTO } from '../../../src/shared-kernel/reloj.js';
-import { sembrarBase } from '../../../db/seed/base.js';
+import { sembrarBase } from '../../../src/platform/seed/base.js';
 import {
   crearContextoDePrueba,
   prepararBase,

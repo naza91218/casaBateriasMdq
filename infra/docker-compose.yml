@@ -1,0 +1,78 @@
+# Staging y producción en el VPS (T126). Cada entorno vive en su carpeta con su propio .env:
+#   /srv/casa/staging/{docker-compose.yml,.env}
+#   /srv/casa/produccion/{docker-compose.yml,.env}
+# El nombre del proyecto (COMPOSE_PROJECT_NAME en el .env) separa contenedores, redes y volúmenes,
+# así los dos entornos conviven en el mismo servidor. Los despliegues los hace scripts/deploy.sh.
+#
+# Variables que lee este archivo (además de las de la app, ver backend/.env.example):
+#   IMAGEN_BACKEND, IMAGEN_FRONTEND  ghcr.io/<usuario>/casa-backend y casa-frontend-<entorno>
+#   TAG                              etiqueta a correr (el sha del commit)
+#   PUERTO_API, PUERTO_WEB           puertos en 127.0.0.1 donde escucha Nginx (4000/3000 prod, 4001/3001 staging)
+#   POSTGRES_PASSWORD                clave de la base
+
+x-backend: &backend
+  image: ${IMAGEN_BACKEND}:${TAG}
+  env_file: .env
+  depends_on:
+    db:
+      condition: service_healthy
+  restart: unless-stopped
+  networks: [interna]
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: casa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: casa
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U casa -d casa']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    mem_limit: 512m
+    networks: [interna]
+
+  backend:
+    <<: *backend
+    environment:
+      DATABASE_URL: postgres://casa:${POSTGRES_PASSWORD}@db:5432/casa
+      PORT: 4000
+    volumes:
+      - uploads:/app/backend/uploads
+    ports:
+      - '127.0.0.1:${PUERTO_API}:4000'
+    mem_limit: 384m
+
+  # Manda los mails y las revalidaciones del outbox. Sin puerto ni chequeo HTTP.
+  worker:
+    <<: *backend
+    command: ['node', 'dist/worker/main.js']
+    environment:
+      DATABASE_URL: postgres://casa:${POSTGRES_PASSWORD}@db:5432/casa
+    healthcheck:
+      disable: true
+    mem_limit: 256m
+
+  frontend:
+    image: ${IMAGEN_FRONTEND}:${TAG}
+    env_file: .env
+    environment:
+      API_INTERNAL_URL: http://backend:4000
+    depends_on: [backend]
+    ports:
+      - '127.0.0.1:${PUERTO_WEB}:3000'
+    restart: unless-stopped
+    mem_limit: 512m
+    networks: [interna]
+
+networks:
+  interna:
+
+volumes:
+  db-data:
+  uploads:
