@@ -8,12 +8,15 @@ import { AcumuladorCompatibilidades, fragmentar } from './compatibilidad.js';
 import * as herbo from './fuentes/herbo.js';
 import * as sermatPdf from './fuentes/sermat-pdf.js';
 import * as sermatVolta from './fuentes/sermat-volta.js';
+import { soloDisponibles } from './disponibles.js';
 import {
   aCsv,
   COLUMNAS_COMPATIBILIDADES,
   COLUMNAS_PRODUCTOS,
+  type FilaCompatibilidad,
   type FilaProducto,
 } from './planillas.js';
+import { rehacerMedidaProducto, rehacerMedidasAuto } from './rehacer.js';
 
 /**
  * Carga inicial del catálogo (research R10, FR-070): baja datos técnicos, autos compatibles y
@@ -22,6 +25,9 @@ import {
  *
  *   pnpm --filter @casa/scraper scrape                 # todas las fuentes
  *   pnpm --filter @casa/scraper scrape -- --solo herbo  # una sola
+ *   pnpm --filter @casa/scraper scrape -- --desde-planillas  # sin internet: rehace las planillas
+ *                                                            # de data/import con la lista del cliente
+ *   pnpm --filter @casa/scraper scrape -- --todo  # todo el catálogo de las marcas, no solo lo disponible
  */
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const RAIZ = resolve(AQUI, '../../..');
@@ -30,6 +36,8 @@ const SALIDA = join(RAIZ, 'data', 'import');
 const args = process.argv.slice(2);
 const solo = args.includes('--solo') ? args[args.indexOf('--solo') + 1] : undefined;
 const sinFotos = args.includes('--sin-fotos');
+const desdePlanillas = args.includes('--desde-planillas');
+const todo = args.includes('--todo');
 
 const cliente = new ClienteEducado({ log: (m) => console.log(`  ${m}`) });
 const productos: FilaProducto[] = [];
@@ -166,18 +174,54 @@ const fuentes: Record<string, () => Promise<void>> = {
   'sermat-volta': deSermatVolta,
   edna: deEdna,
 };
-for (const [nombre, correr] of Object.entries(fuentes)) {
-  if (!solo || solo === nombre) await correr();
+const leerCsv = async <T>(archivo: string) =>
+  parse(await readFile(join(SALIDA, archivo)), {
+    bom: true,
+    columns: true,
+    skip_empty_lines: true,
+  }) as T[];
+
+let compatibilidades: FilaCompatibilidad[];
+let sinReconocer: FilaCompatibilidad[];
+if (desdePlanillas) {
+  console.log('Rehaciendo las planillas de data/import (sin bajar las fuentes)…');
+  productos.push(...(await leerCsv<FilaProducto>('productos.csv')).map(rehacerMedidaProducto));
+  // Edna se vuelve a leer de su planilla manual, por si cambió.
+  for (let i = productos.length - 1; i >= 0; i--)
+    if (productos[i]!.marca === 'Edna') productos.splice(i, 1);
+  await deEdna();
+  compatibilidades = (await leerCsv<FilaCompatibilidad>('compatibilidades.csv')).map(
+    rehacerMedidasAuto,
+  );
+  sinReconocer = (await leerCsv<FilaCompatibilidad>('compatibilidades-sin-reconocer.csv')).map(
+    rehacerMedidasAuto,
+  );
+} else {
+  for (const [nombre, correr] of Object.entries(fuentes)) {
+    if (!solo || solo === nombre) await correr();
+  }
+  compatibilidades = compat.resultado();
+  sinReconocer = compat.sinReconocerComoFilas();
+}
+
+if (!todo) {
+  const { filas, faltan } = soloDisponibles(productos);
+  const quedan = new Set(filas.map((f) => f.sku));
+  const descartados = productos.filter((p) => !quedan.has(p.sku)).length;
+  productos.splice(0, productos.length, ...filas);
+  console.log(
+    `Lista del cliente: ${filas.length} productos disponibles, ${descartados} que no tiene`,
+  );
+  for (const sku of faltan)
+    avisos.push(`${sku} está en la lista del cliente pero ninguna fuente lo trajo`);
 }
 
 await mkdir(SALIDA, { recursive: true });
 await writeFile(join(SALIDA, 'productos.csv'), aCsv(COLUMNAS_PRODUCTOS, productos));
-const compatibilidades = compat.resultado();
 await writeFile(
   join(SALIDA, 'compatibilidades.csv'),
   aCsv(COLUMNAS_COMPATIBILIDADES, compatibilidades),
 );
-const sinReconocer = compat.sinReconocerComoFilas();
 await writeFile(
   join(SALIDA, 'compatibilidades-sin-reconocer.csv'),
   aCsv(COLUMNAS_COMPATIBILIDADES, sinReconocer),

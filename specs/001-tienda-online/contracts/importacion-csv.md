@@ -18,7 +18,7 @@ FR-070. El scraper (`tools/scraper/`) genera exactamente estos formatos.
 | `sku` | sí | Clave de upsert (US5-02) |
 | `marca` | sí | Una de las marcas existentes (Sermat, Herbo, Volta, Edna) |
 | `nombre` | sí | |
-| `medida` | sí | Una medida existente (`12x65`…) |
+| `medida` | sí | Una medida existente: `12x65`…; 12x90 y 12x110 van con la caja, `12x90 alta` o `12x90 baja` (se acepta `12X90 Alta`, `12x90a`) |
 | `amperaje_ah` | sí | Entero > 0 |
 | `cca` | no | Entero > 0 |
 | `gama` | sí | `economica` o `reforzada` |

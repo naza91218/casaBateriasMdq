@@ -175,13 +175,13 @@ describe('importación de productos (FR-046, FR-070)', () => {
     const contenido = Buffer.concat([
       Buffer.from([0xef, 0xbb, 0xbf]),
       Buffer.from(
-        'Nombre,SKU,Marca,Medida,Gama,Amperaje_Ah\nEdna 12x90,ED-1,edna,12X90,Económica,90\n',
+        'Nombre,SKU,Marca,Medida,Gama,Amperaje_Ah\nEdna 12x90,ED-1,edna,12X90 Alta,Económica,90\n',
       ),
     ]);
     const r = await importacion.importar('productos', 'excel.csv', contenido, null);
     expect(r.filasOk).toBe(1);
     expect((await productosPorSku('ED-1'))[0]).toMatchObject({
-      medida: '12x90',
+      medida: '12x90 alta',
       gama: 'economica',
     });
   });
@@ -259,7 +259,7 @@ describe('importación de compatibilidades', () => {
       csv([
         ENC,
         'Volkswagen,Gol Trend,2008,2023,,12x65,herbo.com',
-        'Ford,Ranger,2012,2024,3.2 diésel,12x90|12x110,herbo.com',
+        'Ford,Ranger,2012,2024,3.2 diésel,12x90alta|12x110 A,herbo.com',
       ]),
       null,
     );
@@ -267,7 +267,7 @@ describe('importación de compatibilidades', () => {
     const gol = await p.ctx.servicios.buscador.compatibles('volkswagen', 'gol-trend', 2015);
     expect(gol.medidas).toEqual(['12x65']);
     const ranger = await p.ctx.servicios.buscador.compatibles('ford', 'ranger', 2020);
-    expect(ranger.medidas).toEqual(['12x90', '12x110']);
+    expect(ranger.medidas).toEqual(['12x90 alta', '12x110 alta']);
   });
 
   test('reimportar el mismo auto reemplaza sus medidas sin duplicarlo', async () => {

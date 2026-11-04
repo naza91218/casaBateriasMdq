@@ -288,4 +288,5 @@ export function fuenteCorta(fuentes: string[]): string {
   return [...new Set(nombres)].join(' | ').slice(0, 100);
 }
 
-const porAmperes = (a: string, b: string) => Number(a.split('x')[1]) - Number(b.split('x')[1]);
+const porAmperes = (a: string, b: string) =>
+  parseInt(a.split('x')[1] ?? '', 10) - parseInt(b.split('x')[1] ?? '', 10);

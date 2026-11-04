@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizarMedida, PATRON_MEDIDA } from '../medidas.ts';
 import { Importe, paginado, Whatsapp } from './comunes.ts';
 
 /**
@@ -10,7 +11,8 @@ const Gama = z.enum(['economica', 'reforzada']);
 const medida = z
   .string()
   .trim()
-  .regex(/^\d+x\d+$/, 'La medida tiene el formato 12x65');
+  .transform(normalizarMedida)
+  .pipe(z.string().regex(PATRON_MEDIDA, 'La medida tiene el formato 12x65 o 12x90 alta'));
 const vacioONulo = <T extends z.ZodType>(t: T) =>
   z.preprocess((v) => (v === '' ? null : v), t.nullable());
 

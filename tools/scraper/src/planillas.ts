@@ -82,4 +82,24 @@ export function voltsYAmperes(texto: string): { volts: number; ah: number } | nu
   return ah >= 20 && ah <= 250 ? { volts: Number(m[1]), ah } : null;
 }
 
-export const medida = (volts: number, ah: number) => `${volts}x${ah}`;
+/** Medidas que vienen en caja alta y caja baja: a cada auto le entra una sola (cliente, 2026-11-03). */
+const CON_ALTURA = new Set([90, 110]);
+/** Desde este alto de caja (mm) es "alta". Coincide con los catálogos de Sermat, Herbo y Edna. */
+const ALTO_MINIMO_ALTA = 200;
+
+/**
+ * "12x65"; para 12x90 y 12x110, "12x90 alta" o "12x90 baja" según el alto de la caja en mm o la
+ * altura ya conocida. Sin ese dato queda "12x90" y la importación lo rechaza para que se revise.
+ */
+export function medida(volts: number, ah: number, altura?: number | 'alta' | 'baja'): string {
+  const base = `${volts}x${ah}`;
+  if (!CON_ALTURA.has(ah) || altura === undefined) return base;
+  const alta = typeof altura === 'number' ? altura >= ALTO_MINIMO_ALTA : altura === 'alta';
+  return `${base} ${alta ? 'alta' : 'baja'}`;
+}
+
+/** El alto de "Medidas: 319 x 170 x 227 mm" (largo x ancho x alto). */
+export function altoDe(dimensiones: string): number | undefined {
+  const m = dimensiones.match(/\d+\s*x\s*\d+\s*x\s*(\d+)/);
+  return m ? Number(m[1]) : undefined;
+}

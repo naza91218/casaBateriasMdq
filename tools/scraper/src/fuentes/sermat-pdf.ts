@@ -93,10 +93,17 @@ export function normalizarCodigo(texto: string): string | null {
   return c && c !== '-' ? c : null;
 }
 
-/** Medida comercial del código: "12-75 BD" → "12x75". Las NS (japonesas) y las de 6 V no tienen. */
+/**
+ * Medida comercial del código: "12-75 BD" → "12x75". La primera letra dice la caja: A alta, B
+ * baja ("12-90 BD" → "12x90 baja"); la C de 12/110 es la de 220 mm, alta. Las NS (japonesas) y
+ * las de 6 V no tienen.
+ */
 export function medidaDeCodigo(codigo: string): string | null {
-  const m = codigo.match(/^12-(\d{2,3})\b/);
-  return m ? medida(12, Number(m[1])) : null;
+  const m = codigo.match(/^12-(\d{2,3})(?:\s+([A-Z]))?/);
+  if (!m) return null;
+  const letra = m[2];
+  const altura = letra === 'A' || letra === 'C' ? 'alta' : letra === 'B' ? 'baja' : undefined;
+  return medida(12, Number(m[1]), altura);
 }
 
 export function leerCompatibilidades(paginas: TextoPdf[][]): FilaCatalogo[] {
@@ -270,7 +277,7 @@ export function aFilaProducto(m: ModeloSermat, fuente: string): FilaProducto {
       .replace(/[^A-Z0-9]+/g, '-')}`,
     marca,
     nombre: esVolta ? `Volta ${m.codigo.replace(/^volta\s*/i, '')}` : `Sermat ${m.codigo}`,
-    medida: ah ? medida(12, ah) : '',
+    medida: ah ? medida(12, ah, m.alto) : '',
     amperaje_ah: ah ? String(ah) : '',
     cca: '',
     // Suposición inicial: Volta (segunda marca de Sermat) como económica y Sermat como reforzada.

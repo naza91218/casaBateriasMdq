@@ -42,7 +42,7 @@ const PRODUCTOS = [
   {
     marca: 'Edna',
     nombre: 'Edna 12x90 Reforzada',
-    medida: '12x90',
+    medida: '12x90 alta',
     gama: 'reforzada',
     pesos: 160_000,
     stock: 2,
@@ -53,7 +53,7 @@ const PRODUCTOS = [
 const VEHICULOS = [
   { marca: 'Volkswagen', modelo: 'Gol Trend', desde: 2008, hasta: 2023, medidas: ['12x65'] },
   { marca: 'Chevrolet', modelo: 'Corsa', desde: 2001, hasta: 2012, medidas: ['12x65'] },
-  { marca: 'Toyota', modelo: 'Hilux', desde: 2016, hasta: 2024, medidas: ['12x90'] },
+  { marca: 'Toyota', modelo: 'Hilux', desde: 2016, hasta: 2024, medidas: ['12x90 alta'] },
 ];
 
 export async function sembrarEjemplo(db: BaseDeDatos): Promise<void> {
@@ -71,7 +71,7 @@ export async function sembrarEjemplo(db: BaseDeDatos): Promise<void> {
         nombre: p.nombre,
         marcaId: marca.id,
         medida: p.medida,
-        amperajeAh: Number(p.medida.split('x')[1]),
+        amperajeAh: parseInt(p.medida.split('x')[1] ?? '', 10),
         gama: p.gama,
         precioLista: BigInt(p.pesos * 100),
         stock: p.stock,

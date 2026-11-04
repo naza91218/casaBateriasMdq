@@ -5,7 +5,12 @@ import http from 'node:http';
 import https from 'node:https';
 import { BlockList, isIP, type LookupFunction } from 'node:net';
 import { resolve, sep } from 'node:path';
-import type { InformeImportacion, TipoImportacion } from '@casa/shared';
+import {
+  normalizarMedida,
+  PATRON_MEDIDA,
+  type InformeImportacion,
+  type TipoImportacion,
+} from '@casa/shared';
 import { parse } from 'csv-parse/sync';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -44,8 +49,8 @@ const entero = (mensaje: string) => z.string().regex(/^\d+$/, mensaje).transform
 const medida = z
   .string()
   .min(1, 'Falta la medida, por ejemplo 12x65')
-  .transform((m) => m.toLowerCase().replace(/\s/g, ''))
-  .pipe(z.string().regex(/^\d+x\d+$/, 'La medida va como 12x65'));
+  .transform(normalizarMedida)
+  .pipe(z.string().regex(PATRON_MEDIDA, 'La medida va como 12x65 o 12x90 alta'));
 
 const FilaProducto = z.object({
   sku: z.string().min(1, 'Falta el código').max(60, 'El código puede tener hasta 60 caracteres'),
@@ -102,15 +107,10 @@ const filaCompatibilidad = (anioMaximo: number) => {
       medidas: z
         .string()
         .min(1, 'Falta la medida')
-        .transform((m) =>
-          m
-            .split('|')
-            .map((x) => x.trim().toLowerCase().replace(/\s/g, ''))
-            .filter(Boolean),
-        )
+        .transform((m) => m.split('|').map(normalizarMedida).filter(Boolean))
         .pipe(
           z
-            .array(z.string().regex(/^\d+x\d+$/, 'Cada medida va como 12x65'))
+            .array(z.string().regex(PATRON_MEDIDA, 'Cada medida va como 12x65 o 12x90 alta'))
             .min(1, 'Falta la medida'),
         ),
       fuente: opcional(z.string().max(100, 'La fuente puede tener hasta 100 caracteres')),

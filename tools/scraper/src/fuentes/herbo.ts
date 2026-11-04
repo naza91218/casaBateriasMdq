@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { ClienteEducado } from '../cliente.js';
-import { medida, voltsYAmperes, type FilaProducto } from '../planillas.js';
+import { altoDe, medida, voltsYAmperes, type FilaProducto } from '../planillas.js';
 
 const SITIO = 'https://www.herbobaterias.com';
 
@@ -81,7 +81,7 @@ export function aFila(p: ProductoHerbo, rutaFoto: string | null): FilaProducto {
     sku: `HERBO-${p.slug.toUpperCase()}`,
     marca: 'Herbo',
     nombre: `Herbo ${p.nombre}`,
-    medida: ah ? medida(12, ah) : '',
+    medida: ah ? medida(12, ah, altoDe(p.dimensiones)) : '',
     amperaje_ah: ah ? String(ah) : '',
     cca: p.cca ? String(p.cca) : '',
     // Suposición inicial: las líneas premium como reforzadas. Juan la confirma al revisar.

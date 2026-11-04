@@ -135,12 +135,12 @@ describe('buscador por auto (US1)', () => {
       modelo: 'Hilux',
       desde: 2016,
       hasta: 2024,
-      medidas: ['12x90', '12x110'],
+      medidas: ['12x90 alta', '12x110 alta'],
     });
-    await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x90', gama: 'economica' });
-    await crearProducto(p.ctx.db, { marca: 'Edna', medida: '12x110', gama: 'reforzada' });
+    await crearProducto(p.ctx.db, { marca: 'Sermat', medida: '12x90 alta', gama: 'economica' });
+    await crearProducto(p.ctx.db, { marca: 'Edna', medida: '12x110 alta', gama: 'reforzada' });
     const r = await buscador().compatibles('toyota', 'hilux', 2020);
-    expect(r.medidas).toEqual(['12x90', '12x110']);
+    expect(r.medidas).toEqual(['12x90 alta', '12x110 alta']);
     expect(r.grupos.flatMap((g) => g.productos)).toHaveLength(2);
   });
 });
@@ -164,7 +164,7 @@ describe('autos sin años (clarify 2026-10-30)', () => {
       modelo: 'S10',
       desde: 2016,
       hasta: 2024,
-      medidas: ['12x90'],
+      medidas: ['12x90 alta'],
     });
 
     expect(await buscador().anios('chevrolet', 's10')).toEqual([
@@ -172,7 +172,7 @@ describe('autos sin años (clarify 2026-10-30)', () => {
     ]);
     expect((await buscador().compatibles('chevrolet', 's10', 2020)).medidas).toEqual([
       '12x75',
-      '12x90',
+      '12x90 alta',
     ]);
     expect((await buscador().compatibles('chevrolet', 's10', 2010)).medidas).toEqual(['12x75']);
   });

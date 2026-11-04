@@ -55,7 +55,7 @@ beforeAll(async () => {
     marca: 'Ford',
     modelo: 'Ranger',
     motor: '3.0 TD',
-    medidas: ['12x90'],
+    medidas: ['12x90 alta'],
   });
   await crearVehiculo(e.ctx.db, {
     marca: 'Ford',
@@ -180,7 +180,7 @@ describe('GET /vehiculos/:marca/:modelo (FR-072)', () => {
   test('si cambia según el motor, lo dice', async () => {
     const p = PaginaVehiculo.parse((await get('/vehiculos/ford/ranger')).json());
     expect(p.respuesta).toBe(
-      'La batería del Ford Ranger depende del motor: con motor 2.3, 12x75; con motor 3.0 TD, 12x90.',
+      'La batería del Ford Ranger depende del motor: con motor 2.3, 12x75; con motor 3.0 TD, 12x90 alta.',
     );
     // Sin baterías de esas medidas: el precio se consulta por WhatsApp.
     expect(p.grupos).toEqual([]);

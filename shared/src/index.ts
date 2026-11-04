@@ -4,6 +4,7 @@ import { z } from 'zod';
 // Mensajes de validación en español para todos los esquemas.
 z.config(z.locales.es());
 
+export * from './medidas.ts';
 export * from './contratos/comunes.ts';
 export * from './contratos/configuracion.ts';
 export * from './contratos/catalogo.ts';

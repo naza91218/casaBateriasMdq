@@ -7,6 +7,8 @@ export const MARCAS = ['Sermat', 'Herbo', 'Volta', 'Edna'] as const; // FR-002
 /**
  * FR-003 pide al menos 12x65, 12x75, 12x90, 12x110 y 12x160; se suman las demás medidas
  * comerciales de 12 V que usan Sermat, Herbo y Volta (incluidas las del catálogo oficial de Sermat), para que la carga inicial no las rechace.
+ * 12x90 y 12x110 vienen en caja alta y baja, y a cada auto le entra una sola: van como medidas
+ * separadas (corrección del cliente, 2026-11-03).
  */
 export const MEDIDAS = [
   '12x45',
@@ -18,10 +20,12 @@ export const MEDIDAS = [
   '12x75',
   '12x80',
   '12x85',
-  '12x90',
+  '12x90 baja',
+  '12x90 alta',
   '12x95',
   '12x100',
-  '12x110',
+  '12x110 baja',
+  '12x110 alta',
   '12x120',
   '12x125',
   '12x130',

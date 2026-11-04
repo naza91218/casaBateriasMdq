@@ -54,7 +54,7 @@ describe('productos desde el panel (FR-045)', () => {
   });
 
   test('US5-04: pausar lo saca de la tienda y no se puede comprar', async () => {
-    const p = await productoConFoto({ marca: 'Herbo', medida: '12x90', gama: 'reforzada' });
+    const p = await productoConFoto({ marca: 'Herbo', medida: '12x90 alta', gama: 'reforzada' });
     await s().adminProductos.editar(p.id, { estado: 'pausado' });
 
     const lista = await s().catalogo.listar({ pagina: 1, porPagina: 100 });
@@ -110,7 +110,7 @@ describe('productos desde el panel (FR-045)', () => {
       sku: 'MAN-1',
       nombre: 'Edna 12x110 Reforzada',
       marca: 'edna',
-      medida: '12x110',
+      medida: '12x110 alta',
       amperajeAh: 110,
       gama: 'reforzada' as const,
     };

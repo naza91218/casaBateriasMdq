@@ -78,13 +78,11 @@ describe('catálogo de Sermat: autos', () => {
   });
 
   test('códigos → medida comercial; las NS y las de 6 V no tienen', () => {
-    expect(['12-65 D', '12-110 BD', '12-75 AL', 'NS-40', '6-160'].map(medidaDeCodigo)).toEqual([
-      '12x65',
-      '12x110',
-      '12x75',
-      null,
-      null,
-    ]);
+    expect(
+      ['12-65 D', '12-110 BD', '12-75 AL', '12-90 AD', '12-110 C', 'NS-40', '6-160'].map(
+        medidaDeCodigo,
+      ),
+    ).toEqual(['12x65', '12x110 baja', '12x75', '12x90 alta', '12x110 alta', null, null]);
     expect(normalizarCodigo('12/75 AD')).toBe('12-75 AD');
     expect(normalizarCodigo('12-1101')).toBe('12-110 I');
     expect(normalizarCodigo('-')).toBeNull();

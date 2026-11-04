@@ -37,7 +37,7 @@ export async function crearProducto(
       nombre,
       marcaId: await idMarca(db, datos.marca),
       medida: datos.medida,
-      amperajeAh: Number(datos.medida.split('x')[1] ?? 65),
+      amperajeAh: parseInt(datos.medida.split('x')[1] ?? '65', 10),
       cca: 400,
       gama: datos.gama,
       precioLista: BigInt(Math.round((datos.precio ?? 100_000) * 100)),

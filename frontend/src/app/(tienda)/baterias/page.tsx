@@ -1,4 +1,5 @@
 import type { ListadoProductos, MarcaCatalogo, Medida } from '@casa/shared';
+import { PATRON_MEDIDA } from '@casa/shared/medidas';
 import { ChevronLeft, ChevronRight, MessageCircle, SlidersHorizontal } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -32,7 +33,7 @@ function url(p: Params, cambios: Partial<Params>) {
 export default async function Catalogo({ searchParams }: { searchParams: Promise<Params> }) {
   const p = await searchParams;
   const marca = p.marca || undefined;
-  const medida = p.medida && /^\d+x\d+$/.test(p.medida) ? p.medida : undefined;
+  const medida = p.medida && PATRON_MEDIDA.test(p.medida) ? p.medida : undefined;
   const gama = p.gama === 'economica' || p.gama === 'reforzada' ? p.gama : undefined;
   const pagina = Math.max(1, Number.parseInt(p.pagina ?? '1', 10) || 1);
 
