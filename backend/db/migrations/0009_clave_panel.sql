@@ -1,0 +1,1 @@
+ALTER TABLE "usuarios_panel" ADD COLUMN "clave_hash" text;

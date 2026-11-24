@@ -157,14 +157,21 @@ export async function construirServidor(
       await api.register(rutasCanje({ canje: ctx.servicios.canje }));
       await api.register(rutasLegales({ arrepentimientos: ctx.servicios.arrepentimientos }));
       await api.register(rutasWebhookMercadoPago({ pagos: ctx.servicios.pagosMp }));
-      await api.register(
-        rutasAuth({
-          auth: ctx.servicios.auth,
-          urlFrontend: ctx.config.FRONTEND_URL,
-          cookieSegura: ctx.config.NODE_ENV !== 'development' && ctx.config.NODE_ENV !== 'test',
-          ingresoDirecto: ctx.config.DEMO_INGRESO_DIRECTO,
-        }),
-      );
+      // Ingreso y cambio de contraseña: los POST solo desde la tienda (CSRF), igual que /admin.
+      await api.register(async (auth) => {
+        auth.addHook(
+          'onRequest',
+          soloDesdeLaTienda([ctx.config.FRONTEND_URL, ctx.config.API_PUBLIC_URL]),
+        );
+        await auth.register(
+          rutasAuth({
+            auth: ctx.servicios.auth,
+            urlFrontend: ctx.config.FRONTEND_URL,
+            cookieSegura: ctx.config.NODE_ENV !== 'development' && ctx.config.NODE_ENV !== 'test',
+            ingresoDirecto: ctx.config.DEMO_INGRESO_DIRECTO,
+          }),
+        );
+      });
 
       // Panel: todo lo que está bajo /admin exige sesión.
       await api.register(

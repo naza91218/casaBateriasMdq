@@ -1,6 +1,7 @@
-import { and, eq, gt, isNull } from 'drizzle-orm';
+import { and, eq, gt, isNull, ne } from 'drizzle-orm';
 import type { BaseDeDatos } from '../../../platform/db.js';
-import { hashToken, tokenAleatorio } from '../../../platform/crypto.js';
+import { hashClave, hashToken, tokenAleatorio, verificarClave } from '../../../platform/crypto.js';
+import { ErrorDeDominio } from '../../../shared-kernel/errores.js';
 import type { Reloj } from '../../../shared-kernel/reloj.js';
 import { DIA, MINUTO } from '../../../shared-kernel/reloj.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
@@ -9,15 +10,21 @@ import { enlacesIngreso, sesiones, usuariosPanel } from '../infrastructure/schem
 export const VIGENCIA_ENLACE = 15 * MINUTO;
 export const VIGENCIA_SESION = 30 * DIA;
 
+export const LARGO_MINIMO_CLAVE = 10;
+
 export interface UsuarioPanel {
   id: string;
   email: string;
   rol: string;
 }
 
+/** Para igualar el tiempo de respuesta cuando el mail no existe o no tiene contraseña. */
+let hashDeRelleno: Promise<string> | null = null;
+
 /**
- * Ingreso al panel por enlace mágico (research R4, FR-041).
- * Solo se guardan hashes; el token y el id de sesión en claro viajan una sola vez.
+ * Ingreso al panel con mail y contraseña, o con enlace por mail (primera vez o contraseña
+ * olvidada) (FR-041). Solo se guardan hashes; el token y el id de sesión en claro viajan una
+ * sola vez.
  */
 export class ServicioAuth {
   constructor(
@@ -74,6 +81,86 @@ export class ServicioAuth {
         .returning({ usuarioId: enlacesIngreso.usuarioId });
       if (!enlace) return null;
       return this.abrirSesion(tx, enlace.usuarioId);
+    });
+  }
+
+  /**
+   * Mail y contraseña. Mismo resultado (null) si el mail no existe, no tiene contraseña o la
+   * contraseña no coincide, y en un tiempo parecido: no revela qué mails están autorizados.
+   */
+  async ingresarConClave(
+    email: string,
+    clave: string,
+  ): Promise<{ idSesion: string; venceEn: Date } | null> {
+    const [usuario] = await this.db
+      .select({ id: usuariosPanel.id, claveHash: usuariosPanel.claveHash })
+      .from(usuariosPanel)
+      .where(and(eq(usuariosPanel.email, email.trim()), eq(usuariosPanel.activo, true)));
+    if (!usuario?.claveHash) {
+      hashDeRelleno ??= hashClave('relleno-para-igualar-tiempos');
+      await verificarClave(clave, await hashDeRelleno);
+      return null;
+    }
+    if (!(await verificarClave(clave, usuario.claveHash))) return null;
+    return this.abrirSesion(this.db, usuario.id);
+  }
+
+  async tieneClave(usuarioId: string): Promise<boolean> {
+    const [fila] = await this.db
+      .select({ claveHash: usuariosPanel.claveHash })
+      .from(usuariosPanel)
+      .where(eq(usuariosPanel.id, usuarioId));
+    return Boolean(fila?.claveHash);
+  }
+
+  /**
+   * Pone o cambia la contraseña. Si ya tenía una, pide la actual. Cierra las demás sesiones del
+   * usuario: si alguien más había entrado, queda afuera.
+   */
+  async cambiarClave(
+    usuarioId: string,
+    idSesionActual: string,
+    datos: { actual?: string | undefined; nueva: string },
+  ): Promise<void> {
+    if (datos.nueva.length < LARGO_MINIMO_CLAVE) {
+      throw new ErrorDeDominio(
+        'validacion',
+        'CLAVE_CORTA',
+        `La contraseña tiene que tener al menos ${LARGO_MINIMO_CLAVE} caracteres`,
+        { nueva: `Al menos ${LARGO_MINIMO_CLAVE} caracteres` },
+      );
+    }
+    const [usuario] = await this.db
+      .select({ claveHash: usuariosPanel.claveHash })
+      .from(usuariosPanel)
+      .where(eq(usuariosPanel.id, usuarioId));
+    if (usuario?.claveHash) {
+      const ok = datos.actual ? await verificarClave(datos.actual, usuario.claveHash) : false;
+      if (!ok) {
+        throw new ErrorDeDominio(
+          'validacion',
+          'CLAVE_ACTUAL',
+          'La contraseña actual no es correcta',
+          {
+            actual: 'No es correcta',
+          },
+        );
+      }
+    }
+    const claveHash = await hashClave(datos.nueva);
+    const ahora = this.reloj.ahora();
+    await this.db.transaction(async (tx) => {
+      await tx.update(usuariosPanel).set({ claveHash }).where(eq(usuariosPanel.id, usuarioId));
+      await tx
+        .update(sesiones)
+        .set({ revocadaEn: ahora })
+        .where(
+          and(
+            eq(sesiones.usuarioId, usuarioId),
+            isNull(sesiones.revocadaEn),
+            ne(sesiones.idHash, hashToken(idSesionActual)),
+          ),
+        );
     });
   }
 

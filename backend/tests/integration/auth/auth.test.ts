@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { desc, eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { usuariosPanel } from '../../../src/modules/auth/infrastructure/schema.js';
 import { outboxMensajes } from '../../../src/modules/notificaciones/infrastructure/schema.js';
 import { construirServidor } from '../../../src/http/server.js';
 import { DIA, MINUTO } from '../../../src/shared-kernel/reloj.js';
@@ -127,6 +128,78 @@ describe('ingreso al panel con enlace por mail', () => {
       (await app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion: otra } }))
         .statusCode,
     ).toBe(401);
+  });
+});
+
+describe('ingreso con mail y contraseña', () => {
+  const entrar = (email: string, clave: string) =>
+    app.inject({ method: 'POST', url: '/api/v1/auth/ingresar', payload: { email, clave } });
+  const cambiar = (sesion: string, payload: { actual?: string; nueva: string }) =>
+    app.inject({ method: 'POST', url: '/api/v1/auth/clave', cookies: { sesion }, payload });
+  const sesionDe = (sesion: string) =>
+    app.inject({ method: 'GET', url: '/api/v1/auth/sesion', cookies: { sesion } });
+
+  test('sin contraseña puesta no se entra; la primera vez se pone desde el enlace', async () => {
+    expect((await entrar('admin@tienda.test', 'cualquiera-123')).statusCode).toBe(401);
+    const id = await ingresar();
+    expect((await sesionDe(id)).json().usuario.tieneClave).toBe(false);
+
+    const corta = await cambiar(id, { nueva: 'corta' });
+    expect(corta.statusCode).toBe(400);
+    expect((await cambiar(id, { nueva: 'una-clave-larga-1' })).statusCode).toBe(204);
+    expect((await sesionDe(id)).json().usuario.tieneClave).toBe(true);
+  });
+
+  test('con la contraseña correcta entra con sesión de 30 días; con otra, el mismo error', async () => {
+    const ok = await entrar('ADMIN@tienda.test', 'una-clave-larga-1');
+    expect(ok.statusCode).toBe(204);
+    const cookie = ok.cookies.find((c) => c.name === 'sesion');
+    expect(cookie?.httpOnly).toBe(true);
+    expect(cookie?.maxAge).toBe((30 * DIA) / 1000);
+    expect((await sesionDe(cookie?.value ?? '')).statusCode).toBe(200);
+
+    const mala = await entrar('admin@tienda.test', 'otra-clave-123');
+    const noExiste = await entrar('nadie@tienda.test', 'una-clave-larga-1');
+    expect(mala.statusCode).toBe(401);
+    expect(noExiste.statusCode).toBe(401);
+    expect(mala.json().error.mensaje).toBe(noExiste.json().error.mensaje);
+  });
+
+  test('cambiarla pide la actual y cierra las demás sesiones', async () => {
+    const a = (await entrar('admin@tienda.test', 'una-clave-larga-1')).cookies[0]?.value ?? '';
+    const b = (await entrar('admin@tienda.test', 'una-clave-larga-1')).cookies[0]?.value ?? '';
+
+    expect((await cambiar(a, { nueva: 'nueva-clave-larga-2' })).statusCode).toBe(400);
+    expect(
+      (await cambiar(a, { actual: 'mal-12345678', nueva: 'nueva-clave-larga-2' })).statusCode,
+    ).toBe(400);
+    expect(
+      (await cambiar(a, { actual: 'una-clave-larga-1', nueva: 'nueva-clave-larga-2' })).statusCode,
+    ).toBe(204);
+
+    expect((await sesionDe(a)).statusCode).toBe(200);
+    expect((await sesionDe(b)).statusCode).toBe(401);
+    expect((await entrar('admin@tienda.test', 'una-clave-larga-1')).statusCode).toBe(401);
+    expect((await entrar('admin@tienda.test', 'nueva-clave-larga-2')).statusCode).toBe(204);
+  });
+
+  test('sin sesión no se puede cambiar, y desde otro sitio tampoco', async () => {
+    expect((await cambiar('', { nueva: 'x-clave-larga-3' })).statusCode).toBe(401);
+    const id = (await entrar('admin@tienda.test', 'nueva-clave-larga-2')).cookies[0]?.value ?? '';
+    const r = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/clave',
+      cookies: { sesion: id },
+      headers: { origin: 'https://otro-sitio.test' },
+      payload: { actual: 'nueva-clave-larga-2', nueva: 'x-clave-larga-3' },
+    });
+    expect(r.statusCode).toBe(403);
+  });
+
+  test('la contraseña se guarda con hash, nunca en claro', async () => {
+    const [u] = await p.ctx.db.select().from(usuariosPanel);
+    expect(u?.claveHash).toMatch(/^scrypt\$/);
+    expect(u?.claveHash).not.toContain('nueva-clave-larga-2');
   });
 });
 

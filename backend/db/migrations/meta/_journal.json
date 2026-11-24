@@ -64,6 +64,13 @@
       "when": 1795440071767,
       "tag": "0008_garantia_por_producto",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795560016794,
+      "tag": "0009_clave_panel",
+      "breakpoints": true
     }
   ]
 }

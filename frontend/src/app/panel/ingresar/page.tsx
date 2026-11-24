@@ -21,10 +21,7 @@ export default async function Ingresar({
         <Logo />
         <div className="mt-6 rounded-md border-2 border-negro bg-blanco p-6 md:p-8">
           <h1 className="text-[30px] leading-tight font-bold">Ingresar al panel</h1>
-          <p className="mt-2 text-gris-600">
-            Escribí tu mail y te mandamos un enlace para entrar. Sin contraseña: vence a los 15
-            minutos y sirve una sola vez.
-          </p>
+          <p className="mt-2 text-gris-600">Entrá con tu mail y tu contraseña.</p>
           {error === 'enlace_vencido' && (
             <p
               role="alert"
@@ -33,7 +30,7 @@ export default async function Ingresar({
               Ese enlace ya se usó o venció. Pedí uno nuevo.
             </p>
           )}
-          <FormIngreso />
+          <FormIngreso conEnlace={error === 'enlace_vencido'} />
         </div>
         {urlMails && (
           <div className="mt-4 rounded-md border-2 border-dashed border-gris-400 bg-blanco p-5">

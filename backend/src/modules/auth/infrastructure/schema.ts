@@ -7,6 +7,8 @@ export const usuariosPanel = pgTable('usuarios_panel', {
   email: citext('email').notNull().unique(),
   rol: text('rol').notNull().default('admin'),
   activo: boolean('activo').notNull().default(true),
+  /** scrypt (ver platform/crypto). Sin contraseña todavía, se entra con el enlace por mail. */
+  claveHash: text('clave_hash'),
   creadoEn: creadoEn(),
 });
 

@@ -511,10 +511,13 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
 
 #### Panel del administrador
 
-- **FR-041**: El panel MUST exigir ingreso con un enlace enviado a un mail autorizado, sin
-  contraseña; la sesión MUST durar 30 días en el mismo dispositivo y poder cerrarse; al pedir el
-  enlace, la respuesta MUST ser la misma para mails autorizados y no autorizados (R-PAN-01,
-  R-PAN-02).
+- **FR-041**: El panel MUST exigir ingreso con mail y contraseña (guardada con hash, mínimo 10
+  caracteres, pocos intentos por minuto); la primera vez, o si se olvida la contraseña, se entra
+  con un enlace enviado a un mail autorizado y desde el panel se pone o cambia la contraseña
+  (cambiarla pide la actual y cierra las demás sesiones). La sesión MUST durar 30 días en el mismo
+  dispositivo y poder cerrarse; al pedir el enlace o al fallar el ingreso, la respuesta MUST ser la
+  misma para mails autorizados y no autorizados (R-PAN-01, R-PAN-02). *Cambio del 2026-11-24, a
+  pedido del cliente: antes era solo enlace por mail.*
 - **FR-042**: El panel MUST admitir más de un usuario a futuro, aunque al inicio haya uno solo
   (R-PAN-03).
 - **FR-043**: La lista de pedidos MUST mostrar primero los nuevos y filtrar por estado; el detalle

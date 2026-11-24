@@ -5,6 +5,7 @@ import {
   createHmac,
   hkdfSync,
   randomBytes,
+  scrypt,
   timingSafeEqual,
 } from 'node:crypto';
 
@@ -88,3 +89,43 @@ export function crearFirmadorSeguimiento(claveMaestra: Buffer) {
   };
 }
 export type FirmadorSeguimiento = ReturnType<typeof crearFirmadorSeguimiento>;
+
+// ── Contraseñas del panel ─────────────────────────────────────────────────────────────────────
+
+const SCRYPT = { N: 2 ** 15, r: 8, p: 1, maxmem: 64 * 1024 * 1024 } as const;
+const LARGO_CLAVE_DERIVADA = 32;
+
+function derivar(clave: string, sal: Buffer, n: number, r: number, p: number): Promise<Buffer> {
+  return new Promise((resolve, reject) =>
+    scrypt(
+      clave.normalize('NFC'),
+      sal,
+      LARGO_CLAVE_DERIVADA,
+      { N: n, r, p, maxmem: SCRYPT.maxmem },
+      (err, k) => (err ? reject(err) : resolve(k)),
+    ),
+  );
+}
+
+/** Hash de una contraseña con scrypt y sal aleatoria: `scrypt$N$r$p$sal$hash` (base64). */
+export async function hashClave(clave: string): Promise<string> {
+  const sal = randomBytes(16);
+  const k = await derivar(clave, sal, SCRYPT.N, SCRYPT.r, SCRYPT.p);
+  return [
+    'scrypt',
+    SCRYPT.N,
+    SCRYPT.r,
+    SCRYPT.p,
+    sal.toString('base64'),
+    k.toString('base64'),
+  ].join('$');
+}
+
+/** Compara en tiempo constante. Un hash mal formado nunca coincide. */
+export async function verificarClave(clave: string, guardado: string): Promise<boolean> {
+  const [alg, n, r, p, sal, hash] = guardado.split('$');
+  if (alg !== 'scrypt' || !n || !r || !p || !sal || !hash) return false;
+  const esperado = Buffer.from(hash, 'base64');
+  const k = await derivar(clave, Buffer.from(sal, 'base64'), Number(n), Number(r), Number(p));
+  return k.length === esperado.length && timingSafeEqual(k, esperado);
+}

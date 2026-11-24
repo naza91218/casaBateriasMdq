@@ -42,6 +42,58 @@ export function rutasAuth(deps: {
       },
     );
 
+    app.post(
+      '/auth/ingresar',
+      {
+        // Contra el que prueba contraseñas: pocos intentos por minuto y por IP.
+        config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
+        schema: {
+          tags: ['auth'],
+          body: z.object({
+            email: z.string().trim().email('Escribí un mail válido'),
+            clave: z.string().min(1, 'Escribí tu contraseña').max(200),
+          }),
+          response: { 204: z.null() },
+        },
+      },
+      async (req, reply) => {
+        const sesion = await deps.auth.ingresarConClave(req.body.email, req.body.clave);
+        if (!sesion) {
+          throw new ErrorDeDominio(
+            'no_autorizado',
+            'CREDENCIALES',
+            'El mail o la contraseña no son correctos',
+          );
+        }
+        guardarSesion(reply, sesion.idSesion);
+        return reply.code(204).send(null);
+      },
+    );
+
+    app.post(
+      '/auth/clave',
+      {
+        config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
+        schema: {
+          tags: ['auth'],
+          body: z.object({
+            actual: z.string().max(200).optional(),
+            nueva: z.string().max(200),
+          }),
+          response: { 204: z.null() },
+        },
+      },
+      async (req, reply) => {
+        const id = req.cookies[COOKIE_SESION];
+        const usuario = id ? await deps.auth.usuarioDeSesion(id) : null;
+        if (!id || !usuario) {
+          throw new ErrorDeDominio('no_autorizado', 'SIN_SESION', 'Tenés que ingresar al panel');
+        }
+        await deps.auth.cambiarClave(usuario.id, id, req.body);
+        return reply.code(204).send(null);
+      },
+    );
+
     app.get(
       '/auth/verificar',
       {
@@ -75,7 +127,12 @@ export function rutasAuth(deps: {
           tags: ['auth'],
           response: {
             200: z.object({
-              usuario: z.object({ id: z.string(), email: z.string(), rol: z.string() }),
+              usuario: z.object({
+                id: z.string(),
+                email: z.string(),
+                rol: z.string(),
+                tieneClave: z.boolean(),
+              }),
             }),
           },
         },
@@ -86,7 +143,7 @@ export function rutasAuth(deps: {
         if (!usuario) {
           throw new ErrorDeDominio('no_autorizado', 'SIN_SESION', 'Tenés que ingresar al panel');
         }
-        return { usuario };
+        return { usuario: { ...usuario, tieneClave: await deps.auth.tieneClave(usuario.id) } };
       },
     );
 
