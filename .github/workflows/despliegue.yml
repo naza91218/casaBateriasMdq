@@ -60,12 +60,18 @@ jobs:
           install -m 700 -d ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          # El VPS escucha SSH en un puerto propio (variable SSH_PORT; 22 si no está).
+          {
+            echo "Host servidor"
+            echo "  HostName ${{ secrets.SSH_HOST }}"
+            echo "  User ${{ secrets.SSH_USER }}"
+            echo "  Port ${{ vars.SSH_PORT || '22' }}"
+          } > ~/.ssh/config
       - name: Copiar compose y scripts
         run: |
-          D=${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-          scp infra/docker-compose.yml "$D:/srv/casa/${{ inputs.entorno }}/docker-compose.yml"
-          scp infra/scripts/*.sh "$D:/srv/casa/scripts/"
+          scp infra/docker-compose.yml "servidor:/srv/casa/${{ inputs.entorno }}/docker-compose.yml"
+          scp infra/scripts/*.sh "servidor:/srv/casa/scripts/"
       - name: Desplegar
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          ssh servidor \
             "/srv/casa/scripts/deploy.sh ${{ inputs.entorno }} ${{ github.sha }}"

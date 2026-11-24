@@ -171,8 +171,8 @@ Si falta alguna variable obligatoria, la API no arranca y el deploy vuelve solo 
 
 En GitHub, en **Settings → Environments**, crear `staging` y `produccion` con:
 
-- **secretos:** `SSH_HOST`, `SSH_USER` (`deploy`), `SSH_KEY` y `SSH_KNOWN_HOSTS` (la salida de `ssh-keyscan <ip>`);
-- **variables:** `SITIO_URL`, `GA4_ID` y `META_PIXEL_ID`, que quedan fijas en la imagen de la tienda;
+- **secretos:** `SSH_HOST`, `SSH_USER` (`deploy`), `SSH_KEY` y `SSH_KNOWN_HOSTS` (la salida de `ssh-keyscan -p 22022 <ip>`);
+- **variables:** `SSH_PORT` (22022), `SITIO_URL`, `GA4_ID` y `META_PIXEL_ID`, que quedan fijas en la imagen de la tienda;
 - **solo en `produccion`:** **Required reviewers**, con quien aprueba los pases.
 
 ### 4. Desplegar
