@@ -34,11 +34,13 @@ export class ServicioAdminVehiculos {
 
   async listar(f: {
     q?: string | undefined;
+    marca?: string | undefined;
     medida?: string | undefined;
     pagina: number;
     porPagina: number;
   }) {
     const condiciones: SQL[] = [];
+    if (f.marca) condiciones.push(ilike(vehiculos.marca, f.marca.replace(/[\\%_]/g, '\\$&')));
     if (f.medida)
       condiciones.push(
         inArray(

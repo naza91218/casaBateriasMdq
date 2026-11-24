@@ -60,7 +60,7 @@ export function esDelRubro(p: ProductoHerbo): boolean {
 
 /**
  * Amperaje: del nombre ("Platinum 12 80", "Fit 12 55") o, si no está, del código de la URL
- * ("evolution-60"). Si no aparece en ningún lado queda vacío para que lo complete Juan.
+ * ("evolution-60"). Si no aparece en ningún lado queda vacío para que lo complete Mateo.
  */
 export function amperajeDe(p: ProductoHerbo): number | null {
   const delNombre = voltsYAmperes(p.nombre);
@@ -84,10 +84,8 @@ export function aFila(p: ProductoHerbo, rutaFoto: string | null): FilaProducto {
     medida: ah ? medida(12, ah, altoDe(p.dimensiones)) : '',
     amperaje_ah: ah ? String(ah) : '',
     cca: p.cca ? String(p.cca) : '',
-    // Suposición inicial: las líneas premium como reforzadas. Juan la confirma al revisar.
-    gama: /platinum|premium|max|servicio pesado/i.test(`${p.nombre} ${p.linea}`)
-      ? 'reforzada'
-      : 'economica',
+    // Todo Herbo es reforzada (Mateo, 2026-11-09): las económicas del local son solo Volta.
+    gama: 'reforzada',
     descripcion: partes.filter(Boolean).join(' '),
     precio_lista: '',
     stock: '',

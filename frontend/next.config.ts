@@ -13,8 +13,14 @@ const config: NextConfig = {
   outputFileTracingRoot: fileURLToPath(new URL('..', import.meta.url)),
   poweredByHeader: false,
   devIndicators: false,
+  // La demo (infra/demo) compila en otra carpeta para no pisar la de `pnpm dev`.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   async rewrites() {
-    return [{ source: '/api/v1/:ruta*', destination: `${API}/api/v1/:ruta*` }];
+    return [
+      { source: '/api/v1/:ruta*', destination: `${API}/api/v1/:ruta*` },
+      // Fotos guardadas en disco (sin R2): las sirve la API.
+      { source: '/uploads/:ruta*', destination: `${API}/uploads/:ruta*` },
+    ];
   },
 };
 

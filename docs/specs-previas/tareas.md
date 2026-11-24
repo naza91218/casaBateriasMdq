@@ -20,7 +20,7 @@ Estados: `pendiente` · `en curso` · `hecha` · `bloqueada (P#)`
 | T1.2 | DNS, HTTPS, dominio de mails | R-LEG-07, R-NOT-06 | CA-LEG-05, CA-NOT-06 | pendiente |
 | T1.3 | Esquema de base y migraciones | R-CAT-01, R-BUS-01, R-BUS-02, R-PED-07, R-PED-08 | — | pendiente |
 | T1.4 | Backup diario y restauración | R-OPS-02, R-OPS-03 | CA-OPS-03 | pendiente |
-| T1.5 | Definiciones con Juan | — | — | bloqueada (P1, P4, P8) |
+| T1.5 | Definiciones con Mateo | — | — | bloqueada (P1, P4, P8) |
 | T1.6 | Diseño de portada y ficha | R-SEO-01, R-CAT-06 | CA-SEO-01 | pendiente |
 
 ## Semana 2 — Catálogo y buscador

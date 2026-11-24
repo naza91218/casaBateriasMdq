@@ -31,7 +31,7 @@ PostgreSQL 17. Convenciones:
 | id | uuid PK | |
 | sku | text | UNIQUE (FR-001, upsert de importación) |
 | slug | text | UNIQUE, estable (FR-053) |
-| nombre | text | Ej. "Sermat 12x65 Económica" |
+| nombre | text | Ej. "Sermat 12x65 Reforzada" |
 | marca_id | uuid FK → marcas | |
 | medida | text FK → medidas | |
 | amperaje_ah | int | > 0 |

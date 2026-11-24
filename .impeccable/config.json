@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "consolas",
+        "files": [
+          "docs/entregables/informe-tecnico.html"
+        ],
+        "createdAt": "2026-11-06T03:11:52.221Z",
+        "reason": "Claude: monospace para bloques de código en el informe técnico PDF, no es UI de la tienda"
+      },
+      {
+        "rule": "oversized-h1",
+        "value": "*",
+        "files": [
+          "docs/entregables/informe-tecnico.html"
+        ],
+        "createdAt": "2026-11-06T03:19:55.349Z",
+        "reason": "Claude: es la portada impresa de un PDF A4, no un hero web; el título ocupa la portada a propósito"
+      }
+    ]
+  }
+}

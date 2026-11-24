@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Informe técnico · Tienda online de La Casa de las Baterías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 20mm 18mm 18mm 18mm; }
+  @page :first { margin: 0; }
+  :root {
+    --rojo: #e01e08; --rojo-texto: #c01805; --naranja: #ff4e10; --negro: #111111;
+    --gris: #4a4a4a; --gris-claro: #ededed; --fondo-caja: #f6f5f2; --borde: #d9d9d9;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Barlow', Arial, sans-serif; font-size: 10pt; line-height: 1.45; color: var(--negro); margin: 0; }
+  h1, h2, h3 { font-family: 'Barlow Condensed', Arial, sans-serif; text-transform: uppercase; line-height: 1.05; letter-spacing: .01em; }
+  h1 { font-size: 30pt; font-weight: 800; margin: 0 0 8pt; }
+  h2 { font-size: 20pt; font-weight: 800; margin: 0 0 10pt; padding-bottom: 6pt; border-bottom: 3px solid var(--rojo); break-after: avoid; }
+  h3 { font-size: 13pt; font-weight: 700; margin: 12pt 0 5pt; break-after: avoid; }
+  h4 { font-size: 11pt; margin: 12pt 0 4pt; break-after: avoid; }
+  p { margin: 0 0 7pt; }
+  ul, ol { margin: 0 0 8pt; padding-left: 16pt; }
+  li { margin-bottom: 2pt; }
+  a { color: var(--rojo-texto); }
+  code { font-family: Consolas, 'Courier New', monospace; font-size: 8.6pt; background: var(--gris-claro); padding: 0 3px; border-radius: 3px; }
+  pre { font-family: Consolas, 'Courier New', monospace; font-size: 8pt; line-height: 1.45; background: #151515; color: #eaeaea; padding: 10pt 12pt; border-radius: 6px; white-space: pre-wrap; break-inside: avoid; margin: 0 0 10pt; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 10pt; font-size: 8.8pt; }
+  th { text-align: left; background: var(--negro); color: #fff; font-weight: 600; padding: 4pt 6pt; }
+  td { padding: 4pt 6pt; border-bottom: 1px solid var(--borde); vertical-align: top; }
+  tr { break-inside: avoid; }
+  tbody tr:nth-child(even) td { background: #faf9f7; }
+  .capitulo { break-before: page; }
+  .eyebrow { font-weight: 700; font-size: 8.5pt; letter-spacing: .14em; text-transform: uppercase; color: var(--rojo-texto); margin-bottom: 4pt; }
+  .nota { background: var(--fondo-caja); border-left: 4px solid var(--rojo); padding: 8pt 10pt; margin: 0 0 10pt; break-inside: avoid; }
+  .diagrama { border: 1px solid var(--borde); border-radius: 6px; padding: 10pt; margin: 4pt 0 6pt; text-align: center; break-inside: avoid; background: #fff; }
+  .diagrama svg { max-width: 100%; height: auto; }
+  .pie-fig { font-size: 8.5pt; color: var(--gris); text-align: center; margin: 0 0 12pt; }
+  .diagrama pre.mermaid { background: none; color: inherit; padding: 0; margin: 0; white-space: normal; font-family: 'Barlow', Arial, sans-serif; }
+  .grilla { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin-bottom: 10pt; }
+  .caja { border: 1px solid var(--borde); border-radius: 6px; padding: 8pt 10pt; break-inside: avoid; }
+  .caja h4 { margin-top: 0; }
+  .cu { border: 1px solid var(--borde); border-radius: 6px; margin: 0 0 12pt; break-inside: avoid; overflow: hidden; }
+  .cu-cab { background: var(--negro); color: #fff; padding: 6pt 10pt; display: flex; justify-content: space-between; align-items: baseline; }
+  .cu-cab b { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 13pt; text-transform: uppercase; letter-spacing: .02em; }
+  .cu-cab span { font-size: 8.5pt; color: #cfcfcf; }
+  .cu-cuerpo { padding: 8pt 10pt; }
+  .cu-cuerpo table { margin: 0; }
+  .cu-cuerpo td:first-child { width: 22%; font-weight: 600; color: var(--gris); }
+  .chip { display: inline-block; font-size: 8pt; font-weight: 600; padding: 0 6pt; border-radius: 10px; background: var(--gris-claro); }
+  .chip.r { background: #fde3df; color: var(--rojo-texto); }
+  .numeros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8pt; margin: 6pt 0 12pt; }
+  .numeros div { border-top: 3px solid var(--rojo); padding-top: 4pt; }
+  .numeros b { display: block; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 19pt; line-height: 1; }
+  .numeros span { font-size: 8.5pt; color: var(--gris); }
+
+  /* Portada */
+  .portada { height: 297mm; width: 210mm; break-after: page; display: flex; flex-direction: column; justify-content: space-between; background: #0b0b0b; color: #f4f4f2; margin: 0; padding: 28mm 22mm 30mm; position: relative; overflow: hidden; }
+  .portada::after { content: ''; position: absolute; right: -30mm; top: 0; bottom: 0; width: 80mm; background: var(--rojo); transform: skewX(-10deg); }
+  .portada > * { position: relative; z-index: 1; }
+  .portada h1 { font-size: 46pt; line-height: .95; max-width: 125mm; }
+  .portada h1 span { color: var(--naranja); }
+  .portada .sub { font-size: 13pt; color: #bdbdbd; max-width: 120mm; }
+  .portada table { width: auto; color: #e6e6e6; font-size: 9.5pt; }
+  .portada td { border: none; padding: 1pt 14pt 1pt 0; background: none !important; }
+  .portada td:first-child { color: #9a9a9a; }
+  .indice { columns: 2; column-gap: 14mm; font-size: 10.5pt; }
+  .indice li { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<!-- ───────────────────────────── PORTADA ───────────────────────────── -->
+<section class="portada">
+  <img src="../../frontend/public/marca/isotipo-blanco.svg" alt="" style="width:34mm">
+  <div>
+    <p class="eyebrow" style="color:#ff4e10">Informe técnico</p>
+    <h1>Tienda online de <span>La Casa de las Baterías</span></h1>
+    <p class="sub">Arquitectura, módulos, casos de uso, modelo de datos, flujos, pruebas y operación del sistema.</p>
+  </div>
+  <table>
+    <tr><td>Cliente</td><td>La Casa de las Baterías · Mar del Plata</td></tr>
+    <tr><td>Versión del sistema</td><td>Rama <code style="background:#222;color:#eee">001-tienda-online</code>, lista para producción</td></tr>
+    <tr><td>Fecha</td><td>Noviembre de 2026</td></tr>
+    <tr><td>Autor</td><td>Nazareno · desarrollo</td></tr>
+  </table>
+</section>
+
+<!-- ───────────────────────────── ÍNDICE ───────────────────────────── -->
+<section>
+  <h2>Contenido</h2>
+  <ol class="indice">
+    <li>Resumen del proyecto</li>
+    <li>Actores y casos de uso</li>
+    <li>Especificación de los casos de uso principales</li>
+    <li>Arquitectura general</li>
+    <li>Organización del código</li>
+    <li>Backend: módulos y capas</li>
+    <li>Modelo de datos</li>
+    <li>Ciclo de vida del pedido</li>
+    <li>Flujos principales (diagramas de secuencia)</li>
+    <li>API REST</li>
+    <li>Frontend: tienda y panel</li>
+    <li>Seguridad y datos personales</li>
+    <li>Pruebas y calidad</li>
+    <li>Infraestructura, despliegue y operación</li>
+    <li>Estado actual y pendientes</li>
+    <li>Glosario</li>
+  </ol>
+</section>
+
+<!-- ───────────────────────────── 1 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 1</p>
+  <h2>Resumen del proyecto</h2>
+  <p>La Casa de las Baterías es un comercio de Mar del Plata con 45 años de trayectoria. Su diferencial es la <b>colocación a domicilio incluida en el precio</b>, la medición del alternador y 12 meses de garantía. El proyecto construye su tienda online propia con un principio rector: <b>el cliente nunca tiene que saber de baterías; el auto lleva a la batería</b>.</p>
+  <h3>Objetivos</h3>
+  <ul>
+    <li>Que el comprador elija marca, modelo y año de su auto y vea solo las baterías compatibles, separadas en económicas y reforzadas.</li>
+    <li>Que compre como invitado, en una sola página, con Mercado Pago, transferencia con descuento o efectivo al retirar, y elija colocación a domicilio o retiro en el local.</li>
+    <li>Que el administrador (Mateo) gestione pedidos, catálogo, precios, stock, fotos y configuración desde un panel usable en el celular.</li>
+    <li>Avisos por mail en cada cambio de estado, presencia en Google (SEO local y buscadores con IA) y cumplimiento legal (Defensa del Consumidor y Ley 25.326).</li>
+  </ul>
+  <p><b>Alcance cerrado.</b> Por decisión de la constitución del proyecto quedan <b>fuera</b>: cuentas de cliente, turnos, cupones y precio para el canje de la batería usada (el canje es solo una consulta que se responde por WhatsApp).</p>
+  <h3>El proyecto en números</h3>
+  <div class="numeros">
+    <div><b>8</b><span>historias de usuario</span></div>
+    <div><b>78</b><span>requisitos funcionales</span></div>
+    <div><b>12</b><span>módulos de backend</span></div>
+    <div><b>330</b><span>pruebas automáticas</span></div>
+    <div><b>≈ 6.400</b><span>líneas de backend (src)</span></div>
+    <div><b>≈ 7.400</b><span>líneas de frontend</span></div>
+    <div><b>512</b><span>autos cargados, 35 marcas</span></div>
+    <div><b>≥ 90</b><span>puntaje Lighthouse</span></div>
+  </div>
+  <h3>Metodología</h3>
+  <p>El desarrollo siguió <b>spec-driven development</b> con spec-kit: constitución (principios no negociables), especificación funcional con escenarios de aceptación, plan técnico, investigación de decisiones, modelo de datos, contratos y lista de tareas. Cada escenario de la especificación tiene una prueba automática con su código en el nombre (por ejemplo <code>US2-03</code>). El backend se construyó primero, sobre contratos probados, y el frontend después, cuando se cerró el diseño.</p>
+
+</section>
+
+<!-- ───────────────────────────── 2 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 2</p>
+  <h2>Actores y casos de uso</h2>
+  <table>
+    <tr><th style="width:24%">Actor</th><th>Descripción</th></tr>
+    <tr><td>Comprador</td><td>Automovilista de Mar del Plata, muchas veces con urgencia y desde el celular. Incluye gente mayor que usa poco internet. Compra sin cuenta.</td></tr>
+    <tr><td>Administrador</td><td>Mateo, nieto del dueño. Gestiona pedidos, precios, stock y fotos, y sale a colocar. Usa el panel en el celular y la compu.</td></tr>
+    <tr><td>Mercado Pago</td><td>Sistema externo que cobra y avisa los pagos por webhook.</td></tr>
+    <tr><td>Worker (reloj)</td><td>Proceso del sistema que envía mails, cancela pedidos vencidos y avisa al frontend que revalide páginas.</td></tr>
+  </table>
+
+  <h3>Diagrama de casos de uso: comprador</h3>
+  <div class="diagrama"><pre class="mermaid">
+flowchart LR
+  C(["👤 Comprador"])
+  WA(["WhatsApp"])
+  subgraph T["Tienda online"]
+    direction TB
+    CU01(["CU-01 Buscar batería por auto"])
+    CU02(["CU-02 Explorar catálogo con filtros"])
+    CU03(["CU-03 Ver ficha de producto"])
+    CU04(["CU-04 Armar el carrito"])
+    CU05(["CU-05 Confirmar compra"])
+    CU06(["CU-06 Pagar con Mercado Pago"])
+    CU07(["CU-07 Pagar por transferencia"])
+    CU08(["CU-08 Pagar en efectivo al retirar"])
+    CU09(["CU-09 Seguir el pedido"])
+    CU10(["CU-10 Reintentar el pago"])
+    CU11(["CU-11 Consultar canje de la usada"])
+    CU12(["CU-12 Pedir arrepentimiento"])
+  end
+  C --- CU01 & CU02 & CU03 & CU04 & CU05 & CU09 & CU11 & CU12
+  CU05 -. incluye uno .-> CU06 & CU07 & CU08
+  CU09 -. extiende .-> CU10
+  CU01 -. sin resultados .-> WA
+  CU11 -.-> WA
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 1. Casos de uso del comprador. Las líneas punteadas son relaciones de inclusión o extensión.</p></div>
+
+  <h3>Diagrama de casos de uso: administrador y sistema</h3>
+  <div class="diagrama"><pre class="mermaid">
+flowchart LR
+  A(["👤 Administrador"])
+  subgraph P["Panel: acceso y pedidos"]
+    direction TB
+    CU13(["CU-13 Ingresar con enlace por mail"])
+    CU14(["CU-14 Ver lo pendiente"])
+    CU15(["CU-15 Gestionar pedidos"])
+    CU20(["CU-20 Resolver alertas de pago"])
+    CU16(["CU-16 Confirmar transferencia"])
+    CU17(["CU-17 Registrar efectivo"])
+    CU18(["CU-18 Cambiar estado del pedido"])
+    CU19(["CU-19 Anonimizar datos"])
+  end
+  A --- CU13 & CU14 & CU15 & CU20
+  CU15 -. extiende .-> CU16 & CU17 & CU18 & CU19
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 2. Casos de uso del administrador: acceso y pedidos.</p></div>
+
+  <div class="diagrama"><pre class="mermaid">
+flowchart LR
+  A(["👤 Administrador"])
+  subgraph P["Panel: catálogo y configuración"]
+    direction TB
+    CU21(["CU-21 Gestionar productos y fotos"])
+    CU22(["CU-22 Revisar productos importados"])
+    CU23(["CU-23 Importar planillas"])
+    CU24(["CU-24 Gestionar autos y medidas"])
+    CU25(["CU-25 Configurar tienda y zonas"])
+    CU26(["CU-26 Atender canje y arrepentimientos"])
+  end
+  A --- CU21 & CU22 & CU23 & CU24 & CU25 & CU26
+  CU23 -. genera .-> CU22
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 3. Casos de uso del administrador: catálogo y configuración.</p></div>
+
+  <div class="diagrama"><pre class="mermaid">
+flowchart LR
+  MP(["Mercado Pago"])
+  W(["⏱ Worker"])
+  subgraph S["Procesos del sistema"]
+    direction TB
+    CU27(["CU-27 Notificar un pago"])
+    CU28(["CU-28 Vencer pedidos sin pagar"])
+    CU29(["CU-29 Enviar mails"])
+    CU30(["CU-30 Revalidar páginas"])
+  end
+  MP --- CU27
+  CU28 & CU29 & CU30 --- W
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 4. Casos de uso de Mercado Pago y de los procesos automáticos.</p></div>
+</section>
+
+<section>
+  <h3>Catálogo de casos de uso</h3>
+  <table>
+    <tr><th style="width:9%">Código</th><th style="width:27%">Caso de uso</th><th style="width:14%">Actor</th><th>Resumen</th><th style="width:14%">Requisitos</th></tr>
+    <tr><td>CU-01</td><td>Buscar batería por auto</td><td>Comprador</td><td>Marca → modelo → año; muestra las baterías compatibles con stock, económicas primero. Recuerda el último auto.</td><td>FR-009 a FR-014</td></tr>
+    <tr><td>CU-02</td><td>Explorar catálogo</td><td>Comprador</td><td>Filtros combinables por marca, medida y gama; el filtro queda en la URL y se puede compartir.</td><td>FR-005, FR-007</td></tr>
+    <tr><td>CU-03</td><td>Ver ficha</td><td>Comprador</td><td>Fotos, especificaciones, precio de lista y por transferencia, servicio incluido y autos compatibles.</td><td>FR-006, FR-008</td></tr>
+    <tr><td>CU-04</td><td>Armar el carrito</td><td>Comprador</td><td>Varias baterías; se conserva en el dispositivo.</td><td>FR-018</td></tr>
+    <tr><td>CU-05</td><td>Confirmar compra</td><td>Comprador</td><td>Una página: datos, entrega (colocación con zona o retiro) y pago. Crea el pedido y reserva stock en una transacción.</td><td>FR-015 a FR-021</td></tr>
+    <tr><td>CU-06</td><td>Pagar con Mercado Pago</td><td>Comprador, MP</td><td>Checkout Pro con medios instantáneos; la reserva vence a los 30 minutos.</td><td>FR-024 a FR-026, FR-034b</td></tr>
+    <tr><td>CU-07</td><td>Pagar por transferencia</td><td>Comprador</td><td>Muestra CBU, alias, monto con descuento y plazo de 48 h.</td><td>FR-027, FR-028</td></tr>
+    <tr><td>CU-08</td><td>Efectivo al retirar</td><td>Comprador</td><td>Solo con retiro en el local; el pedido queda "a pagar en el local".</td><td>FR-029</td></tr>
+    <tr><td>CU-09</td><td>Seguir el pedido</td><td>Comprador</td><td>Enlace privado con token: número, ítems, entrega, estado y datos bancarios. Nunca el DNI.</td><td>FR-021</td></tr>
+    <tr><td>CU-10</td><td>Reintentar pago</td><td>Comprador</td><td>Nueva preferencia de Mercado Pago si el pedido sigue pendiente.</td><td>FR-026</td></tr>
+    <tr><td>CU-11</td><td>Consultar canje</td><td>Comprador</td><td>Guarda la consulta y abre WhatsApp con el mensaje armado.</td><td>FR-004</td></tr>
+    <tr><td>CU-12</td><td>Pedir arrepentimiento</td><td>Comprador</td><td>Formulario con número de pedido; devuelve un código y avisa al administrador.</td><td>FR-058</td></tr>
+    <tr><td>CU-13</td><td>Ingresar al panel</td><td>Administrador</td><td>Enlace mágico al mail autorizado: 15 min, un solo uso; sesión de 30 días.</td><td>FR-041, FR-042</td></tr>
+    <tr><td>CU-14</td><td>Ver lo pendiente</td><td>Administrador</td><td>Pedidos por atender, efectivos que esperan más de 48 h, alertas, productos a revisar y consultas.</td><td>FR-043, FR-070</td></tr>
+    <tr><td>CU-15</td><td>Gestionar pedidos</td><td>Administrador</td><td>Lista con filtros por estado; detalle con DNI, mapa y WhatsApp.</td><td>FR-043</td></tr>
+    <tr><td>CU-16</td><td>Confirmar transferencia</td><td>Administrador</td><td>Pasa a pagado y registra quién y cuándo.</td><td>FR-028, FR-044</td></tr>
+    <tr><td>CU-17</td><td>Registrar efectivo</td><td>Administrador</td><td>"A pagar en el local" → entregado, con el pago registrado.</td><td>FR-029, FR-044</td></tr>
+    <tr><td>CU-18</td><td>Cambiar estado</td><td>Administrador</td><td>Solo transiciones válidas; los intentos inválidos quedan auditados.</td><td>FR-032, FR-033</td></tr>
+    <tr><td>CU-19</td><td>Anonimizar datos</td><td>Administrador</td><td>Reemplaza nombre, DNI, teléfono, mail y dirección; conserva importes y productos.</td><td>FR-061</td></tr>
+    <tr><td>CU-20</td><td>Resolver alertas</td><td>Administrador</td><td>Pagos con monto distinto, sobre pedidos cancelados o tardíos.</td><td>FR-031</td></tr>
+    <tr><td>CU-21</td><td>Gestionar productos</td><td>Administrador</td><td>Alta, edición rápida de precio y stock, pausa, fotos (subir, ordenar, borrar), borrar o archivar.</td><td>FR-045, FR-071</td></tr>
+    <tr><td>CU-22</td><td>Revisar importados</td><td>Administrador</td><td>Habilitar o eliminar en lote los productos "a revisar".</td><td>FR-070</td></tr>
+    <tr><td>CU-23</td><td>Importar planillas</td><td>Administrador</td><td>CSV de productos (upsert por SKU) o de compatibilidades, con informe por fila.</td><td>FR-046</td></tr>
+    <tr><td>CU-24</td><td>Gestionar autos</td><td>Administrador</td><td>Alta, edición y baja de autos y sus medidas; búsqueda y filtro por marca.</td><td>FR-048</td></tr>
+    <tr><td>CU-25</td><td>Configurar tienda</td><td>Administrador</td><td>Descuento, datos bancarios, horarios, WhatsApp, comercio, reseñas y zonas.</td><td>FR-047, FR-017</td></tr>
+    <tr><td>CU-26</td><td>Atender consultas</td><td>Administrador</td><td>Consultas de canje (con descarga CSV) y solicitudes de arrepentimiento.</td><td>FR-004b, FR-058</td></tr>
+    <tr><td>CU-27</td><td>Notificar un pago</td><td>Mercado Pago</td><td>Webhook firmado; se verifica consultando el pago y se procesa una sola vez.</td><td>FR-024, FR-025, FR-031</td></tr>
+    <tr><td>CU-28</td><td>Vencer pedidos</td><td>Worker</td><td>Cada minuto cancela los pedidos vencidos y devuelve el stock una sola vez.</td><td>FR-034, FR-035</td></tr>
+    <tr><td>CU-29</td><td>Enviar mails</td><td>Worker</td><td>Toma el outbox y envía con reintentos exponenciales.</td><td>FR-036 a FR-040</td></tr>
+    <tr><td>CU-30</td><td>Revalidar páginas</td><td>Worker</td><td>Avisa al frontend qué páginas regenerar tras un cambio del panel.</td><td>US5-03</td></tr>
+  </table>
+</section>
+
+<!-- ───────────────────────────── 3 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 3</p>
+  <h2>Especificación de los casos de uso principales</h2>
+
+  <div class="cu">
+    <div class="cu-cab"><b>CU-01 · Buscar batería por auto</b><span>Comprador · Prioridad P1</span></div>
+    <div class="cu-cuerpo"><table>
+      <tr><td>Precondición</td><td>Hay vehículos con medidas cargadas y productos activos.</td></tr>
+      <tr><td>Flujo principal</td><td>1. El comprador elige la marca; el sistema lista solo marcas con datos.<br>2. Elige el modelo de esa marca.<br>3. Elige el año; si el modelo no distingue años, el paso se saltea.<br>4. El sistema resuelve las medidas de los vehículos que cubren ese año, más los que valen para todos los años.<br>5. Muestra los productos activos con stock de esas medidas, agrupados por gama, económicas primero.<br>6. Guarda el auto en el dispositivo para la próxima visita.</td></tr>
+      <tr><td>Alternativas</td><td>4a. El auto no está cargado: "Todavía no tenemos cargado tu auto" y WhatsApp con marca, modelo y año.<br>5a. No hay stock de la medida: "Sin stock para tu auto" y WhatsApp.</td></tr>
+      <tr><td>Endpoints</td><td><code>GET /vehiculos/marcas</code>, <code>/modelos</code>, <code>/anios</code>, <code>/compatibles</code></td></tr>
+      <tr><td>Pruebas</td><td>US1-01 a US1-05, US1-10</td></tr>
+    </table></div>
+  </div>
+
+  <div class="cu">
+    <div class="cu-cab"><b>CU-05 · Confirmar compra</b><span>Comprador · Prioridad P1</span></div>
+    <div class="cu-cuerpo"><table>
+      <tr><td>Precondición</td><td>Carrito con al menos un producto activo con stock.</td></tr>
+      <tr><td>Flujo principal</td><td>1. El comprador completa nombre, DNI, teléfono y mail (cada campo explica para qué se usa).<br>2. Elige colocación (con zona y dirección) o retiro.<br>3. Elige el medio de pago; el sistema cotiza en el servidor (<code>POST /checkout/cotizar</code>) y muestra subtotal, descuento, costo de zona y total.<br>4. Confirma (<code>POST /pedidos</code>). En una transacción: descuenta stock con un <code>UPDATE</code> condicional, crea el pedido con número correlativo, guarda el comprador con el DNI cifrado, registra el evento y encola los mails.<br>5. Devuelve número, enlace de seguimiento e instrucciones de pago según el medio.</td></tr>
+      <tr><td>Alternativas</td><td>1a. DNI con letras: "El DNI tiene solo números, sin puntos".<br>2a. Colocación sin dirección: "Falta la dirección para ir a colocarla".<br>3a. Con colocación, "Efectivo al retirar" no se ofrece.<br>4a. Otro comprador se llevó la última unidad: 409 "Se agotó mientras comprabas"; el stock nunca queda negativo.<br>4b. Precio alterado en el navegador: se ignora; vale el precio del servidor.</td></tr>
+      <tr><td>Reglas</td><td>Importes en centavos enteros, siempre calculados en el servidor. Límite de pedidos sin pagar por comprador. Rate limit por IP.</td></tr>
+      <tr><td>Pruebas</td><td>US2-01 a US2-06, US2-15</td></tr>
+    </table></div>
+  </div>
+
+  <div class="cu">
+    <div class="cu-cab"><b>CU-06 / CU-27 · Pagar con Mercado Pago y notificación</b><span>Comprador y Mercado Pago</span></div>
+    <div class="cu-cuerpo"><table>
+      <tr><td>Flujo principal</td><td>1. Al crear el pedido se genera una preferencia de Checkout Pro con <code>external_reference = pedido.id</code>, vencimiento de 30 min y solo medios instantáneos.<br>2. El comprador paga en Mercado Pago y vuelve a la tienda.<br>3. Mercado Pago llama al webhook. El sistema valida la firma <code>x-signature</code> (HMAC-SHA256) y consulta el pago a la API de Mercado Pago.<br>4. Si está aprobado y el monto coincide, registra el pago (único por <code>medio, id_externo</code>) y pasa el pedido a pagado con <code>cambiarEstado</code>.</td></tr>
+      <tr><td>Alternativas</td><td>2a. Vuelve con "aprobado" en la URL pero sin aviso verificado: "Estamos confirmando tu pago".<br>3a. Firma inválida: se rechaza sin cambios.<br>3b. Aviso repetido: se procesa una sola vez y sale un solo mail.<br>4a. Monto distinto o pedido cancelado: no se marca pagado; se crea una alerta.<br>4b. Pago rechazado: el pedido sigue pendiente y se puede reintentar (CU-10).</td></tr>
+      <tr><td>Pruebas</td><td>US2-07 a US2-12</td></tr>
+    </table></div>
+  </div>
+
+  <div class="cu">
+    <div class="cu-cab"><b>CU-16 · Confirmar transferencia</b><span>Administrador · Prioridad P2</span></div>
+    <div class="cu-cuerpo"><table>
+      <tr><td>Precondición</td><td>Sesión válida en el panel; pedido por transferencia en "pendiente de pago".</td></tr>
+      <tr><td>Flujo principal</td><td>1. Mateo ve la transferencia acreditada en su banco.<br>2. Abre el pedido y toca "Confirmar transferencia"; acepta la confirmación.<br>3. El sistema registra un pago manual con monto y usuario, pasa el pedido a pagado y encola el mail al comprador.</td></tr>
+      <tr><td>Alternativas</td><td>3a. El pedido ya venció o cambió de estado: 409 y se informa; no hay reactivación automática.</td></tr>
+      <tr><td>Pruebas</td><td>US3-03, US3-06, US3-07</td></tr>
+    </table></div>
+  </div>
+
+  <div class="cu">
+    <div class="cu-cab"><b>CU-13 · Ingresar al panel</b><span>Administrador</span></div>
+    <div class="cu-cuerpo"><table>
+      <tr><td>Flujo principal</td><td>1. Escribe su mail en <code>/panel/ingresar</code>.<br>2. El sistema responde siempre lo mismo (202) y, solo si el mail está autorizado, envía un enlace con un token aleatorio de 32 bytes; guarda su hash SHA-256 con vencimiento de 15 min.<br>3. Al abrir el enlace se marca como usado, se crea una sesión opaca en la base y una cookie <code>httpOnly</code>, <code>Secure</code>, <code>SameSite=Lax</code> de 30 días.</td></tr>
+      <tr><td>Alternativas</td><td>2a. Mail no autorizado: no se envía nada, misma respuesta.<br>3a. Enlace vencido o usado: vuelve al ingreso con un mensaje claro.<br>Sin sesión, cualquier pantalla del panel redirige al ingreso.</td></tr>
+      <tr><td>Pruebas</td><td>US3-01, US3-02</td></tr>
+    </table></div>
+  </div>
+
+  <div class="cu">
+    <div class="cu-cab"><b>CU-23 · Importar planillas</b><span>Administrador · Prioridad P2</span></div>
+    <div class="cu-cuerpo"><table>
+      <tr><td>Flujo principal</td><td>1. Sube un CSV de productos o de compatibilidades.<br>2. El sistema lo valida fila por fila con Zod.<br>3. Productos: upsert por SKU (los nuevos entran "a revisar"). Compatibilidades: upsert por marca, modelo, años y motor.<br>4. Devuelve un informe: filas totales, correctas, con error, creadas y actualizadas, y el motivo de cada error con su número de fila.</td></tr>
+      <tr><td>Alternativas</td><td>2a. Medida inválida o campo faltante: la fila se informa y el resto se carga.</td></tr>
+      <tr><td>Pruebas</td><td>US5-01, US5-02, US5-07</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ───────────────────────────── 4 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 4</p>
+  <h2>Arquitectura general</h2>
+  <p>El sistema es una aplicación web con tres procesos propios (frontend, API y worker) y una base PostgreSQL, todos en contenedores Docker en un VPS Linux. Nginx termina HTTPS y enruta: <code>/api</code> va al backend y el resto al frontend. El navegador nunca habla con la base ni tiene claves: todo pasa por la API.</p>
+  <div class="diagrama"><pre class="mermaid">
+flowchart TB
+  U["🌐 Navegador<br/>comprador o admin"]
+  UR["UptimeRobot<br/>cada 5 min"]
+  subgraph VPS["VPS Linux · Docker Compose (producción y staging)"]
+    N["Nginx · HTTPS"]
+    FE["frontend<br/>Next.js 16"]
+    BE["backend<br/>API Fastify"]
+    WK["worker<br/>mails, vencimientos,<br/>revalidaciones"]
+    DB[("PostgreSQL 17")]
+    CR["cron · backup.sh"]
+  end
+  subgraph EXT["Servicios externos"]
+    MP["Mercado Pago"]
+    RS["Resend · mails"]
+    R2["Cloudflare R2<br/>fotos y copias"]
+    SE["Sentry · errores"]
+  end
+  U -->|HTTPS| N
+  UR -->|"/api/v1/salud"| N
+  N -->|"/"| FE
+  N -->|"/api/v1"| BE
+  FE -->|"red interna"| BE
+  WK -->|"revalidar"| FE
+  BE --> DB
+  WK --> DB
+  CR --> DB
+  BE <-->|"cobros y webhook"| MP
+  WK --> RS
+  BE --> R2
+  CR -->|"pg_dump"| R2
+  WK -.-> SE
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 5. Vista de despliegue y servicios externos.</p></div>
+
+  <h3>Decisiones de arquitectura</h3>
+  <table>
+    <tr><th style="width:26%">Decisión</th><th>Motivo</th><th style="width:28%">Alternativa descartada</th></tr>
+    <tr><td>API propia separada del frontend</td><td>El frontend no accede a la base ni guarda secretos; los contratos Zod se comparten en <code>shared/</code>.</td><td>Rutas API de Next.js (mezcla procesos y responsabilidades)</td></tr>
+    <tr><td>Monolito modular</td><td>Un desarrollador, 30 días, un VPS: módulos con límites claros sin el costo de microservicios.</td><td>Microservicios</td></tr>
+    <tr><td>Fastify 5</td><td>Liviano en memoria, validación por esquema y OpenAPI desde Zod.</td><td>NestJS (más pesado), Express (sin esquemas)</td></tr>
+    <tr><td>PostgreSQL + Drizzle</td><td>Transacciones reales, <code>UPDATE</code> condicional para stock, <code>FOR UPDATE SKIP LOCKED</code> para el worker, SQL explícito.</td><td>Prisma (motor aparte), base gestionada (otra cuenta)</td></tr>
+    <tr><td>Outbox transaccional + worker</td><td>Un mail que falla no frena el pedido y sale una sola vez, sin sumar Redis ni colas.</td><td>BullMQ (Redis), cron del sistema</td></tr>
+    <tr><td>Enlace mágico propio</td><td>Sin contraseñas; sesiones revocables en la base; preparado para más usuarios.</td><td>Auth.js (atado a Next.js), JWT sin estado</td></tr>
+    <tr><td>Renderizado en servidor + ISR por etiquetas</td><td>SEO y buscadores con IA necesitan HTML completo; los cambios del panel se ven en menos de un minuto.</td><td>SPA renderizada en el navegador</td></tr>
+  </table>
+</section>
+
+<!-- ───────────────────────────── 5 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 5</p>
+  <h2>Organización del código</h2>
+  <p>Monorepo con pnpm workspaces. Un solo CI revisa y prueba todo; los contratos se comparten sin publicar paquetes.</p>
+<pre><code>negocioBaterias/
+├── backend/                 API REST (Fastify) y worker
+│   ├── src/
+│   │   ├── modules/         12 módulos: catalogo, compatibilidad, importacion, pedidos, pagos,
+│   │   │                    clientes, entregas, notificaciones, configuracion, legales, canje, auth
+│   │   │   └── &lt;modulo&gt;/    domain/ · application/ · infrastructure/ · http/
+│   │   ├── adapters/        Mercado Pago, mailer (Resend o SMTP), almacenamiento (R2 o disco), revalidador
+│   │   ├── platform/        config (Zod), db (Drizzle), logger con redact, cifrado, Sentry, migraciones, seed
+│   │   ├── shared-kernel/   Dinero, errores, reloj, puertos, privacidad, WhatsApp, slug
+│   │   ├── http/            servidor y plugins (sesión, errores, rate limit, swagger)
+│   │   ├── worker/          outbox, vencimientos y revalidaciones
+│   │   ├── composition-root.ts   arma los servicios con sus adaptadores
+│   │   └── main.ts
+│   ├── db/migrations/       migraciones SQL generadas con drizzle-kit
+│   └── tests/               unit · integration (Postgres real) · contract (HTTP)
+├── shared/src/contratos/    esquemas Zod de requests y responses
+├── frontend/                Next.js 16
+│   └── src/app/             (tienda)/ · panel/ · api/revalidate · sitemap · robots · llms.txt
+├── tools/scraper/           carga inicial del catálogo desde fuentes públicas (genera CSV)
+├── infra/                   Docker Compose, Nginx, scripts de deploy, backup y restore
+├── .github/workflows/       ci.yml · deploy-staging.yml · deploy-prod.yml
+└── specs/001-tienda-online/ spec, plan, research, data-model, contratos, tareas y checklists</code></pre>
+
+  <h3>Stack tecnológico</h3>
+  <table>
+    <tr><th style="width:24%">Capa</th><th>Tecnología</th></tr>
+    <tr><td>Lenguaje</td><td>TypeScript 5 estricto sobre Node.js 24 LTS; monorepo con pnpm workspaces</td></tr>
+    <tr><td>Backend</td><td>Fastify 5, Zod 4 (validación y OpenAPI), Drizzle ORM y drizzle-kit, pino, Sentry</td></tr>
+    <tr><td>Base de datos</td><td>PostgreSQL 17</td></tr>
+    <tr><td>Frontend</td><td>Next.js 16 (App Router, renderizado en servidor e ISR), React, Tailwind CSS 4</td></tr>
+    <tr><td>Pagos</td><td>Mercado Pago Checkout Pro (SDK oficial v2) con webhook firmado</td></tr>
+    <tr><td>Mails</td><td>Outbox propio + worker, React Email, Resend (producción) y Mailpit (desarrollo)</td></tr>
+    <tr><td>Pruebas</td><td>Vitest (unitarias, integración contra Postgres real y contrato HTTP); Playwright y Lighthouse</td></tr>
+    <tr><td>Operación</td><td>Docker y Docker Compose, Nginx, GitHub Actions, UptimeRobot; Cloudflare R2 para fotos y copias</td></tr>
+  </table>
+
+  <h3>Tamaño por parte</h3>
+  <table>
+    <tr><th>Parte</th><th style="width:16%">Archivos</th><th style="width:20%">Líneas</th></tr>
+    <tr><td>Backend: módulos</td><td>—</td><td>≈ 6.400</td></tr>
+    <tr><td>Backend: adapters, platform, shared-kernel, http, worker</td><td>28</td><td>≈ 1.600</td></tr>
+    <tr><td>Contratos compartidos (<code>shared/</code>)</td><td>10</td><td>≈ 830</td></tr>
+    <tr><td>Frontend</td><td>67</td><td>≈ 7.400</td></tr>
+    <tr><td>Scraper</td><td>10</td><td>≈ 1.400</td></tr>
+    <tr><td>Pruebas del backend</td><td>40</td><td>≈ 5.200</td></tr>
+  </table>
+</section>
+
+<!-- ───────────────────────────── 6 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 6</p>
+  <h2>Backend: módulos y capas</h2>
+  <p>Cada módulo tiene cuatro capas. Las dependencias apuntan hacia el dominio: el dominio no conoce la base ni el framework; los casos de uso dependen de <b>puertos</b> (interfaces) y los <b>adaptadores</b> concretos se conectan en <code>composition-root.ts</code>. En las pruebas se reemplazan por versiones falsas.</p>
+  <div class="diagrama"><pre class="mermaid">
+flowchart TB
+  H["http/<br/>rutas Fastify delgadas<br/>validan con Zod"]
+  A["application/<br/>casos de uso y servicios"]
+  D["domain/<br/>reglas puras: precios, estados, medios de pago"]
+  I["infrastructure/<br/>esquema Drizzle y consultas"]
+  P["shared-kernel/puertos<br/>Mailer · PasarelaPago · Almacenamiento · Revalidador · Reloj"]
+  AD["adapters/<br/>MercadoPago · Resend/SMTP · R2/disco · Frontend"]
+  CR["composition-root.ts"]
+  H --> A
+  A --> D
+  A --> I
+  A --> P
+  AD -. implementa .-> P
+  CR --> AD
+  CR --> A
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 6. Capas de un módulo y la inversión de dependencias.</p></div>
+
+  <h3>Módulos</h3>
+  <table>
+    <tr><th style="width:17%">Módulo</th><th>Responsabilidad</th><th style="width:30%">Piezas principales</th><th style="width:9%">Líneas</th></tr>
+    <tr><td>catalogo</td><td>Marcas, medidas, productos, fotos, revisión de importados, stock</td><td><code>ServicioStock</code>, revisión, fotos con sharp</td><td>1.217</td></tr>
+    <tr><td>compatibilidad</td><td>Vehículos y sus medidas; buscador y páginas de auto</td><td>buscador, <code>ServicioAdminVehiculos</code></td><td>777</td></tr>
+    <tr><td>importacion</td><td>Planillas CSV con informe por fila</td><td>pipeline parse → validar → upsert</td><td>610</td></tr>
+    <tr><td>pedidos</td><td>Cotizar, crear, seguir, estados y vencimientos</td><td><code>calcularImportes</code>, máquina de estados, <code>cambiarEstado</code></td><td>1.213</td></tr>
+    <tr><td>pagos</td><td>Mercado Pago, pagos manuales, alertas</td><td>Strategy de medios de pago, <code>procesar-pago</code>, webhook</td><td>449</td></tr>
+    <tr><td>clientes</td><td>Comprador del pedido, DNI cifrado, anonimización</td><td><code>ServicioCompradores</code></td><td>165</td></tr>
+    <tr><td>entregas</td><td>Zonas de colocación y su costo extra</td><td><code>ServicioZonas</code></td><td>109</td></tr>
+    <tr><td>notificaciones</td><td>Outbox, mapa evento → mail, plantillas React Email</td><td><code>Outbox</code>, despachador, 13 plantillas</td><td>884</td></tr>
+    <tr><td>configuracion</td><td>Descuento, banco, horarios, WhatsApp, comercio, reseñas</td><td>fila única con <code>CHECK (id = 1)</code></td><td>289</td></tr>
+    <tr><td>legales</td><td>Arrepentimiento con código legible</td><td>formulario y aviso al admin</td><td>211</td></tr>
+    <tr><td>canje</td><td>Consultas de canje de la batería usada</td><td>alta, lista y CSV</td><td>264</td></tr>
+    <tr><td>auth</td><td>Enlace mágico, sesiones y usuarios del panel</td><td>tokens hasheados, cookie opaca</td><td>225</td></tr>
+  </table>
+
+  <h3>Patrones de diseño aplicados</h3>
+  <div class="grilla">
+    <div class="caja"><h4>Puertos y adaptadores</h4><p>Mercado Pago, mails, fotos y revalidación detrás de interfaces chicas; reales en producción, falsos en pruebas.</p></div>
+    <div class="caja"><h4>Máquina de estados centralizada</h4><p>Una tabla de transiciones pura y una única puerta, <code>cambiarEstado</code>, que bloquea la fila y aplica los efectos.</p></div>
+    <div class="caja"><h4>Unidad de trabajo</h4><p>Crear un pedido, reservar stock, guardar el comprador y encolar mails ocurre en una sola transacción.</p></div>
+    <div class="caja"><h4>Value object <code>Dinero</code></h4><p>Importes en centavos enteros (<code>bigint</code>) con operaciones seguras; nunca números flotantes.</p></div>
+    <div class="caja"><h4>Strategy por medio de pago</h4><p>Cada medio define si aplica descuento, si está disponible para la entrega y su vencimiento.</p></div>
+    <div class="caja"><h4>Outbox transaccional</h4><p>Los mails se escriben en la misma transacción del cambio; el worker los envía con reintentos.</p></div>
+    <div class="caja"><h4>Idempotencia por restricciones</h4><p><code>UNIQUE</code> en pagos externos y en el outbox: un aviso repetido no cambia nada dos veces.</p></div>
+    <div class="caja"><h4>Capa anticorrupción</h4><p>El scraper solo genera planillas; nunca escribe en la base. Si una fuente cambia, se arregla el scraper.</p></div>
+  </div>
+
+  <h3>Ejemplo: la máquina de estados es código puro</h3>
+<pre><code>const TRANSICIONES: Record&lt;EstadoPedido, EstadoPedido[]&gt; = {
+  pendiente_pago: ['pagado', 'cancelado'],
+  a_pagar_en_local: ['entregado', 'cancelado'],
+  pagado: ['en_camino', 'listo_para_retirar', 'cancelado'],
+  en_camino: ['entregado'],
+  listo_para_retirar: ['entregado'],
+  entregado: [],
+  cancelado: [],
+};
+
+export function transicionesPermitidas(estado: EstadoPedido, entrega: Entrega) {
+  return TRANSICIONES[estado].filter((a) =&gt; {
+    if (a === 'en_camino') return entrega === 'colocacion';
+    if (a === 'listo_para_retirar') return entrega === 'retiro';
+    return true;
+  });
+}</code></pre>
+
+  <h3>Ejemplo: importes calculados en el servidor</h3>
+<pre><code>export function calcularImportes({ lineas, descuentoPct, aplicaDescuento, costoZona }) {
+  let subtotal = Dinero.cero();
+  let descuento = Dinero.cero();
+  for (const l of lineas) {
+    subtotal = subtotal.sumar(l.precioUnitario.por(l.cantidad));
+    if (aplicaDescuento)
+      descuento = descuento.sumar(l.precioUnitario.porcentaje(descuentoPct).por(l.cantidad));
+  }
+  return { subtotal, descuento, costoZona, total: subtotal.restar(descuento).sumar(costoZona) };
+}</code></pre>
+  <p>El descuento se calcula por unidad, igual que el "precio por transferencia" de la ficha, para que lo que el comprador vio sea exactamente lo que paga.</p>
+</section>
+
+<!-- ───────────────────────────── 7 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 7</p>
+  <h2>Modelo de datos</h2>
+  <p>PostgreSQL 17. Claves <code>uuid</code> v7 (ordenables), fechas <code>timestamptz</code> en UTC e importes en centavos enteros. Cada tabla pertenece a un módulo y otro módulo solo la usa a través del servicio de su dueño.</p>
+  <div class="diagrama"><pre class="mermaid">
+erDiagram
+  MARCAS ||--o{ PRODUCTOS : tiene
+  MEDIDAS ||--o{ PRODUCTOS : mide
+  PRODUCTOS ||--o{ PRODUCTO_FOTOS : muestra
+  VEHICULOS ||--o{ VEHICULO_MEDIDAS : lleva
+  MEDIDAS ||--o{ VEHICULO_MEDIDAS : compatible
+  PRODUCTOS {
+    uuid id PK
+    text sku UK
+    text slug UK
+    text medida FK
+    enum gama
+    bigint precio_lista
+    int stock "CHECK >= 0"
+    enum estado "a_revisar activo pausado archivado"
+  }
+  VEHICULOS {
+    uuid id PK
+    text marca
+    text modelo
+    smallint anio_desde
+    smallint anio_hasta
+    text motor
+  }
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 7. Catálogo y compatibilidad: qué medida lleva cada auto y qué productos hay de cada medida.</p></div>
+
+  <div class="diagrama"><pre class="mermaid">
+erDiagram
+  PEDIDOS ||--|{ PEDIDO_ITEMS : contiene
+  PRODUCTOS ||--o{ PEDIDO_ITEMS : vendido
+  PEDIDOS ||--|| PEDIDO_COMPRADORES : comprador
+  PEDIDOS ||--o{ PEDIDO_EVENTOS : audita
+  ZONAS_COLOCACION ||--o{ PEDIDOS : zona
+  PEDIDOS {
+    uuid id PK
+    int numero UK
+    text token_seguimiento_hash
+    enum estado
+    enum entrega
+    enum medio_pago
+    bigint total
+    timestamptz vence_en
+  }
+  PEDIDO_COMPRADORES {
+    uuid pedido_id PK
+    text nombre
+    bytea dni_cifrado "AES-256-GCM"
+    text email
+    timestamptz anonimizado_en
+  }
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 8. El pedido, sus ítems, su comprador y su auditoría.</p></div>
+
+  <div class="diagrama" style="max-width:120mm;margin:4pt auto 6pt"><pre class="mermaid">
+erDiagram
+  PEDIDOS ||--o{ PAGOS : cobra
+  PEDIDOS ||--o{ ALERTAS : alerta
+  PEDIDOS ||--o{ OUTBOX_MENSAJES : notifica
+  PEDIDOS |o--o{ ARREPENTIMIENTOS : solicita
+  </pre></div>
+  <div class="diagrama" style="max-width:120mm;margin:4pt auto 6pt"><pre class="mermaid">
+erDiagram
+  USUARIOS_PANEL ||--o{ SESIONES : abre
+  USUARIOS_PANEL ||--o{ ENLACES_INGRESO : pide
+  USUARIOS_PANEL ||--o{ PAGOS : confirma
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 9. Pagos y avisos del pedido, y acceso al panel.</p></div>
+</section>
+
+<section>
+  <h3>Tablas por módulo</h3>
+  <table>
+    <tr><th style="width:18%">Módulo</th><th style="width:30%">Tablas</th><th>Reglas clave</th></tr>
+    <tr><td>catalogo</td><td><code>marcas</code>, <code>medidas</code>, <code>productos</code>, <code>producto_fotos</code></td><td>Visible solo si <code>activo</code>; comprable si además hay stock. Activar exige precio y foto. Un producto con pedidos se archiva, no se borra.</td></tr>
+    <tr><td>compatibilidad</td><td><code>vehiculos</code>, <code>vehiculo_medidas</code></td><td>Años opcionales (null = todos). Clave única por marca, modelo, años y motor.</td></tr>
+    <tr><td>pedidos</td><td><code>pedidos</code>, <code>pedido_items</code>, <code>pedido_eventos</code></td><td>Número correlativo desde 1001. Ítems con nombre y precio del momento. Cada cambio de estado auditado, incluidos los rechazados.</td></tr>
+    <tr><td>clientes</td><td><code>pedido_compradores</code></td><td>DNI cifrado con versión de clave para rotarla. Anonimización con fecha.</td></tr>
+    <tr><td>pagos</td><td><code>pagos</code>, <code>alertas</code></td><td>Único por <code>(medio, id_externo)</code>. Los pagos manuales exigen usuario.</td></tr>
+    <tr><td>entregas</td><td><code>zonas_colocacion</code></td><td>Costo extra por zona.</td></tr>
+    <tr><td>notificaciones</td><td><code>outbox_mensajes</code></td><td>Único por <code>(evento, pedido, destinatario)</code>; hasta 8 intentos con espera exponencial; sin DNI.</td></tr>
+    <tr><td>configuracion</td><td><code>configuracion</code></td><td>Fila única. Descuento 0–50 %, vencimientos configurables.</td></tr>
+    <tr><td>legales · canje</td><td><code>arrepentimientos</code>, <code>consultas_canje</code></td><td>Código legible (<code>ARR-7K2Q</code>). Consultas pendientes o atendidas.</td></tr>
+    <tr><td>auth</td><td><code>usuarios_panel</code>, <code>enlaces_ingreso</code>, <code>sesiones</code></td><td>Solo se guardan hashes SHA-256 de tokens; enlace de 15 min y un uso; sesión de 30 días revocable.</td></tr>
+    <tr><td>importacion</td><td><code>importaciones</code></td><td>Totales y errores por fila en <code>jsonb</code>.</td></tr>
+  </table>
+  <div class="nota"><b>Stock sin sobreventa.</b> Se descuenta al crear el pedido con <code>UPDATE productos SET stock = stock - $n WHERE id = $id AND estado = 'activo' AND stock &gt;= $n</code>. Si no actualiza ninguna fila, el pedido no se crea. Se devuelve solo en la transición a <code>cancelado</code>, que ocurre una única vez. La prueba US2-03 lanza dos compras simultáneas de la última unidad sobre una base real.</div>
+</section>
+
+<!-- ───────────────────────────── 8 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 8</p>
+  <h2>Ciclo de vida del pedido</h2>
+  <div class="diagrama"><pre class="mermaid">
+stateDiagram-v2
+  [*] --> pendiente_pago : Mercado Pago o transferencia
+  [*] --> a_pagar_en_local : efectivo (solo retiro)
+  pendiente_pago --> pagado : MP aprobado y monto ok / admin confirma
+  pendiente_pago --> cancelado : vence 30 min MP o 48 h transf. / admin
+  a_pagar_en_local --> entregado : admin registra efectivo
+  a_pagar_en_local --> cancelado : admin
+  pagado --> en_camino : colocación
+  pagado --> listo_para_retirar : retiro
+  pagado --> cancelado : admin
+  en_camino --> entregado
+  listo_para_retirar --> entregado
+  entregado --> [*]
+  cancelado --> [*]
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 10. Máquina de estados del pedido.</p></div>
+  <h3>La función <code>cambiarEstado</code></h3>
+  <ol>
+    <li>Abre una transacción y bloquea la fila del pedido (<code>SELECT … FOR UPDATE</code>).</li>
+    <li>Valida la transición contra la tabla y la forma de entrega. Si no es válida, registra el intento con <code>rechazado = true</code> y responde 409.</li>
+    <li>Aplica los efectos: devolver stock al cancelar, registrar el pago manual.</li>
+    <li>Registra el evento (estado anterior, nuevo, actor y motivo).</li>
+    <li>Encola los mails del comprador y del administrador según el mapa de eventos.</li>
+  </ol>
+  <h3>Mails por evento</h3>
+  <table>
+    <tr><th style="width:32%">Evento</th><th>Comprador</th><th style="width:32%">Administrador</th></tr>
+    <tr><td>Pedido creado</td><td>"Recibimos tu pedido" (con datos bancarios si es transferencia)</td><td>Aviso de pedido nuevo con enlace al panel</td></tr>
+    <tr><td>Pagado</td><td>"Pago confirmado"</td><td>Aviso de pago</td></tr>
+    <tr><td>En camino / listo para retirar</td><td>"Vamos en camino" o "Listo para retirar"</td><td>—</td></tr>
+    <tr><td>Entregado</td><td>"Entregado", con enlace a la reseña de Google</td><td>—</td></tr>
+    <tr><td>Cancelado</td><td>"Cancelado"</td><td>—</td></tr>
+    <tr><td>Alerta de pago</td><td>—</td><td>Aviso de alerta</td></tr>
+    <tr><td>Consulta de canje</td><td>—</td><td>Aviso de canje</td></tr>
+    <tr><td>Arrepentimiento</td><td>Código de la solicitud</td><td>Aviso de arrepentimiento</td></tr>
+    <tr><td>Ingreso al panel</td><td>—</td><td>Enlace de ingreso</td></tr>
+  </table>
+</section>
+
+<!-- ───────────────────────────── 9 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 9</p>
+  <h2>Flujos principales</h2>
+  <h3>Compra con Mercado Pago</h3>
+  <div class="diagrama"><pre class="mermaid">
+sequenceDiagram
+  autonumber
+  actor C as Comprador
+  participant F as Frontend
+  participant B as API
+  participant D as PostgreSQL
+  participant M as Mercado Pago
+  participant W as Worker
+  C->>F: Confirma la compra
+  F->>B: POST /pedidos
+  B->>D: BEGIN · UPDATE stock condicional
+  B->>D: INSERT pedido, ítems, comprador (DNI cifrado), evento, outbox · COMMIT
+  B->>M: Crea preferencia (external_reference, vence 30 min)
+  B-->>F: 201 número, seguimiento, initPoint
+  F-->>C: Redirige a Mercado Pago
+  C->>M: Paga
+  M->>B: POST /webhooks/mercadopago (x-signature)
+  B->>B: Verifica firma HMAC-SHA256
+  B->>M: GET /v1/payments/{id}
+  B->>D: INSERT pago (único) · cambiarEstado → pagado · outbox
+  B-->>M: 200
+  W->>D: Toma mensajes (FOR UPDATE SKIP LOCKED)
+  W->>W: Renderiza la plantilla y envía por Resend
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 11. El pedido pasa a pagado solo por el aviso verificado con la API de Mercado Pago, nunca por la URL de retorno.</p></div>
+
+  <h3>Ingreso al panel con enlace mágico</h3>
+  <div class="diagrama"><pre class="mermaid">
+sequenceDiagram
+  actor A as Administrador
+  participant F as Frontend
+  participant B as API
+  participant D as PostgreSQL
+  participant W as Worker
+  A->>F: Escribe su mail
+  F->>B: POST /auth/enlace
+  B->>D: Si está autorizado: guarda hash del token (15 min) y encola el mail
+  B-->>F: 202 (misma respuesta siempre)
+  W-->>A: Mail con el enlace
+  A->>B: GET /auth/verificar?token=…
+  B->>D: Marca el enlace como usado · crea sesión (hash)
+  B-->>A: Cookie httpOnly y redirección a /panel
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 12. Ingreso sin contraseña.</p></div>
+</section>
+
+<section>
+  <h3>Cambio en el panel y revalidación de la tienda</h3>
+  <div class="diagrama"><pre class="mermaid">
+sequenceDiagram
+  actor A as Administrador
+  participant B as API
+  participant D as PostgreSQL
+  participant W as Worker
+  participant F as Frontend (Next.js)
+  A->>B: PATCH /admin/productos/:id (precio)
+  B->>D: UPDATE producto · outbox revalidar [producto:slug, catalogo, buscador]
+  B-->>A: 200
+  W->>D: Toma la revalidación
+  W->>F: POST /api/revalidate (secreto compartido)
+  F->>F: revalidateTag por etiqueta
+  Note over F: La próxima visita ve el precio nuevo (menos de 1 minuto)
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 13. Las páginas públicas se regeneran por etiqueta; además revalidan cada hora por las dudas.</p></div>
+
+  <h3>Vencimiento de pedidos sin pagar</h3>
+  <div class="diagrama" style="max-width:110mm;margin:4pt auto 6pt"><pre class="mermaid">
+flowchart TB
+  T["⏱ Worker · cada minuto"] --> Q["Busca pedidos pendiente_pago con vence_en vencido"]
+  Q --> L{"¿Hay?"}
+  L -- no --> F["Fin"]
+  L -- sí --> CE["cambiarEstado → cancelado<br/>actor worker, motivo vencido"]
+  CE --> S["Devuelve stock (una sola vez)"]
+  S --> M["Encola mail Cancelado"]
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 14. Un pago de Mercado Pago que llega después del vencimiento no reactiva el pedido: genera una alerta para el administrador.</p></div>
+</section>
+
+<!-- ───────────────────────────── 10 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 10</p>
+  <h2>API REST</h2>
+  <p>Base <code>/api/v1</code>, JSON, importes en centavos y fechas ISO 8601 en UTC. Los esquemas Zod de <code>shared/</code> son la fuente de verdad; la documentación OpenAPI se genera sola en <code>/api/v1/docs</code> (desarrollo y staging). Los errores tienen la forma <code>{ error: { codigo, mensaje, campos } }</code>, con mensajes listos para mostrar al comprador.</p>
+  <h3>Público</h3>
+  <table>
+    <tr><th style="width:44%">Ruta</th><th>Qué hace</th></tr>
+    <tr><td><code>GET /catalogo/marcas</code> · <code>/medidas</code></td><td>Listas cerradas</td></tr>
+    <tr><td><code>GET /catalogo/productos</code></td><td>Productos activos con filtros y paginación</td></tr>
+    <tr><td><code>GET /catalogo/productos/:slug</code></td><td>Ficha completa; 404 si no está activo</td></tr>
+    <tr><td><code>GET /vehiculos/marcas</code> · <code>/modelos</code> · <code>/anios</code></td><td>Pasos del buscador</td></tr>
+    <tr><td><code>GET /vehiculos/compatibles</code></td><td>Resultado del buscador con grupos por gama, motivo si no hay resultados y WhatsApp</td></tr>
+    <tr><td><code>GET /vehiculos/:marca/:modelo</code></td><td>Página de auto: medidas por años, productos y preguntas frecuentes</td></tr>
+    <tr><td><code>GET /configuracion/publica</code></td><td>Descuento, WhatsApp, horarios, comercio y zonas</td></tr>
+    <tr><td><code>GET /seo/indice</code></td><td>Slugs para el sitemap y <code>llms.txt</code></td></tr>
+    <tr><td><code>POST /checkout/cotizar</code></td><td>Importes y medios de pago disponibles</td></tr>
+    <tr><td><code>POST /pedidos</code></td><td>Crea el pedido y reserva stock</td></tr>
+    <tr><td><code>GET /pedidos/:id?t=</code> · <code>POST …/reintentar-pago</code></td><td>Seguimiento y reintento con token</td></tr>
+    <tr><td><code>POST /consultas-canje</code> · <code>POST /arrepentimiento</code></td><td>Formularios públicos</td></tr>
+    <tr><td><code>POST /webhooks/mercadopago</code></td><td>Avisos de pago firmados</td></tr>
+    <tr><td><code>POST /auth/enlace</code> · <code>GET /auth/verificar</code> · <code>GET /auth/sesion</code> · <code>POST /auth/salir</code></td><td>Sesión del panel</td></tr>
+    <tr><td><code>GET /salud</code></td><td>Monitor externo: responde 200 si la base está accesible</td></tr>
+  </table>
+  <h3>Panel (prefijo <code>/admin</code>, requiere sesión)</h3>
+  <table>
+    <tr><th style="width:44%">Ruta</th><th>Qué hace</th></tr>
+    <tr><td><code>GET /resumen</code></td><td>Lo pendiente del inicio</td></tr>
+    <tr><td><code>GET /pedidos</code> · <code>GET /pedidos/:id</code></td><td>Lista y detalle (único lugar con el DNI descifrado)</td></tr>
+    <tr><td><code>POST /pedidos/:id/confirmar-transferencia</code></td><td>Pendiente → pagado</td></tr>
+    <tr><td><code>POST /pedidos/:id/registrar-efectivo</code></td><td>A pagar en el local → entregado</td></tr>
+    <tr><td><code>POST /pedidos/:id/estado</code> · <code>/anonimizar</code></td><td>Transiciones y anonimización</td></tr>
+    <tr><td><code>GET /alertas</code> · <code>POST /alertas/:id/resolver</code></td><td>Alertas de pago</td></tr>
+    <tr><td><code>GET · POST · PATCH · DELETE /productos</code></td><td>Catálogo, con borrado o archivo</td></tr>
+    <tr><td><code>POST /productos/revision</code></td><td>Habilitar o eliminar en lote</td></tr>
+    <tr><td><code>POST · PATCH · DELETE /productos/:id/fotos</code></td><td>Fotos (multipart, normalizadas a WebP)</td></tr>
+    <tr><td><code>POST /importaciones</code></td><td>Planillas CSV con informe</td></tr>
+    <tr><td><code>GET · POST · PATCH · DELETE /vehiculos</code></td><td>Autos y medidas, con búsqueda y filtro por marca</td></tr>
+    <tr><td><code>GET · PATCH /configuracion</code> · <code>/zonas</code></td><td>Configuración y zonas</td></tr>
+    <tr><td><code>GET · PATCH /consultas-canje</code> · <code>GET /arrepentimientos</code></td><td>Consultas y solicitudes</td></tr>
+  </table>
+  <p>Códigos HTTP: 200/201 éxito · 400 validación · 401 sin sesión · 404 no existe o no visible · 409 conflicto de estado o stock · 422 regla de negocio · 429 límite de pedidos.</p>
+</section>
+
+<!-- ───────────────────────────── 11 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 11</p>
+  <h2>Frontend: tienda y panel</h2>
+  <p>Next.js 16 con App Router. Las páginas públicas se renderizan en el servidor y se cachean por etiquetas (ISR); llaman a la API por la red interna de Docker. El navegador usa <code>/api/v1</code> del mismo dominio para checkout y panel, así que no hay CORS y la cookie de sesión es simple.</p>
+  <h3>Rutas</h3>
+  <table>
+    <tr><th style="width:36%">Ruta</th><th>Contenido</th></tr>
+    <tr><td><code>/</code></td><td>Portada: hero, buscador, beneficios, marcas, cómo funciona, gamas, historia, pagos y cierre</td></tr>
+    <tr><td><code>/buscar</code></td><td>Resultado del buscador (no indexado)</td></tr>
+    <tr><td><code>/baterias</code></td><td>Catálogo con filtros en la URL</td></tr>
+    <tr><td><code>/producto/[slug]</code></td><td>Ficha con datos estructurados de producto</td></tr>
+    <tr><td><code>/auto/[marca]/[modelo]</code></td><td>Página por modelo con preguntas frecuentes (SEO y GEO)</td></tr>
+    <tr><td><code>/carrito</code></td><td>Carrito y checkout en una página</td></tr>
+    <tr><td><code>/pedido/[id]</code></td><td>Seguimiento privado</td></tr>
+    <tr><td><code>/quienes-somos</code> · <code>/contacto</code></td><td>Institucionales, con mapa y horarios</td></tr>
+    <tr><td><code>/legales/*</code> · <code>/arrepentimiento</code></td><td>Términos, privacidad, garantía y botón de arrepentimiento</td></tr>
+    <tr><td><code>/panel/*</code></td><td>Inicio, pedidos, alertas, productos, autos, importar, canje y configuración</td></tr>
+    <tr><td><code>/api/revalidate</code></td><td>Recibe las revalidaciones del backend</td></tr>
+    <tr><td><code>sitemap.xml</code> · <code>robots.txt</code> · <code>llms.txt</code></td><td>Indexación para buscadores y buscadores con IA</td></tr>
+  </table>
+  <h3>Componentes principales</h3>
+  <div class="grilla">
+    <div class="caja"><h4>Tienda</h4><p><code>Encabezado</code>, <code>MenuMovil</code>, <code>Pie</code>, <code>WhatsappFlotante</code>, <code>BotonCarrito</code>, <code>Buscador</code>, <code>Hero</code>, <code>Secciones</code>, <code>TarjetaProducto</code>, <code>AgregarAlCarrito</code>, <code>Checkout</code>, <code>ReintentarPago</code>, <code>FormArrepentimiento</code>.</p></div>
+    <div class="caja"><h4>Panel</h4><p><code>NavPanel</code>, <code>AccionesPedido</code>, <code>Estado</code>, <code>FormProducto</code>, <code>FotosProducto</code>, <code>ListaRevision</code>, <code>Importar</code>, <code>Vehiculos</code>, <code>FormConfiguracion</code>, <code>Zonas</code>, <code>MarcarCanje</code>.</p></div>
+  </div>
+  <h3>Diseño y accesibilidad</h3>
+  <ul>
+    <li>Celular primero: texto base de 17–18 px, áreas táctiles de 48 px o más, contraste WCAG AA, sin desplazamiento horizontal a 375 px.</li>
+    <li>Identidad de la marca: rojo <code>#FF2610</code>, naranja <code>#FF4E10</code>, negro y blanco, patrón de rayos y Barlow / Barlow Condensed.</li>
+    <li>Animaciones solo con <code>transform</code> y <code>opacity</code>, desactivadas si la persona pide menos movimiento.</li>
+    <li>Voseo rioplatense, frases cortas y siempre una salida a WhatsApp.</li>
+  </ul>
+  <h3>SEO, GEO y medición</h3>
+  <ul>
+    <li>Datos estructurados de producto, comercio local (dirección, horarios, teléfono) y preguntas frecuentes.</li>
+    <li><code>robots.txt</code> permite a los buscadores con IA las páginas públicas y bloquea panel, checkout y seguimiento; <code>llms.txt</code> resume la tienda.</li>
+    <li>GA4 con eventos de ver producto, agregar al carrito, iniciar compra y compra, sin datos personales, y atribución de campañas.</li>
+    <li>Auditorías Lighthouse de 90 o más en portada, ficha y página de auto.</li>
+  </ul>
+</section>
+
+<!-- ───────────────────────────── 12 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 12</p>
+  <h2>Seguridad y datos personales</h2>
+  <table>
+    <tr><th style="width:28%">Tema</th><th>Medida</th></tr>
+    <tr><td>DNI</td><td>Cifrado con AES-256-GCM (IV aleatorio por registro, clave de 32 bytes por variable de entorno, con versión para rotar). Solo se descifra en el detalle del pedido del panel.</td></tr>
+    <tr><td>Registros</td><td>pino con <code>redact</code> de DNI, dirección, teléfono, mail y nombre; Sentry descarta los cuerpos de las requests.</td></tr>
+    <tr><td>Respuestas públicas</td><td>Nunca devuelven DNI, dirección ni teléfono. El seguimiento exige un token del que solo se guarda el hash.</td></tr>
+    <tr><td>Mails y outbox</td><td>Sin DNI. Una prueba recorre todos los mails, en HTML y en texto, para verificarlo.</td></tr>
+    <tr><td>Pagos</td><td>El estado pagado solo llega por la API de Mercado Pago verificada o por confirmación manual de un usuario registrado. Firma del webhook validada. Sin datos de tarjeta en el sistema.</td></tr>
+    <tr><td>Sesiones</td><td>Enlace de un uso y 15 minutos; sesión opaca revocable; cookie <code>httpOnly</code>, <code>Secure</code> y <code>SameSite=Lax</code>; respuesta idéntica para mails no autorizados.</td></tr>
+    <tr><td>Abuso</td><td>Rate limit por IP en checkout, consultas, arrepentimiento e ingreso; límite de pedidos sin pagar por comprador.</td></tr>
+    <tr><td>Inyección</td><td>Consultas parametrizadas con Drizzle; React escapa el contenido; pruebas específicas de inyección.</td></tr>
+    <tr><td>Transporte</td><td>HTTPS obligatorio con redirección desde HTTP; staging con autenticación básica y <code>noindex</code>.</td></tr>
+    <tr><td>Legales</td><td>Términos, privacidad, cambios y garantía, datos del comercio y botón de arrepentimiento en el pie de todas las páginas (Ley 24.240 y Ley 25.326). Anonimización a pedido.</td></tr>
+  </table>
+</section>
+
+<!-- ───────────────────────────── 13 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 13</p>
+  <h2>Pruebas y calidad</h2>
+  <div class="numeros">
+    <div><b>330</b><span>pruebas, todas pasan</span></div>
+    <div><b>34</b><span>archivos de prueba</span></div>
+    <div><b>3</b><span>niveles: unidad, integración y contrato</span></div>
+    <div><b>≥ 90</b><span>Lighthouse en las páginas clave</span></div>
+  </div>
+  <table>
+    <tr><th style="width:20%">Nivel</th><th>Qué cubre</th><th style="width:30%">Cómo</th></tr>
+    <tr><td>Unitarias</td><td>Dominio puro: importes, máquina de estados, <code>Dinero</code>, vencimientos, cifrado, privacidad</td><td>Vitest, con reloj falso</td></tr>
+    <tr><td>Integración</td><td>Casos de uso y repositorios: compra, stock concurrente, pagos, mails, importación, auth, canje, legales</td><td>Vitest contra PostgreSQL real (<code>casa_test</code>)</td></tr>
+    <tr><td>Contrato</td><td>Rutas HTTP validadas contra los esquemas de <code>shared/</code>; webhook con firmas de ejemplo; seguridad y SEO</td><td><code>fastify.inject()</code></td></tr>
+    <tr><td>Rendimiento</td><td>Portada, ficha y página de auto</td><td>Lighthouse ≥ 90</td></tr>
+  </table>
+  <p>Cada prueba lleva en el nombre el escenario de la especificación que verifica, por ejemplo <code>US2-03: dos compras de la última unidad</code>. El mapa completo está en <code>specs/001-tienda-online/checklists/cobertura-tests.md</code>.</p>
+  <h3>Controles en cada cambio</h3>
+  <ul>
+    <li>ESLint y Prettier en todo el monorepo.</li>
+    <li>TypeScript estricto (<code>pnpm typecheck</code>).</li>
+    <li>Todas las pruebas, con PostgreSQL levantado como servicio en GitHub Actions.</li>
+    <li>Si algo falla, no se construyen imágenes ni se despliega.</li>
+  </ul>
+</section>
+
+<!-- ───────────────────────────── 14 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 14</p>
+  <h2>Infraestructura, despliegue y operación</h2>
+  <h3>Entornos</h3>
+  <table>
+    <tr><th style="width:18%">Entorno</th><th>Cómo corre</th></tr>
+    <tr><td>Desarrollo</td><td>PostgreSQL y Mailpit en Docker (<code>infra/docker-compose.dev.yml</code>); API, worker y frontend con <code>pnpm dev</code>.</td></tr>
+    <tr><td>Staging</td><td>Mismo VPS, proyecto de Compose aparte, credenciales de prueba de Mercado Pago, autenticación básica y <code>noindex</code>.</td></tr>
+    <tr><td>Producción</td><td>Servicios <code>db</code>, <code>backend</code>, <code>worker</code> y <code>frontend</code> en <code>infra/docker-compose.yml</code>; imágenes multi-stage sobre Node 24 slim con usuario no root.</td></tr>
+  </table>
+  <h3>Integración y despliegue continuos</h3>
+  <div class="diagrama" style="max-width:110mm;margin:4pt auto 6pt"><pre class="mermaid">
+flowchart TB
+  P["git push"] --> CI["ci.yml: lint, typecheck y tests"]
+  CI -- falla --> X["Se frena: la tienda sigue igual"]
+  CI -- pasa --> IMG["Imágenes Docker a GHCR"]
+  IMG --> D["deploy.sh por SSH<br/>develop → staging · main → producción"]
+  D --> MIG["Migraciones y cambio de contenedores"]
+  MIG -- "falla o /salud no responde" --> RB["Rollback a la imagen anterior"]
+  MIG -- ok --> UP["Versión nueva en línea"]
+  </pre><p class="pie-fig" style="margin:6pt 0 0">Figura 15. Una versión con una prueba fallida nunca llega a producción.</p></div>
+  <h3>Operación</h3>
+  <ul>
+    <li><b>Copias:</b> <code>pg_dump</code> diario por cron (4:15), comprimido y subido a un bucket de R2 aparte, con 30 días de retención. Restauración documentada y probada con <code>restore.sh</code>.</li>
+    <li><b>Monitoreo:</b> UptimeRobot consulta <code>/api/v1/salud</code> cada 5 minutos y avisa por mail; Sentry reporta los errores del backend y del worker.</li>
+    <li><b>Nginx:</b> HTTPS con certbot, sitios de producción y staging, encabezados de seguridad comunes.</li>
+    <li><b>Propiedad:</b> todas las cuentas y el servidor quedan a nombre del negocio.</li>
+    <li><b>Guía:</b> <code>infra/README.md</code> explica la preparación del VPS, el dominio, los mails (SPF, DKIM y DMARC) y la recuperación.</li>
+  </ul>
+</section>
+
+<!-- ───────────────────────────── 15 ───────────────────────────── -->
+<section class="capitulo">
+  <p class="eyebrow">Capítulo 15</p>
+  <h2>Estado actual y pendientes</h2>
+  <p>El sistema está completo y probado en desarrollo: tienda, panel, mails, legales, SEO, infraestructura y despliegue. De las tareas planificadas quedan las que requieren el servidor real.</p>
+  <table>
+    <tr><th style="width:36%">Pendiente</th><th>Detalle</th><th style="width:15%">Depende de</th></tr>
+    <tr><td>Servidor y dominio</td><td>Preparar el VPS, apuntar el dominio, certificados HTTPS y secretos de producción.</td><td>Cliente y desarrollo</td></tr>
+    <tr><td>Mercado Pago en producción</td><td>Credenciales de la cuenta del negocio, clave del webhook y un cobro real de prueba.</td><td>Cliente</td></tr>
+    <tr><td>Mails del dominio</td><td>Registros SPF, DKIM y DMARC en Resend; objetivo 9/10 en mail-tester.</td><td>Dominio</td></tr>
+    <tr><td>Contenido real</td><td>Precios, stock y fotos de los productos; historia y fotos del local; datos bancarios y horarios. Hoy se ven marcadores entre corchetes.</td><td>Cliente</td></tr>
+    <tr><td>T143 · Prueba punta a punta</td><td>Compra completa con Playwright en staging con el sandbox de Mercado Pago.</td><td>Staging</td></tr>
+    <tr><td>T147 · Validación en staging</td><td>Recorrer todas las validaciones de <code>quickstart.md</code> y registrar el resultado.</td><td>Staging</td></tr>
+    <tr><td>T150 · Pruebas de carga</td><td>k6 con 100 usuarios en el buscador, ráfaga de compras sobre el mismo producto y de avisos de pago; meta p95 &lt; 500 ms y sin sobreventa.</td><td>Staging</td></tr>
+  </table>
+
+  <h2 style="margin-top:22pt">Glosario</h2>
+  <table>
+    <tr><th style="width:24%">Término</th><th>Significado</th></tr>
+    <tr><td>Medida</td><td>Tamaño de la batería, por ejemplo 12x65 (12 V, 65 Ah).</td></tr>
+    <tr><td>Gama</td><td>Económica (uso diario) o reforzada (frío, viajes, muchos consumos).</td></tr>
+    <tr><td>Outbox</td><td>Tabla donde se anotan los mensajes a enviar dentro de la misma transacción del cambio; un proceso aparte los envía.</td></tr>
+    <tr><td>Webhook</td><td>Llamada que hace Mercado Pago a la tienda para avisar un pago.</td></tr>
+    <tr><td>ISR</td><td>Regeneración incremental: Next.js guarda la página generada y la renueva cuando cambia el dato.</td></tr>
+    <tr><td>Enlace mágico</td><td>Ingreso sin contraseña mediante un enlace de un solo uso enviado por mail.</td></tr>
+    <tr><td>Idempotencia</td><td>Propiedad de una operación que, repetida, produce el mismo resultado que hecha una vez.</td></tr>
+    <tr><td>GEO</td><td>Optimización para buscadores con inteligencia artificial.</td></tr>
+    <tr><td>Staging</td><td>Entorno de prueba igual a producción, con pagos de prueba.</td></tr>
+  </table>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    securityLevel: 'loose',
+    fontFamily: 'Barlow, Arial, sans-serif',
+    themeVariables: {
+      primaryColor: '#fff4f1', primaryBorderColor: '#e01e08', primaryTextColor: '#111111',
+      lineColor: '#4a4a4a', secondaryColor: '#f6f5f2', tertiaryColor: '#ffffff',
+      clusterBkg: '#faf9f7', clusterBorder: '#d9d9d9', fontSize: '14px',
+      actorBkg: '#111111', actorTextColor: '#ffffff', actorBorder: '#111111',
+      signalColor: '#333333', noteBkgColor: '#fff4f1', noteBorderColor: '#e01e08'
+    },
+    flowchart: { htmlLabels: true, curve: 'basis' },
+    sequence: { mirrorActors: false, useMaxWidth: true, actorMargin: 24, width: 120, messageFontSize: 15, actorFontSize: 15, noteFontSize: 14, boxMargin: 6 },
+    er: { useMaxWidth: true, fontSize: 14, entityPadding: 10 }
+  });
+  mermaid.run({ querySelector: '.mermaid' }).then(() => { window.diagramasListos = true; })
+    .catch((e) => { window.diagramasError = String(e); window.diagramasListos = true; });
+</script>
+</body>
+</html>

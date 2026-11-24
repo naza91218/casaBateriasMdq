@@ -83,7 +83,7 @@ export function aFila(m: ModeloLista): FilaProducto {
     medida: ah ? medida(12, ah) : '',
     amperaje_ah: ah ? String(ah) : '',
     cca: '',
-    // Suposición inicial: la línea pesada como reforzada. Juan la confirma al revisar.
+    // Suposición inicial: la línea pesada como reforzada. Mateo la confirma al revisar.
     gama: /pesada/i.test(m.linea) ? 'reforzada' : 'economica',
     descripcion: [m.linea ? `Línea ${m.linea}.` : '', `${ah ? `12 V ${ah} Ah.` : ''}`, borne]
       .filter(Boolean)

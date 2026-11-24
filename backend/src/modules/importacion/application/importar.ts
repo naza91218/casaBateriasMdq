@@ -18,6 +18,7 @@ import type { BaseDeDatos } from '../../../platform/db.js';
 import { ErrorDeDominio, validacion } from '../../../shared-kernel/errores.js';
 import type { Reloj } from '../../../shared-kernel/reloj.js';
 import { slugUnico } from '../../catalogo/application/admin-productos.js';
+import { garantiaPorDefecto } from '../../catalogo/domain/precios.js';
 import type { ServicioFotos } from '../../catalogo/application/fotos.js';
 import { marcas, medidas, productoFotos, productos } from '../../catalogo/infrastructure/schema.js';
 import {
@@ -388,6 +389,8 @@ export class ServicioImportacion {
               slug: await slugUnico(tx, d.nombre),
               estado: 'a_revisar',
               fuente: 'planilla',
+              // Solo al crear: si el admin la cambió, reimportar no la pisa.
+              garantiaMeses: garantiaPorDefecto(d.marca, d.medida),
               ...comunes,
               ...opcionales,
             })

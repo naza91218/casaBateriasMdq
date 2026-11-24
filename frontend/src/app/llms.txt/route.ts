@@ -10,7 +10,7 @@ export async function GET() {
   const lineas = [
     `# ${NOMBRE}`,
     '',
-    `> Venta y colocación de baterías para autos en Mar del Plata, hace 45 años. Colocación incluida, 12 meses de garantía. ${d.domicilio}.`,
+    `> Venta y colocación de baterías para autos en Mar del Plata, hace 45 años. Colocación incluida, garantía de 12 o 18 meses según la batería. ${d.domicilio}.`,
     '',
     ...(d.horarios.length ? [`Horarios: ${d.horarios.join('; ')}.`] : []),
     ...(d.telefono ? [`Teléfono: ${d.telefono}.`] : []),

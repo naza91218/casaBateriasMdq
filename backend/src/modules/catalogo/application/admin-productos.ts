@@ -13,6 +13,7 @@ import { ErrorDeDominio, noEncontrado, validacion } from '../../../shared-kernel
 import { slug as aSlug } from '../../../shared-kernel/slug.js';
 import type { Outbox } from '../../notificaciones/application/outbox.js';
 import { pedidoItems } from '../../pedidos/infrastructure/schema.js';
+import { garantiaPorDefecto } from '../domain/precios.js';
 import { marcas, medidas, productos } from '../infrastructure/schema.js';
 import type { ServicioFotos } from './fotos.js';
 
@@ -43,6 +44,7 @@ const columnas = {
   descripcion: productos.descripcion,
   precioLista: productos.precioLista,
   stock: productos.stock,
+  garantiaMeses: productos.garantiaMeses,
   estado: productos.estado,
   fuente: productos.fuente,
   actualizadoEn: productos.actualizadoEn,
@@ -129,6 +131,7 @@ export class ServicioAdminProductos {
           descripcion: d.descripcion ?? '',
           precioLista: BigInt(d.precioLista ?? 0),
           stock: d.stock ?? 0,
+          garantiaMeses: d.garantiaMeses ?? garantiaPorDefecto(d.marca, d.medida),
           estado: 'pausado',
           fuente: 'manual',
         })
@@ -153,6 +156,7 @@ export class ServicioAdminProductos {
       if (e.precioLista !== undefined) cambios.precioLista = BigInt(e.precioLista);
       // Valor absoluto: es el conteo que hizo el admin en el local.
       if (e.stock !== undefined) cambios.stock = e.stock;
+      if (e.garantiaMeses !== undefined) cambios.garantiaMeses = e.garantiaMeses;
       if (e.estado !== undefined) cambios.estado = e.estado;
 
       const estadoFinal = cambios.estado ?? actual.estado;
@@ -264,6 +268,7 @@ export class ServicioAdminProductos {
       descripcion: p.descripcion,
       precioLista: Number(p.precioLista),
       stock: p.stock,
+      garantiaMeses: p.garantiaMeses,
       estado: p.estado === 'archivado' ? 'pausado' : p.estado,
       fuente: p.fuente,
       fotos,
@@ -287,6 +292,7 @@ type FilaAdmin = {
   descripcion: string;
   precioLista: bigint;
   stock: number;
+  garantiaMeses: number;
   estado: EstadoProducto;
   fuente: string;
   actualizadoEn: Date;

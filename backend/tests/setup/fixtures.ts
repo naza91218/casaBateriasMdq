@@ -6,6 +6,7 @@ import {
   vehiculos,
 } from '../../src/modules/compatibilidad/infrastructure/schema.js';
 import { slug } from '../../src/shared-kernel/slug.js';
+import { garantiaPorDefecto } from '../../src/modules/catalogo/domain/precios.js';
 
 let contador = 0;
 
@@ -40,6 +41,7 @@ export async function crearProducto(
       amperajeAh: parseInt(datos.medida.split('x')[1] ?? '65', 10),
       cca: 400,
       gama: datos.gama,
+      garantiaMeses: garantiaPorDefecto(datos.marca, datos.medida),
       precioLista: BigInt(Math.round((datos.precio ?? 100_000) * 100)),
       stock: datos.stock ?? 5,
       estado: datos.estado ?? 'activo',

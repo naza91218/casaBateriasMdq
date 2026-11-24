@@ -19,6 +19,7 @@ type Valores = {
   descripcion: string;
   precio: string;
   stock: string;
+  garantia: string;
   estado: 'activo' | 'pausado' | 'a_revisar';
 };
 
@@ -36,6 +37,7 @@ export function FormProducto({ producto }: { producto?: ProductoAdmin }) {
     descripcion: producto?.descripcion ?? '',
     precio: producto?.precioLista ? aPesos(producto.precioLista) : '',
     stock: producto ? String(producto.stock) : '0',
+    garantia: producto ? String(producto.garantiaMeses) : '',
     estado: producto?.estado ?? 'pausado',
   });
   const [errores, setErrores] = useState<Record<string, string>>({});
@@ -63,6 +65,8 @@ export function FormProducto({ producto }: { producto?: ProductoAdmin }) {
       descripcion: v.descripcion,
       ...(precio !== null ? { precioLista: precio } : {}),
       stock: Number(v.stock) || 0,
+      // Vacío al crear: el servidor pone 18 meses a las Sermat de 12x45 a 12x75 y 12 al resto.
+      ...(v.garantia.trim() ? { garantiaMeses: Number(v.garantia) } : {}),
     };
     setEnviando(true);
     setAviso(null);
@@ -203,6 +207,19 @@ export function FormProducto({ producto }: { producto?: ProductoAdmin }) {
           value={v.stock}
           onChange={set('stock')}
           error={errores.stock}
+        />
+        <CampoPanel
+          id="garantia"
+          rotulo="Garantía (meses)"
+          ayuda={
+            producto
+              ? 'Se muestra en la tarjeta y en la ficha.'
+              : 'Si lo dejás vacío: 18 las Sermat de 12x45 a 12x75 y 12 el resto.'
+          }
+          inputMode="numeric"
+          value={v.garantia}
+          onChange={set('garantia')}
+          error={errores.garantiaMeses}
         />
         {producto && (
           <div>

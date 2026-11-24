@@ -6,13 +6,13 @@
 
 ## Objetivo
 
-Que el cliente compre en pocos pasos, sin cuenta, y que Juan sepa **a quién y a dónde va** antes de salir con la camioneta.
+Que el cliente compre en pocos pasos, sin cuenta, y que Mateo sepa **a quién y a dónde va** antes de salir con la camioneta.
 
 ## Historias de usuario
 
 * Como **comprador**, quiero comprar sin crear una cuenta y entender por qué me piden cada dato.
 * Como **comprador**, quiero elegir si me la colocan a domicilio o la retiro en el local.
-* Como **Juan**, quiero tener nombre, DNI, teléfono y dirección antes de salir.
+* Como **Mateo**, quiero tener nombre, DNI, teléfono y dirección antes de salir.
 * Como **comprador**, quiero ver el estado de mi pedido con un link, sin preguntar.
 
 ## Requisitos — Checkout

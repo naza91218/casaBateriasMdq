@@ -162,6 +162,7 @@ export async function construirServidor(
           auth: ctx.servicios.auth,
           urlFrontend: ctx.config.FRONTEND_URL,
           cookieSegura: ctx.config.NODE_ENV !== 'development' && ctx.config.NODE_ENV !== 'test',
+          ingresoDirecto: ctx.config.DEMO_INGRESO_DIRECTO,
         }),
       );
 

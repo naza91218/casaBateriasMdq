@@ -30,7 +30,7 @@ export function MenuMovil({
         aria-controls={id}
         aria-label={abierto ? 'Cerrar el menú' : 'Abrir el menú'}
         onClick={() => setAbierto((a) => !a)}
-        className="grid size-12 place-items-center rounded-sm text-negro transition-colors duration-150 hover:bg-gris-100"
+        className="grid size-12 place-items-center rounded-sm text-current transition-colors duration-150 hover:bg-white/10"
       >
         {abierto ? <X aria-hidden size={26} /> : <Menu aria-hidden size={26} />}
       </button>
@@ -38,7 +38,7 @@ export function MenuMovil({
         id={id}
         aria-label="Principal"
         hidden={!abierto}
-        className="absolute inset-x-0 top-full border-b border-gris-200 bg-blanco px-4 pt-1 pb-6"
+        className="absolute inset-x-0 top-full border-b border-gris-200 bg-blanco px-4 pt-1 pb-6 text-negro"
       >
         <ul>
           {enlaces.map(([texto, href]) => (

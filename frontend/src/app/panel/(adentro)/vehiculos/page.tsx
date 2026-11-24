@@ -1,4 +1,4 @@
-import type { Medida, VehiculoAdmin } from '@casa/shared';
+import type { Medida, OpcionVehiculo, VehiculoAdmin } from '@casa/shared';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Vehiculos } from '@/components/panel/Vehiculos';
@@ -11,19 +11,27 @@ const POR_PAGINA = 50;
 export default async function PaginaVehiculos({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; pagina?: string }>;
+  searchParams: Promise<{ q?: string; marca?: string; pagina?: string }>;
 }) {
   const p = await searchParams;
   const pagina = Math.max(1, Number.parseInt(p.pagina ?? '1', 10) || 1);
-  const q = new URLSearchParams({ pagina: String(pagina), porPagina: String(POR_PAGINA) });
-  if (p.q?.trim()) q.set('q', p.q.trim());
-  const [lista, medidas] = await Promise.all([
+  const filtros = {
+    ...(p.q?.trim() ? { q: p.q.trim() } : {}),
+    ...(p.marca ? { marca: p.marca } : {}),
+  };
+  const q = new URLSearchParams({
+    ...filtros,
+    pagina: String(pagina),
+    porPagina: String(POR_PAGINA),
+  });
+  const [lista, medidas, marcas] = await Promise.all([
     pedirPanel<{ items: VehiculoAdmin[]; total: number }>(`/admin/vehiculos?${q}`),
     pedirPanel<Medida[]>('/catalogo/medidas'),
+    pedirPanel<OpcionVehiculo[]>('/vehiculos/marcas'),
   ]);
   const paginas = Math.ceil(lista.total / POR_PAGINA);
   const url = (n: number) =>
-    `/panel/vehiculos?${new URLSearchParams({ ...(p.q ? { q: p.q } : {}), pagina: String(n) })}`;
+    `/panel/vehiculos?${new URLSearchParams({ ...filtros, pagina: String(n) })}`;
   return (
     <>
       <h1 className="text-[32px] leading-tight font-bold">Autos</h1>
@@ -36,6 +44,22 @@ export default async function PaginaVehiculos({
         .
       </p>
       <form action="/panel/vehiculos" className="mt-5 flex flex-col gap-2 md:flex-row">
+        <label htmlFor="marca" className="sr-only">
+          Marca
+        </label>
+        <select
+          id="marca"
+          name="marca"
+          defaultValue={p.marca ?? ''}
+          className="selector !h-12 md:max-w-[240px]"
+        >
+          <option value="">Todas las marcas</option>
+          {marcas.map((m) => (
+            <option key={m.slug} value={m.nombre}>
+              {m.nombre}
+            </option>
+          ))}
+        </select>
         <label htmlFor="q" className="sr-only">
           Buscar
         </label>

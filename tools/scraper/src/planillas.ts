@@ -19,7 +19,7 @@ export interface FilaProducto {
 
 /**
  * Compatibilidad con el formato de importación. Los años quedan vacíos (= todos los años, clarify
- * 2026-10-30) salvo que Juan los complete. `texto_original` y `revisar` son para él: la
+ * 2026-10-30) salvo que Mateo los complete. `texto_original` y `revisar` son para él: la
  * importación ignora esas columnas.
  */
 export interface FilaCompatibilidad {

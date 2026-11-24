@@ -44,7 +44,7 @@ Salen de lo que la propuesta promete por escrito:
 | Validación | **Zod** | Un esquema por formulario, compartido entre servidor y cliente |
 | Pagos | **Mercado Pago Checkout Pro** (SDK `mercadopago`) + webhooks | Tarjetas, dinero en cuenta y cuotas sin manejar datos de tarjeta |
 | Mails | **Resend** + **React Email** | Plan gratuito suficiente, plantillas en JSX, dominio propio verificado |
-| Login del panel | **Auth.js** con enlace por mail (Resend) | Juan no tiene que recordar contraseña; un solo usuario, preparado para sumar roles |
+| Login del panel | **Auth.js** con enlace por mail (Resend) | Mateo no tiene que recordar contraseña; un solo usuario, preparado para sumar roles |
 | Imágenes y backups | **Cloudflare R2** | Gratis hasta 10 GB y sin costo de salida; API S3 estándar |
 | Hosting | **Netlify** (plan gratuito, uso comercial permitido) | Deploy por push, previews, funciones programadas para el vencimiento de pedidos |
 | Tareas programadas | **Netlify Scheduled Functions** (cada hora) | Vencer pedidos a las 48 h |
@@ -130,7 +130,7 @@ Reglas:
 ### 4.1 Estados del pedido
 
 ```text
-pendiente_pago ──(MP aprueba / Juan confirma transferencia)──► pagado
+pendiente_pago ──(MP aprueba / Mateo confirma transferencia)──► pagado
 pendiente_pago ──(48 h sin pago)──► cancelado (devuelve stock)
 a_pagar_en_local ──(retira y paga)──► entregado
 pagado ──► en_camino ──► entregado        (colocación a domicilio)
@@ -200,8 +200,8 @@ Formato `T<semana>.<n>`, con **Hecho cuando** verificable. Coincide con las 4 se
 | T1.2 | DNS en Cloudflare apuntando a Netlify, HTTPS, dominio verificado en Resend (SPF, DKIM, DMARC) | El sitio abre por HTTPS en el dominio y un mail de prueba llega sin spam |
 | T1.3 | Esquema de base completo (§4) y primera migración en Neon (ramas `main` y `dev`) | Las tablas existen en ambas ramas |
 | T1.4 | Backup diario: Action con `pg_dump` → R2, y **prueba de restauración** | Un backup se restaura en una rama nueva de Neon |
-| T1.5 | Definir categorías, gamas, canje y zonas con Juan (§10 de la propuesta) | Respuestas anotadas en el registro de decisiones |
-| T1.6 | Diseño de portada y ficha de producto (identidad del logo elegido, Bricolage, negro/verde) | Juan aprueba el diseño por escrito |
+| T1.5 | Definir categorías, gamas, canje y zonas con Mateo (§10 de la propuesta) | Respuestas anotadas en el registro de decisiones |
+| T1.6 | Diseño de portada y ficha de producto (identidad del logo elegido, Bricolage, negro/verde) | Mateo aprueba el diseño por escrito |
 
 ### Semana 2 — Catálogo y buscador
 
@@ -223,21 +223,21 @@ Formato `T<semana>.<n>`, con **Hecho cuando** verificable. Coincide con las 4 se
 | T3.4 | Transferencia con descuento (datos bancarios en el mail y en `/pedido`) y efectivo solo con retiro | Efectivo no aparece si se elige colocación |
 | T3.5 | Vencimiento a las 48 h (función programada cada hora) | Un pedido vencido pasa a `cancelado` y el stock vuelve |
 | T3.6 | Mails con React Email: recibido, pagado, en camino / listo para retirar, entregado (comprador y comercio) | Cada cambio de estado envía su mail |
-| T3.7 | Panel: login por enlace, pedidos (detalle, mapa, confirmar transferencia, cambiar estado), productos (precio, stock, pausa, fotos), configuración | Juan hace todo el recorrido de §5 de la propuesta desde el celular |
+| T3.7 | Panel: login por enlace, pedidos (detalle, mapa, confirmar transferencia, cambiar estado), productos (precio, stock, pausa, fotos), configuración | Mateo hace todo el recorrido de §5 de la propuesta desde el celular |
 
 ### Semana 4 — Últimos detalles y salida
 
 | Tarea | Descripción | Hecho cuando |
 | :- | :- | :- |
-| T4.1 | Quiénes somos, contacto con mapa, botón de WhatsApp global | Las páginas tienen los textos y fotos de Juan |
+| T4.1 | Quiénes somos, contacto con mapa, botón de WhatsApp global | Las páginas tienen los textos y fotos de Mateo |
 | T4.2 | Legales: términos, privacidad, arrepentimiento, datos del comercio (razón social, CUIT) | Enlazados en el pie con datos reales |
 | T4.3 | GA4, Meta Pixel (eventos `ViewContent`, `AddToCart`, `Purchase`), Search Console, perfil de Google Business enlazado | Los eventos aparecen en las herramientas |
 | T4.4 | Sentry y monitor de disponibilidad con aviso por mail | Un error forzado llega a Sentry; el monitor avisa si el sitio cae |
 | T4.5 | Prueba de punta a punta con Playwright en sandbox + checklist manual (§7) | Todo pasa en celular y compu |
 | T4.6 | Mercado Pago a producción y **compra real** de bajo monto | Se acredita, cambia el estado, llegan los mails; se reintegra |
-| T4.7 | Guía con capturas + capacitación; entrega de accesos; cobro del 50 % restante | Juan gestiona un pedido y edita un producto sin ayuda; confirma la entrega por escrito |
+| T4.7 | Guía con capturas + capacitación; entrega de accesos; cobro del 50 % restante | Mateo gestiona un pedido y edita un producto sin ayuda; confirma la entrega por escrito |
 
-Al final de cada semana: demo a Juan en el deploy de preview.
+Al final de cada semana: demo a Mateo en el deploy de preview.
 
 ---
 

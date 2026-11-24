@@ -13,7 +13,7 @@ constitucion.md ──► spec.md (qué y por qué) ──► PLAN_TECNICO.md (c
 ```
 
 1. **Especificar:** se escribe o ajusta el `spec.md` de la funcionalidad. Estado `borrador`.
-2. **Aclarar:** se resuelven las preguntas abiertas con Juan. Estado `aprobada`.
+2. **Aclarar:** se resuelven las preguntas abiertas con Mateo. Estado `aprobada`.
 3. **Planificar:** se revisa que [PLAN_TECNICO.md](../../PLAN_TECNICO.md) cubra cada requisito.
 4. **Tareas:** se agregan en [tareas.md](tareas.md), cada una con los requisitos que cumple.
 5. **Implementar:** cada criterio de aceptación tiene su test (Vitest o Playwright) con el ID en el nombre, por ejemplo `test("CA-PED-03: ...")`.

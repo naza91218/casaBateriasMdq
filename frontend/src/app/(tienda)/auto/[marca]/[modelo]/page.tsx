@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const auto = `${p.marca.nombre} ${p.modelo.nombre}`;
   return {
     title: `¿Qué batería lleva el ${auto}? ${enLista(p.medidas)}`.trim(),
-    description: `${p.respuesta} Te la colocamos en Mar del Plata, con 12 meses de garantía.`,
+    description: `${p.respuesta} Te la colocamos en Mar del Plata, con hasta 18 meses de garantía.`,
     alternates: { canonical: `/auto/${p.marca.slug}/${p.modelo.slug}` },
   };
 }

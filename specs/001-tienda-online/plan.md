@@ -182,7 +182,7 @@ detalle cuando el diseño UX/UI esté definido.
 | Riesgo | Mitigación |
 | :- | :- |
 | 30 días para backend + frontend + operación con 1 dev | Backend primero; frontend sobre contratos ya probados; priorizar P1 |
-| Calidad de los datos scrapeados | Todo entra `a_revisar`; Juan aprueba; `fuente` en cada fila |
+| Calidad de los datos scrapeados | Todo entra `a_revisar`; Mateo aprueba; `fuente` en cada fila |
 | RAM del VPS (prod + staging + Postgres) | Imágenes slim, límites de memoria en Compose; staging apagable; recomendado 4 GB |
 | Licencia web de Sport Headline | Se resuelve en el bloque frontend |
 | Datos del comercio y bancarios pendientes | Configurables desde el panel; marcadores hasta tenerlos |

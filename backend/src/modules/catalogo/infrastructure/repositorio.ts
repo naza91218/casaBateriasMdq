@@ -1,4 +1,4 @@
-import { and, asc, count, eq, gt, inArray, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, inArray, type SQL } from 'drizzle-orm';
 import type { Ejecutor } from '../../../platform/db.js';
 import type { Gama } from '../domain/precios.js';
 import { marcas, medidas, productoFotos, productos } from './schema.js';
@@ -7,6 +7,7 @@ export interface FiltrosListado {
   marca?: string | undefined; // slug
   medida?: string | undefined;
   gama?: Gama | undefined;
+  orden?: 'relevantes' | 'precio-asc' | 'precio-desc' | 'amperaje' | 'nombre' | undefined;
   pagina: number;
   porPagina: number;
 }
@@ -22,6 +23,7 @@ const columnasProducto = {
   descripcion: productos.descripcion,
   precioLista: productos.precioLista,
   stock: productos.stock,
+  garantiaMeses: productos.garantiaMeses,
   marcaNombre: marcas.nombre,
   marcaSlug: marcas.slug,
 };
@@ -37,6 +39,7 @@ export type FilaProducto = {
   descripcion: string;
   precioLista: bigint;
   stock: number;
+  garantiaMeses: number;
   marcaNombre: string;
   marcaSlug: string;
 };
@@ -63,6 +66,14 @@ export class RepositorioCatalogo {
     if (f.medida) condiciones.push(eq(productos.medida, f.medida));
     if (f.gama) condiciones.push(eq(productos.gama, f.gama));
     const donde = and(...condiciones);
+    // El nombre desempata siempre, así la paginación no repite ni saltea productos.
+    const orden = {
+      relevantes: [asc(medidas.orden), asc(productos.gama), asc(productos.nombre)],
+      'precio-asc': [asc(productos.precioLista), asc(productos.nombre)],
+      'precio-desc': [desc(productos.precioLista), asc(productos.nombre)],
+      amperaje: [desc(productos.amperajeAh), asc(productos.precioLista), asc(productos.nombre)],
+      nombre: [asc(productos.nombre)],
+    }[f.orden ?? 'relevantes'];
 
     const [filas, [totalFila]] = await Promise.all([
       this.db
@@ -71,7 +82,7 @@ export class RepositorioCatalogo {
         .innerJoin(marcas, eq(marcas.id, productos.marcaId))
         .innerJoin(medidas, eq(medidas.codigo, productos.medida))
         .where(donde)
-        .orderBy(asc(medidas.orden), asc(productos.gama), asc(productos.nombre))
+        .orderBy(...orden)
         .limit(f.porPagina)
         .offset((f.pagina - 1) * f.porPagina),
       this.db

@@ -11,7 +11,7 @@ export function BotonCarrito() {
     <Link
       href="/carrito"
       aria-label={n ? `Carrito, ${n} ${n === 1 ? 'batería' : 'baterías'}` : 'Carrito, vacío'}
-      className="relative grid size-12 place-items-center rounded-sm text-negro transition-colors duration-150 hover:bg-gris-100"
+      className="relative grid size-12 place-items-center rounded-sm text-current transition-colors duration-150 hover:bg-white/10"
     >
       <ShoppingCart aria-hidden size={24} strokeWidth={2} />
       {n > 0 && (

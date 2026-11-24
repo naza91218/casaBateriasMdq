@@ -56,6 +56,8 @@ export const productos = pgTable(
       .notNull()
       .default(sql`0`),
     stock: integer('stock').notNull().default(0),
+    // Meses de garantía de esta batería (ver garantiaPorDefecto): editable desde el panel.
+    garantiaMeses: integer('garantia_meses').notNull().default(12),
     // Lo importado entra "a revisar" y no se ve hasta que el admin lo habilita (FR-070).
     estado: estadoProducto('estado').notNull().default('a_revisar'),
     fuente: text('fuente').notNull().default('manual'),
@@ -65,6 +67,7 @@ export const productos = pgTable(
   (t) => [
     check('productos_stock_no_negativo', sql`${t.stock} >= 0`), // FR-020, SC-003
     check('productos_amperaje_positivo', sql`${t.amperajeAh} > 0`),
+    check('productos_garantia_valida', sql`${t.garantiaMeses} between 1 and 60`),
     index('productos_estado_medida_idx').on(t.estado, t.medida),
     index('productos_estado_marca_gama_idx').on(t.estado, t.marcaId, t.gama),
   ],

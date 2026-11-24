@@ -16,7 +16,7 @@
 
 - **Comprador:** automovilista de Mar del Plata, muchas veces mayor y con poca práctica en
   internet, que compra desde el celular y no sabe qué medida de batería lleva su auto.
-- **Administrador:** la persona a cargo de la tienda (hoy Juan, nieto del dueño). Gestiona
+- **Administrador:** la persona a cargo de la tienda (hoy Mateo, nieto del dueño). Gestiona
   pedidos, precios, stock y fotos, y sale a colocar las baterías.
 
 ## Clarifications

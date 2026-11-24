@@ -64,6 +64,26 @@ describe('contratos de catálogo y buscador', () => {
     expect((await get('/catalogo/productos?gama=premium')).statusCode).toBe(400);
   });
 
+  test('GET /catalogo/productos ordena por precio, amperaje y nombre', async () => {
+    await crearProducto(p.ctx.db, {
+      marca: 'Edna',
+      medida: '12x90 alta',
+      gama: 'reforzada',
+      precio: 180_000,
+    });
+    const items = async (orden: string) =>
+      ListadoProductos.parse((await get(`/catalogo/productos?orden=${orden}`)).json()).items;
+    const precios = (await items('precio-asc')).map((i) => i.precios.lista);
+    expect(precios).toEqual([...precios].sort((a, b) => a - b));
+    const bajando = (await items('precio-desc')).map((i) => i.precios.lista);
+    expect(bajando).toEqual([...bajando].sort((a, b) => b - a));
+    const ah = (await items('amperaje')).map((i) => i.amperajeAh);
+    expect(ah).toEqual([...ah].sort((a, b) => b - a));
+    const nombres = (await items('nombre')).map((i) => i.nombre);
+    expect(nombres).toEqual([...nombres].sort((a, b) => a.localeCompare(b, 'es')));
+    expect((await get('/catalogo/productos?orden=barato')).statusCode).toBe(400);
+  });
+
   test('GET /catalogo/productos/:slug no expone el stock ni datos internos', async () => {
     const r = await get(`/catalogo/productos/${slugProducto}`);
     expect(r.statusCode).toBe(200);

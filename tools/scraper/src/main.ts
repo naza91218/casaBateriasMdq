@@ -21,7 +21,7 @@ import { rehacerMedidaProducto, rehacerMedidasAuto } from './rehacer.js';
 /**
  * Carga inicial del catálogo (research R10, FR-070): baja datos técnicos, autos compatibles y
  * fotos de fuentes públicas y arma las planillas de importación en data/import/. Nunca toca la
- * base: Juan revisa las planillas y las importa desde el panel, donde todo entra "a revisar".
+ * base: Mateo revisa las planillas y las importa desde el panel, donde todo entra "a revisar".
  *
  *   pnpm --filter @casa/scraper scrape                 # todas las fuentes
  *   pnpm --filter @casa/scraper scrape -- --solo herbo  # una sola

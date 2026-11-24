@@ -260,7 +260,7 @@ export class AcumuladorCompatibilidades {
     );
   }
 
-  /** Lo no reconocido va aparte, sin marca, para que Juan lo complete o lo descarte. */
+  /** Lo no reconocido va aparte, sin marca, para que Mateo lo complete o lo descarte. */
   sinReconocerComoFilas(): FilaCompatibilidad[] {
     return this.sinReconocer.map((s) => ({
       marca_auto: '',

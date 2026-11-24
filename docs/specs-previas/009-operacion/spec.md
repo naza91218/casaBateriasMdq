@@ -32,7 +32,7 @@ Que la tienda esté siempre en línea, que la información no se pierda y que el
 | CA-OPS-03 | el backup de ayer | se restaura en una rama nueva de Neon | la tienda de preview funciona con esos datos | R-OPS-02, R-OPS-03 |
 | CA-OPS-04 | un test que falla | se hace push a `main` | Netlify no publica y queda la versión anterior | R-OPS-06 |
 | CA-OPS-05 | la tienda caída | pasan 5 minutos | llega un aviso por mail | R-OPS-05 |
-| CA-OPS-06 | el acta de entrega | Juan la revisa | todas las cuentas figuran con su dueño y sus accesos | R-OPS-09 |
+| CA-OPS-06 | el acta de entrega | Mateo la revisa | todas las cuentas figuran con su dueño y sus accesos | R-OPS-09 |
 
 ## Fuera de alcance
 

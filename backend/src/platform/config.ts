@@ -14,6 +14,9 @@ const esquema = z.object({
   API_PUBLIC_URL: z.string().url(),
   FRONTEND_URL: z.string().url(),
   REVALIDATE_SECRET: z.string().min(16),
+  // Dónde avisar al frontend que regenere páginas. En desarrollo no se avisa, salvo que esté
+  // (la demo corre el frontend compilado, con caché). Sin valor, fuera de desarrollo: FRONTEND_URL.
+  REVALIDATE_URL: opcional(),
 
   DNI_ENCRYPTION_KEY: z
     .string()
@@ -41,6 +44,10 @@ const esquema = z.object({
   IMPORT_FOTOS_DIR: z.string().default('../data/import'),
 
   SENTRY_DSN: opcional(),
+
+  // Solo la demo para el cliente (infra/demo): mail del usuario con el que /auth/demo entra al
+  // panel sin enlace por mail. Nunca en un servidor.
+  DEMO_INGRESO_DIRECTO: opcional(),
 
   // Pedidos sin pagar que puede tener abiertos un mismo comprador: cada uno retiene stock.
   MAX_PEDIDOS_SIN_PAGAR: z.coerce.number().int().positive().default(3),
@@ -82,6 +89,9 @@ function exigirServidor(config: z.infer<typeof esquema>): void {
   );
   if (deEjemplo.length) {
     throw new Error(`Estas variables tienen el valor de ejemplo: ${deEjemplo.join(', ')}`);
+  }
+  if (config.DEMO_INGRESO_DIRECTO) {
+    throw new Error('DEMO_INGRESO_DIRECTO es solo para la demo: deja el panel sin contraseña');
   }
 }
 

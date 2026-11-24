@@ -1,6 +1,6 @@
 # Tienda y panel (T135). Se construye desde la raíz del monorepo:
 #   docker build -f frontend/Dockerfile -t casa-frontend \
-#     --build-arg NEXT_PUBLIC_SITIO_URL=https://lacasadelasbaterias.com.ar .
+#     --build-arg NEXT_PUBLIC_SITIO_URL=https://casadelasbaterias.com.ar .
 # Las NEXT_PUBLIC_* quedan fijas en el build (van al navegador); API_INTERNAL_URL y
 # REVALIDATE_SECRET se pasan al correr el contenedor.
 

@@ -2,6 +2,7 @@ import type { ItemProducto } from '@casa/shared';
 import { Check, ImageIcon, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { enlaceWhatsapp } from '@/lib/api';
+import { fotoDeMarca } from '@/lib/foto-marca';
 import { pesos } from '@/lib/formato';
 
 /** Tarjeta de producto del resultado y del catálogo: foto, datos, precio y una sola acción. */
@@ -9,17 +10,25 @@ export function TarjetaProducto({ p, whatsapp }: { p: ItemProducto; whatsapp: st
   const datos = [p.medida, `${p.amperajeAh} Ah`, p.cca ? `${p.cca} A de arranque` : null]
     .filter(Boolean)
     .join(' · ');
+  const ilustrativa = p.foto ? null : fotoDeMarca(p.marca.slug);
   return (
     <article className="flex flex-col overflow-hidden rounded-md border-2 border-gris-200 bg-blanco transition-colors duration-150 hover:border-negro">
       <Link
         href={`/producto/${p.slug}`}
-        className="grid aspect-[4/3] place-items-center bg-gris-100 p-5"
+        className="relative grid aspect-[4/3] place-items-center overflow-hidden bg-gris-100 p-5"
         tabIndex={-1}
         aria-hidden
       >
         {p.foto ? (
           // Las fotos vienen del almacenamiento de la API (R2): tamaño ya optimizado en WebP.
-          <img src={p.foto} alt="" loading="lazy" className="h-full w-auto object-contain" />
+          <img src={p.foto} alt="" loading="lazy" className="size-full object-contain" />
+        ) : ilustrativa ? (
+          <>
+            <img src={ilustrativa} alt="" loading="lazy" className="size-full object-contain" />
+            <span className="absolute right-2 bottom-2 rounded-sm bg-blanco/90 px-2 py-0.5 text-[14px] font-semibold text-gris-600">
+              Foto ilustrativa
+            </span>
+          </>
         ) : (
           <span className="flex flex-col items-center gap-2 text-[15px] font-semibold text-gris-600">
             <ImageIcon aria-hidden size={36} strokeWidth={1.5} />
@@ -50,7 +59,7 @@ export function TarjetaProducto({ p, whatsapp }: { p: ItemProducto; whatsapp: st
             </p>
             <p className="mt-4 flex items-center gap-2 text-[16px] font-semibold">
               <Check aria-hidden size={18} strokeWidth={3} className="flex-none text-rojo" />
-              Colocación incluida · 12 meses de garantía
+              Colocación incluida · {p.garantiaMeses} meses de garantía
             </p>
             <Link href={`/producto/${p.slug}`} className="boton boton-rojo mt-5 w-full">
               Comprar

@@ -40,6 +40,7 @@ export const ProductoAdmin = z.object({
   descripcion: z.string(),
   precioLista: Importe,
   stock: z.number().int(),
+  garantiaMeses: z.number().int(),
   estado: EstadoProductoAdmin,
   fuente: z.string(),
   fotos: z.array(FotoAdmin),
@@ -72,6 +73,13 @@ export const NuevoProducto = z.object({
   descripcion: z.string().trim().max(3000).optional(),
   precioLista: Importe.optional(),
   stock: z.number().int().min(0, 'El stock no puede ser negativo').optional(),
+  /** Si no viene, se calcula: 18 meses las Sermat de 12x45 a 12x75, 12 el resto. */
+  garantiaMeses: z
+    .number()
+    .int('La garantía va en meses enteros')
+    .min(1, 'La garantía tiene que ser de al menos 1 mes')
+    .max(60, 'La garantía no puede pasar de 60 meses')
+    .optional(),
 });
 export type NuevoProducto = z.infer<typeof NuevoProducto>;
 
@@ -136,6 +144,8 @@ export type VehiculoAdmin = z.infer<typeof VehiculoAdmin>;
 
 export const FiltroVehiculosAdmin = z.object({
   q: z.string().trim().max(100).optional(),
+  /** Solo los autos de esta marca (exacta, sin distinguir mayúsculas). */
+  marca: z.string().trim().max(60).optional(),
   /** Solo los autos que llevan esta medida (la lista «Le sirve a estos autos» del producto). */
   medida: z.string().trim().max(40).optional(),
   pagina: z.coerce.number().int().min(1).default(1),

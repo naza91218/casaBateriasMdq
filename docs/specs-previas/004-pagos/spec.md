@@ -32,7 +32,7 @@ Cobrar online con Mercado Pago, mostrar el beneficio de pagar por transferencia 
 | CA-PAG-04 | el comprador vuelve de MP con `status=approved` en la URL pero sin webhook | se abre la página de retorno | el pedido sigue `pendiente_pago` y la página dice "Estamos confirmando tu pago" | R-PAG-04 |
 | CA-PAG-05 | el mismo webhook enviado tres veces | se procesa | el pedido cambia una vez y se envía un solo mail | R-PAG-05 |
 | CA-PAG-06 | un webhook con firma inválida | llega | se rechaza con 401 y no cambia nada | R-PAG-05 |
-| CA-PAG-07 | un pago aprobado por un monto menor al del pedido | llega el webhook | el pedido no se marca pagado y queda una alerta para Juan | R-PAG-04 |
+| CA-PAG-07 | un pago aprobado por un monto menor al del pedido | llega el webhook | el pedido no se marca pagado y queda una alerta para Mateo | R-PAG-04 |
 | CA-PAG-08 | un pago rechazado | el comprador vuelve | ve "El pago no se aprobó" y un botón para reintentar | R-PAG-06 |
 
 ## Fuera de alcance

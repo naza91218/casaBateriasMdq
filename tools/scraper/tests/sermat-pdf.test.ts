@@ -111,7 +111,7 @@ describe('catálogo de Sermat: autos', () => {
     ]);
   });
 
-  test('marca las letras mal codificadas del PDF para que Juan las revise', () => {
+  test('marca las letras mal codificadas del PDF para que Mateo las revise', () => {
     expect(textoDudoso('AYEO/ ASTRA /CORSA')).toBe(true);
     expect(textoDudoso('CL / (3 / (4')).toBe(true);
     expect(textoDudoso('S0NIC')).toBe(true);

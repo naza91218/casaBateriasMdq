@@ -41,3 +41,7 @@ frontend/.impeccable/review/
 # Next.js
 *.tsbuildinfo
 next-env.d.ts
+
+# Demo para el cliente (infra/demo)
+.next-demo/
+infra/demo/.estado/

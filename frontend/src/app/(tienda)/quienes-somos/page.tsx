@@ -1,6 +1,8 @@
-import { ImageIcon, MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Palabras } from '@/components/Palabras';
+import { FotosLocal } from '@/components/FotosLocal';
 import { datosTienda, whatsappDe } from '@/lib/tienda';
 
 export const metadata: Metadata = {
@@ -16,12 +18,13 @@ export default async function QuienesSomos() {
     <>
       <section className="rayos-rojo text-negro">
         <div className="mx-auto max-w-[1200px] px-4 py-14 md:px-12 md:py-20">
-          <h1 className="titular text-[52px] md:text-[88px]">
-            45 años <span className="text-blanco">en el mercado</span>
+          <h1 className="al-cargar titular text-[52px] md:text-[88px]">
+            <Palabras texto="45 años" />{' '}
+            <Palabras texto="en el mercado" desde={2} className="text-blanco" />
           </h1>
           <p className="mt-5 max-w-[52ch] text-[20px] leading-relaxed">
-            Vendemos y colocamos baterías en Mar del Plata, en {d.domicilio}. Todas con 12 meses de
-            garantía y la colocación incluida.
+            Vendemos y colocamos baterías en Mar del Plata, en {d.domicilio}. Todas con garantía, de
+            12 o 18 meses, y la colocación incluida.
           </p>
         </div>
       </section>
@@ -32,7 +35,7 @@ export default async function QuienesSomos() {
             <h2 className="titular text-[34px] md:text-[44px]">Cómo empezó</h2>
             <p className="mt-3 max-w-[60ch] leading-relaxed">
               [Historia del local: el año en que abrió, quién lo fundó y cómo creció. Texto a cargar
-              por Juan.]
+              por Mateo.]
             </p>
           </section>
           <section>
@@ -46,7 +49,7 @@ export default async function QuienesSomos() {
             <ul className="mt-3 flex list-disc flex-col gap-2 pl-6">
               <li>La batería justa para tu auto, por marca, modelo y año.</li>
               <li>Colocación incluida en el local y en Mar del Plata.</li>
-              <li>12 meses de garantía en todas las baterías.</li>
+              <li>Garantía en todas: 18 meses las Sermat de 12x45 a 12x75 y 12 meses el resto.</li>
               <li>Retiramos la batería usada para reciclarla.</li>
             </ul>
           </section>
@@ -60,12 +63,7 @@ export default async function QuienesSomos() {
             </a>
           </div>
         </div>
-        <figure className="grid aspect-[4/3] place-items-center self-start rounded-md bg-negro text-center text-gris-400">
-          <div>
-            <ImageIcon aria-hidden size={48} strokeWidth={1.5} className="mx-auto" />
-            <figcaption className="mt-3 font-semibold">[Foto del local o del equipo]</figcaption>
-          </div>
-        </figure>
+        <FotosLocal className="self-start" />
       </div>
     </>
   );

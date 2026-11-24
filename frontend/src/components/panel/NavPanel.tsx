@@ -7,6 +7,7 @@ import {
   ClipboardList,
   House,
   LogOut,
+  Mail,
   Menu,
   Package,
   Recycle,
@@ -20,7 +21,16 @@ import { useState } from 'react';
 import { enviar } from '@/lib/api';
 
 /** Barra lateral negra en la compu; en el celular, barra arriba con menú desplegable. */
-export function NavPanel({ email, resumen }: { email: string; resumen: ResumenAdmin }) {
+export function NavPanel({
+  email,
+  resumen,
+  urlMails,
+}: {
+  email: string;
+  resumen: ResumenAdmin;
+  /** Solo en la demo: la bandeja donde caen los mails que manda la tienda. */
+  urlMails?: string | null;
+}) {
   const ruta = usePathname();
   const router = useRouter();
   const [abierto, setAbierto] = useState(false);
@@ -78,6 +88,19 @@ export function NavPanel({ email, resumen }: { email: string; resumen: ResumenAd
               </Link>
             </li>
           ),
+        )}
+        {urlMails && (
+          <li>
+            <a
+              href={urlMails}
+              target="_blank"
+              rel="noopener"
+              className="flex min-h-12 items-center gap-3 rounded-sm px-3 font-semibold text-blanco no-underline transition-colors duration-150 hover:bg-gris-900"
+            >
+              <Mail aria-hidden size={22} />
+              Mails de la demo
+            </a>
+          </li>
         )}
       </ul>
       <div className="mt-6 border-t border-gris-800 pt-4">

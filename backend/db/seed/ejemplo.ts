@@ -6,6 +6,7 @@ import {
   vehiculos,
 } from '../../src/modules/compatibilidad/infrastructure/schema.js';
 import { slug } from '../../src/shared-kernel/slug.js';
+import { garantiaPorDefecto } from '../../src/modules/catalogo/domain/precios.js';
 
 /**
  * Datos de EJEMPLO para desarrollo y staging (escenarios de la spec). No son productos ni precios
@@ -14,9 +15,9 @@ import { slug } from '../../src/shared-kernel/slug.js';
 const PRODUCTOS = [
   {
     marca: 'Sermat',
-    nombre: 'Sermat 12x65 Económica',
+    nombre: 'Sermat 12x65 Reforzada',
     medida: '12x65',
-    gama: 'economica',
+    gama: 'reforzada',
     pesos: 100_000,
     stock: 5,
     estado: 'activo',
@@ -75,6 +76,7 @@ export async function sembrarEjemplo(db: BaseDeDatos): Promise<void> {
         gama: p.gama,
         precioLista: BigInt(p.pesos * 100),
         stock: p.stock,
+        garantiaMeses: garantiaPorDefecto(p.marca, p.medida),
         estado: p.estado,
         fuente: 'ejemplo',
       })

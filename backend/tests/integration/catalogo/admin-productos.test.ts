@@ -130,6 +130,21 @@ describe('productos desde el panel (FR-045)', () => {
     ).rejects.toMatchObject({ tipo: 'validacion' });
   });
 
+  test('garantía: sale de la regla al crear y el admin la puede cambiar (reunión 2026-11-17)', async () => {
+    const base = {
+      nombre: 'Sermat 12x65 R',
+      medida: '12x65',
+      amperajeAh: 65,
+      gama: 'reforzada' as const,
+    };
+    const sermat = await s().adminProductos.crear({ ...base, sku: 'GAR-1', marca: 'sermat' });
+    const herbo = await s().adminProductos.crear({ ...base, sku: 'GAR-2', marca: 'herbo' });
+    expect(sermat.garantiaMeses).toBe(18);
+    expect(herbo.garantiaMeses).toBe(12);
+    const editada = await s().adminProductos.editar(herbo.id, { garantiaMeses: 24 });
+    expect(editada.garantiaMeses).toBe(24);
+  });
+
   test('búsqueda por nombre, código o medida; "%" se busca como texto', async () => {
     await crearProducto(e.ctx.db, {
       marca: 'Herbo',

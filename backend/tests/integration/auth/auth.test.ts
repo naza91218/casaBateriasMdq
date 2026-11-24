@@ -129,3 +129,30 @@ describe('ingreso al panel con enlace por mail', () => {
     ).toBe(401);
   });
 });
+
+describe('ingreso directo de la demo (DEMO_INGRESO_DIRECTO)', () => {
+  test('sin la variable, la ruta no existe', async () => {
+    const r = await app.inject({ method: 'GET', url: '/api/v1/auth/demo' });
+    expect(r.statusCode).toBe(404);
+  });
+
+  test('con la variable, entra al panel sin mail', async () => {
+    const demo = crearContextoDePrueba({ DEMO_INGRESO_DIRECTO: 'admin@tienda.test' });
+    const appDemo = await construirServidor(demo.ctx, { sinLimites: true });
+    try {
+      const r = await appDemo.inject({ method: 'GET', url: '/api/v1/auth/demo' });
+      expect(r.statusCode).toBe(302);
+      expect(r.headers.location).toMatch(/\/panel$/);
+      const id = r.cookies.find((c) => c.name === 'sesion')?.value ?? '';
+      const sesion = await appDemo.inject({
+        method: 'GET',
+        url: '/api/v1/auth/sesion',
+        cookies: { sesion: id },
+      });
+      expect(sesion.json().usuario.email).toBe('admin@tienda.test');
+    } finally {
+      await appDemo.close();
+      await demo.ctx.cerrar();
+    }
+  });
+});

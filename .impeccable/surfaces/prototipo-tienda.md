@@ -8,7 +8,7 @@ related_targets: []
 # Prototipo tienda (web y mobile)
 
 Scope: tienda pública (inicio, resultado por auto, ficha, checkout, pedido) y panel, en mesa de diseño. Mode: Persuade en inicio; Operate en checkout, pedido y panel.
-Audience: automovilistas de Mar del Plata, incluida gente grande; Juan en el panel. Action: buscar el auto y comprar. Proof: 45 años, servicio incluido, marcas nacionales. Constraints: DISENO_UI.md y banners del usuario (pinned).
+Audience: automovilistas de Mar del Plata, incluida gente grande; Mateo en el panel. Action: buscar el auto y comprar. Proof: 45 años, servicio incluido, marcas nacionales. Constraints: DISENO_UI.md y banners del usuario (pinned).
 Unresolved: precios reales, fotos de Herbo/Edna/Volta, licencia web de Sport Headline.
 
 ## Direction contract

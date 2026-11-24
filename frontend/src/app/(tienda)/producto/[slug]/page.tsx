@@ -7,6 +7,7 @@ import { cache } from 'react';
 import { Medir } from '@/components/Analitica';
 import { AgregarAlCarrito } from '@/components/catalogo/AgregarAlCarrito';
 import { ErrorApi, pedir } from '@/lib/api';
+import { fotoDeMarca } from '@/lib/foto-marca';
 import { pesos } from '@/lib/formato';
 
 const GAMA = { economica: 'Económica', reforzada: 'Reforzada' } as const;
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!p) return { title: 'Batería no encontrada' };
   return {
     title: `${p.nombre} con colocación en Mar del Plata`,
-    description: `Batería ${p.nombre}: ${pesos(p.precios.transferenciaOEfectivo)} con transferencia. Colocación incluida y 12 meses de garantía.`,
+    description: `Batería ${p.nombre}: ${pesos(p.precios.transferenciaOEfectivo)} con transferencia. Colocación incluida y ${p.garantiaMeses} meses de garantía.`,
   };
 }
 
@@ -46,7 +47,7 @@ export default async function Ficha({ params }: Props) {
     ['Corriente de arranque', p.cca ? `${p.cca} A` : '[a confirmar]'],
     ['Gama', GAMA[p.gama]],
     ['Marca', p.marca.nombre],
-    ['Garantía', '12 meses'],
+    ['Garantía', `${p.garantiaMeses} meses`],
   ];
 
   // Datos estructurados para Google (FR-053): producto con precio y disponibilidad.
@@ -86,9 +87,20 @@ export default async function Ficha({ params }: Props) {
         <div className="mt-4 grid gap-10 md:grid-cols-[1.05fr_1fr] md:gap-14">
           {/* Fotos */}
           <div>
-            <div className="grid aspect-[4/3] place-items-center rounded-md bg-gris-100 p-8">
+            <div className="relative grid aspect-[4/3] place-items-center rounded-md bg-gris-100 p-8">
               {fotos[0] ? (
                 <img src={fotos[0]} alt={p.nombre} className="h-full w-auto object-contain" />
+              ) : fotoDeMarca(p.marca.slug) ? (
+                <>
+                  <img
+                    src={fotoDeMarca(p.marca.slug) ?? ''}
+                    alt={`Batería ${p.marca.nombre} (foto ilustrativa)`}
+                    className="h-full w-auto object-contain"
+                  />
+                  <span className="absolute right-3 bottom-3 rounded-sm bg-blanco/90 px-2.5 py-1 text-[15px] font-semibold text-gris-600">
+                    Foto ilustrativa
+                  </span>
+                </>
               ) : (
                 <span className="flex flex-col items-center gap-2 font-semibold text-gris-600">
                   <ImageIcon aria-hidden size={48} strokeWidth={1.5} />

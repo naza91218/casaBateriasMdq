@@ -9,7 +9,7 @@ import { noEncontrado } from '../../../shared-kernel/errores.js';
 import { Dinero } from '../../../shared-kernel/dinero.js';
 import { enlaceWhatsapp, mensajes } from '../../../shared-kernel/whatsapp.js';
 import type { ServicioConfiguracion } from '../../configuracion/application/configuracion.js';
-import { calcularPrecios, EXPLICACION_GAMA, SERVICIO_INCLUIDO } from '../domain/precios.js';
+import { calcularPrecios, EXPLICACION_GAMA, servicioIncluido } from '../domain/precios.js';
 import type {
   FiltrosListado,
   FilaProducto,
@@ -73,7 +73,7 @@ export class ServicioCatalogo {
       descripcion: fila.descripcion,
       fotos: (fotos.get(fila.id) ?? []).map(this.d.urlFoto),
       explicacionGama: EXPLICACION_GAMA[fila.gama],
-      servicioIncluido: [...SERVICIO_INCLUIDO],
+      servicioIncluido: servicioIncluido(fila.garantiaMeses),
       autosCompatibles: autos,
       whatsapp: enlaceWhatsapp(config.whatsapp, mensajes.consultaProducto(fila.nombre)),
     };
@@ -97,6 +97,7 @@ export class ServicioCatalogo {
         gama: f.gama,
         amperajeAh: f.amperajeAh,
         cca: f.cca,
+        garantiaMeses: f.garantiaMeses,
         precios: {
           lista: precios.lista.aNumero(),
           transferenciaOEfectivo: precios.transferenciaOEfectivo.aNumero(),

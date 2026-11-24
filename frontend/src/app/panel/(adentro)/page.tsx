@@ -5,7 +5,7 @@ import { pedirPanel } from '@/lib/panel';
 
 export const metadata = { title: 'Inicio' };
 
-/** Lo que espera a Juan al abrir el panel (FR-043): cada contador lleva a su lista. */
+/** Lo que espera a Mateo al abrir el panel (FR-043): cada contador lleva a su lista. */
 export default async function Inicio() {
   const r = await pedirPanel<ResumenAdmin>('/admin/resumen');
   const tarjetas = [

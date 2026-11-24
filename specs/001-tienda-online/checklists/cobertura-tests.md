@@ -35,7 +35,7 @@ Para buscar el test de un escenario: `git grep -n "US2-09" backend/tests`.
 | :- | :- | :- |
 | US1-05 | El buscador recuerda el último auto | Frontend (fase 11): Playwright |
 | US1-10 | Buscador usable a 375 px | Frontend (fase 11): Playwright con viewport de celular |
-| US3-08 | Juan gestiona un pedido sin ayuda en menos de 3 minutos | A mano, con la guía de uso, antes de salir |
+| US3-08 | Mateo gestiona un pedido sin ayuda en menos de 3 minutos | A mano, con la guía de uso, antes de salir |
 | US4-06 | Reputación de los mails ≥ 9/10 | A mano en staging con mail-tester.com (`infra/README.md`) |
 | US6-01 | Portada en 375 × 667 sin desplazamiento | Frontend (fase 11): Playwright |
 | US6-02 | Página del auto legible sin JavaScript | Frontend (fase 11): test que pide el HTML sin ejecutar scripts. Los datos ya los da `GET /vehiculos/:marca/:modelo` |

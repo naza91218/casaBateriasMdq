@@ -22,6 +22,11 @@ colors:
   verde-ok: "#187A33"
   amarillo-aviso: "#B87900"
   whatsapp: "#25D366"
+  carcasa: "#121212"
+  carcasa-relieve: "#1D1D1D"
+  plomo: "#9A9EA3"
+  etiqueta: "#F3F2EE"
+  ojo: "#2FBF4A"
 typography:
   display:
     fontFamily: "Barlow Condensed, sans-serif"
@@ -177,20 +182,19 @@ components:
 
 ## Overview
 
-**Creative North Star: "Cartel de servicio"**
+**Creative North Star: "La batería por dentro"** (portada, 23/11/2026)
 
-La voz fuerte de la marca (negro, rojo y el patrón de rayos del isotipo) puesta al servicio de una compra simple. Los banners impresos del local son la fuente de esa voz, pero la página no los imita: dice primero qué se compra y qué se recibe ("La batería de tu auto, colocada en tu casa"), muestra las baterías reales a todo color y deja la acción a la vista. El cartel aporta energía. El servicio aporta el orden.
+La portada usa el material de una batería de auto (carcasa con nervaduras, etiqueta con la banda de la marca, insignias en relieve, bornes y el ojo mágico) sin convertir el hero en un objeto. El hero (rehecho el 23/11/2026, porque la batería de frente no convenció) es el de "Cartel de servicio" mejorado: titular grande a la izquierda sobre el negro con rayos, las baterías reales a la derecha bajo un foco de estudio y sobre la losa de la marca, con su reflejo, e insignias en relieve debajo de los botones. El buscador es una etiqueta que se monta sobre el borde inferior del hero, así la acción se ve desde el primer vistazo, y su ojo mágico se pone verde cuando el auto queda completo. La carcasa aparece en las tarjetas de marca, la gama reforzada, la franja y el cierre.
 
-El diseño es plano, con la lógica de "confianza y conversión" de un servicio local: colores sólidos, sin degradés ni sombras, líneas limpias y mucho aire. Las secciones van a ancho completo y alternan blanco, gris claro, negro con rayos y un solo campo rojo con rayos, cada una con un solo mensaje. Lo que se lee de lejos (titulares) va en Barlow Condensed en mayúsculas. Lo que se lee de cerca y se toca va en Barlow, grande y con mucho contraste, porque entre los compradores hay mucha gente grande.
-
-La propuesta anterior (tríptico tipo banner, campo naranja al centro con las baterías en penumbra) se descartó el 02/11/2026: el usuario dijo que no lo convencía para nada.
+Reemplaza a "Cartel de servicio" (plano, sin sombras), que el usuario sintió básico y poco actual. Se conservan la paleta, el isotipo, los rayos, la tipografía, la voz y el orden de la compra. El resto de la tienda (catálogo, ficha, carrito, checkout, panel) todavía usa el sistema anterior y se lleva a este mundo después.
 
 **Key Characteristics:**
-- Rojo de marca para la acción y los íconos; negro y blanco para todo lo demás; un solo campo rojo por página.
-- Patrón de rayos del isotipo como textura del negro (hero, cierre) y del campo rojo (historia).
+- Carcasa negra con nervaduras y luz cenital, etiqueta clara con la banda de la marca, insignias en relieve, bornes de plomo y el ojo mágico.
+- El rojo tiene un solo significado: actuar (botones, enlaces, el polo positivo). Nada decorativo va en rojo.
+- El verde (ojo mágico, celdas, línea de pasos, checks) dice que algo quedó bien, siempre acompañado de texto.
+- Profundidad real: sombras con desplazamiento y desenfoque, relieves con luz arriba y sombra abajo.
 - Barlow Condensed 800 en mayúsculas para titulares; Barlow 500 a 18 px para el texto.
-- Esquinas casi rectas (4 a 6 px), bordes de 2 px y nada de sombras.
-- Baterías reales recortadas, a todo color.
+- Baterías reales recortadas, a todo color, bajo luz de estudio.
 - Objetivos táctiles de 48 px o más; selectores de 60 px y botones de 56 px.
 
 ## Colors
@@ -270,18 +274,18 @@ Huecos habituales de 12, 20 y 40 px. El encabezado queda fijo arriba, y el ancla
 
 ## Elevation & Depth
 
-El sistema es plano: no hay sombras. La profundidad sale del contraste entre fondos (blanco, gris claro, negro, campo), de los bordes de 2 px y del patrón de rayos.
-
-La única superposición es de forma, no de luz: las dos baterías del hero se apoyan sobre una losa en paralelogramo color campo, y la etiqueta del slogan se monta sobre ese borde.
+La profundidad sale del material. La carcasa tiene luz cenital (un brillo radial arriba), un filo claro de 1 px arriba, uno oscuro abajo y una sombra apoyada larga (0 44 px 80 px −34 px). La etiqueta se apoya sobre la carcasa con un filo blanco interior, un contorno oscuro de 1 px y una sombra corta. Las insignias son relieves: degradé de #202020 a #151515, filo claro arriba y oscuro abajo; su ícono va en un hueco hundido (sombra interior). Las baterías de la vitrina llevan un foco radial detrás y un reflejo hacia abajo (`-webkit-box-reflect`, solo donde existe).
 
 ### Named Rules
-**The Plano Rule.** Nada lleva `box-shadow` de elevación. El único uso de sombra es un halo blanco de 10 px que corta la línea de pasos alrededor de cada número, y es un recurso de forma.
+**The Una Luz Rule.** Hay un solo punto de máxima luz por pantalla: el botón del buscador, que se enciende (halo rojo y sombra) cuando el auto está completo.
+**The Profundidad Es Jerarquía Rule.** Lo que se toca está en el plano más cercano y más claro (la etiqueta); lo informativo va en relieve sobre la carcasa.
 
 ## Shapes
 
-Esquinas casi rectas en todo lo que se toca:
-- 4 px en botones, selectores, íconos en cuadrado y marcas de check;
-- 6 px en tarjetas;
+Esquinas casi rectas en todo lo que se toca, y redondeos de objeto moldeado en el material:
+- 4 px en botones, selectores y números de paso;
+- 6 px en tarjetas del sistema anterior;
+- 12 px en insignias; 16 px en etiquetas y en las gamas; 20 px en las tarjetas de marca; 28 px en la carcasa del hero y del cierre;
 - 2 px en las celdas de la batería;
 - píldora solo para el botón de WhatsApp y los estados del panel.
 
@@ -313,11 +317,18 @@ Firmes y planos: un solo color, esquinas casi rectas y el hover que solo cambia 
 - **Error / Disabled:** el error es un borde Rojo Texto con el mensaje debajo, que el lector de pantalla anuncia. Deshabilitado es gris fondo con texto gris.
 
 ### Navigation
-- **Encabezado:** blanco, fijo y de 72 px (64 px en celular), con borde inferior gris. Lleva el logo (isotipo en degradé y nombre en Sport Headline), los enlaces en Barlow 600 de 17 px (pasan a Rojo Texto en hover), "Consultanos" con ícono, el botón rojo "Buscar mi batería" y el carrito de 48 px.
+- **Encabezado:** negro liso (el mismo del hero) con una línea blanca al 8 % abajo, fijo y de 72 px (64 px en celular). Al bajar, el logo se achica al 86 % sin cambiar la altura. Lleva el logo en versión oscura, los enlaces en Barlow 600 de 17 px blancos (pasan a naranja en hover), "Consultanos" con ícono, el botón rojo "Buscar mi batería" y el carrito de 48 px.
 - **Debajo de 1200 px:** un botón de menú de 48 px que despliega los enlaces en filas de 56 px y dos botones de ancho completo.
 
-### Batería del buscador (firma)
-Un contorno de batería de 76 × 30 px con tres celdas que pasan de gris borde a Rojo Casa al elegir marca, modelo y año, al lado del estado en vivo ("Paso 1 de 3: elegí la marca"). Si el modelo no distingue años, la tercera celda se carga con el modelo.
+### Batería del buscador y ojo mágico (firma)
+El ojo mágico (44 px: anillo de plomo, centro negro con brillo) pasa a verde con un halo cuando el auto queda completo. Al lado, un contorno de batería de 76 × 30 px con tres celdas que se cargan en verde al elegir marca, modelo y año, y el estado en vivo ("Paso 1 de 3: elegí la marca" … "Listo: Gol Trend 2015"). Si el modelo no distingue años, la tercera celda se carga con el modelo. En la etiqueta del hero las opciones dicen solo "Elegí", porque el rótulo ya nombra el campo.
+
+### Carcasa, etiqueta, insignias y bornes
+- **Carcasa:** #121212 con la baldosa `/bateria/nervaduras.svg` (24 × 8 px), luz cenital y sombra apoyada. Hero, tarjetas de marca, gama reforzada, franja y cierre.
+- **Etiqueta:** #F3F2EE, 16 px de radio, con la banda impresa arriba (campo con rayos, 126 × 36 px) que lleva el nombre en Sport Headline y "12 V". Buscador, gama económica, nombre de cada marca y medios de pago.
+- **Insignia:** relieve de 12 px de radio con ícono de Lucide en un hueco de 40 px y texto Barlow 700. Fila de confianza debajo del hero y el slogan "45 años cargando confianza".
+- **Bornes:** `/bateria/borne-positivo.svg` (anillo rojo y +) y `borne-negativo.svg` (−), asomando arriba de la carcasa del hero y del cierre.
+- **Vitrina:** foco radial y reflejo debajo de las fotos de producto.
 
 ### Marcas de confianza
 Cuadrado de 24 px (naranja sobre negro, rojo sobre blanco) con un check, seguido de la frase en Barlow 600. Van en el hero (colocación incluida, 12 meses de garantía, marcas nacionales) y en las listas de gamas.
@@ -331,13 +342,16 @@ Píldoras de 28 px: Pendiente de pago (amarillo, texto negro), Pagado (verde, te
 - **Do** decir en el titular del hero qué se compra y qué se recibe, con las baterías reales a todo color al lado.
 - **Do** usar Rojo Acción (#E01E08) para el botón principal, así el texto blanco llega a 4,8:1.
 - **Do** mantener botones de 56 px, selectores de 60 px y todo objetivo táctil en 48 px o más.
-- **Do** poner el patrón de rayos sobre el negro del hero y del cierre, y sobre el único campo rojo.
+- **Do** poner el patrón de rayos en la banda impresa de las etiquetas y en el único campo rojo (historia).
+- **Do** decir cada estado con texto además del color (ojo mágico, celdas, pasos).
 - **Do** dejar siempre una salida a WhatsApp: botón flotante (que se aparta en el celular mientras se ve el buscador), enlace bajo el buscador y botón de cierre.
 - **Do** usar solo fotos del usuario o derivadas de sus archivos; si falta una, un marcador con el texto entre corchetes.
 - **Do** usar números tabulares en precios, medidas, totales y tablas.
 
 ### Don't:
-- **Don't** usar sombras de elevación ni degradés en superficies o botones (la única excepción es el degradé del isotipo).
+- **Don't** usar rojo para adornar: ni titulares, ni íconos, ni checks. El rojo es para actuar.
+- **Don't** exagerar el relieve hasta que parezca un juguete 3D: el texto siempre va sobre superficies lisas y con contraste alto.
+- **Don't** poner sombras duras sin desenfoque ni halos de color como decoración.
 - **Don't** poner más de un campo de color por página.
 - **Don't** usar Barlow Condensed en párrafos, botones, campos o en el panel.
 - **Don't** oscurecer ni desaturar las fotos de producto (lo que se descartó con el tríptico).

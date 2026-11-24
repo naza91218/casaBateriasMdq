@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: '%s · La Casa de las Baterías',
   },
   description:
-    'Buscá la batería de tu auto por marca, modelo y año. Te la colocamos en Mar del Plata, con 12 meses de garantía. 45 años en el mercado.',
+    'Buscá la batería de tu auto por marca, modelo y año. Te la colocamos en Mar del Plata, con hasta 18 meses de garantía. 45 años en el mercado.',
 };
 
 export const viewport: Viewport = { themeColor: '#0b0b0b' };

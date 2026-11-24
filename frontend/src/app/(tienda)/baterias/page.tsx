@@ -3,19 +3,30 @@ import { PATRON_MEDIDA } from '@casa/shared/medidas';
 import { ChevronLeft, ChevronRight, MessageCircle, SlidersHorizontal } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Palabras } from '@/components/Palabras';
 import { TarjetaProducto } from '@/components/catalogo/TarjetaProducto';
-import { intentar, pedir } from '@/lib/api';
+import { Buscador } from '@/components/portada/Buscador';
+import { api, intentar, pedir } from '@/lib/api';
 import { datosTienda, whatsappDe } from '@/lib/tienda';
 
 export const metadata: Metadata = {
-  title: 'Todas las baterías',
+  title: 'Catálogo de baterías',
   description:
-    'Baterías Sermat, Edna, Herbo y Volta en Mar del Plata, económicas y reforzadas, con colocación incluida y 12 meses de garantía.',
+    'Baterías Sermat, Edna, Herbo y Volta en Mar del Plata, económicas y reforzadas, con colocación incluida y hasta 18 meses de garantía.',
 };
 
-type Params = { marca?: string; medida?: string; gama?: string; pagina?: string };
+type Params = { marca?: string; medida?: string; gama?: string; orden?: string; pagina?: string };
 
 const POR_PAGINA = 24;
+const ORDENES = [
+  ['relevantes', 'Más relevantes'],
+  ['precio-asc', 'Menor precio'],
+  ['precio-desc', 'Mayor precio'],
+  ['amperaje', 'Mayor amperaje'],
+  ['nombre', 'Nombre (A-Z)'],
+] as const;
+type Orden = (typeof ORDENES)[number][0];
+
 const GAMAS = [
   ['', 'Todas'],
   ['economica', 'Económicas'],
@@ -35,18 +46,21 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
   const marca = p.marca || undefined;
   const medida = p.medida && PATRON_MEDIDA.test(p.medida) ? p.medida : undefined;
   const gama = p.gama === 'economica' || p.gama === 'reforzada' ? p.gama : undefined;
+  const orden: Orden = ORDENES.some(([v]) => v === p.orden) ? (p.orden as Orden) : 'relevantes';
   const pagina = Math.max(1, Number.parseInt(p.pagina ?? '1', 10) || 1);
 
   const q = new URLSearchParams({ pagina: String(pagina), porPagina: String(POR_PAGINA) });
   if (marca) q.set('marca', marca);
   if (medida) q.set('medida', medida);
   if (gama) q.set('gama', gama);
+  if (orden !== 'relevantes') q.set('orden', orden);
 
-  const [listado, marcas, medidas, datos] = await Promise.all([
+  const [listado, marcas, medidas, datos, marcasAutos] = await Promise.all([
     intentar(pedir<ListadoProductos>(`/catalogo/productos?${q}`, { etiquetas: ['catalogo'] })),
     intentar(pedir<MarcaCatalogo[]>('/catalogo/marcas', { etiquetas: ['catalogo'] })),
     intentar(pedir<Medida[]>('/catalogo/medidas', { etiquetas: ['catalogo'] })),
     datosTienda(),
+    intentar(api.marcas()),
   ]);
   const whatsappUrl = whatsappDe(datos);
   const paginas = listado ? Math.ceil(listado.total / POR_PAGINA) : 0;
@@ -56,31 +70,30 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
     <>
       <section aria-labelledby="catalogo-titulo" className="bg-gris-100">
         <div className="mx-auto max-w-[1200px] px-4 py-10 md:px-12 md:py-14">
-          <h1 id="catalogo-titulo" className="titular text-[44px] md:text-[64px]">
-            Todas las baterías
+          <h1 id="catalogo-titulo" className="al-cargar titular text-[48px] md:text-[72px]">
+            <Palabras texto="Catálogo" />
           </h1>
           <p className="mt-3 max-w-[60ch] text-[19px]">
-            ¿No sabés cuál lleva tu auto?{' '}
-            <Link
-              href="/#buscador"
-              className="font-semibold text-rojo-texto underline hover:text-negro"
-            >
-              Buscala por marca, modelo y año
-            </Link>{' '}
-            y te mostramos solo las que le sirven.
+            Todas nuestras baterías, con colocación incluida. Si no sabés la medida, buscala por tu
+            auto; si la sabés, filtrá por medida, marca y gama.
           </p>
+          <div className="mt-8">
+            <Buscador marcas={marcasAutos} whatsapp={datos.whatsapp} />
+          </div>
+
+          <h2 className="titular mt-12 text-[30px] md:text-[38px]">O filtrá por medida</h2>
 
           {/* Filtros: un formulario GET, así funcionan sin JavaScript y la dirección se puede compartir. */}
           <form
             action="/baterias"
-            className="mt-8 grid gap-4 md:grid-cols-[1fr_1fr_auto_auto] md:items-end"
+            className="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_auto] lg:grid-cols-[1fr_1fr_auto_1fr_auto] md:items-end"
           >
             <div className="flex flex-col gap-2">
               <label htmlFor="f-marca" className="text-[17px] font-bold">
                 Marca
               </label>
               <select id="f-marca" name="marca" defaultValue={marca ?? ''} className="selector">
-                <option value="">Todas las marcas</option>
+                <option value="">Todas</option>
                 {marcas?.map((m) => (
                   <option key={m.slug} value={m.slug}>
                     {m.nombre}
@@ -98,7 +111,7 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
                 defaultValue={medida ?? ''}
                 className="selector num"
               >
-                <option value="">Todas las medidas</option>
+                <option value="">Todas</option>
                 {medidas?.map((m) => (
                   <option key={m.codigo} value={m.codigo}>
                     {m.codigo}
@@ -126,6 +139,18 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
                 ))}
               </div>
             </fieldset>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="f-orden" className="text-[17px] font-bold">
+                Ordenar por
+              </label>
+              <select id="f-orden" name="orden" defaultValue={orden} className="selector">
+                {ORDENES.map(([valor, texto]) => (
+                  <option key={valor} value={valor}>
+                    {texto}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button type="submit" className="boton boton-negro">
               <SlidersHorizontal aria-hidden size={22} />
               Filtrar

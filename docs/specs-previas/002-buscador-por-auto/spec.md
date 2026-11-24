@@ -12,7 +12,7 @@ Que nadie tenga que saber qué medida lleva su auto: elige marca, modelo y año,
 
 * Como **comprador**, quiero elegir mi auto y ver solo las baterías compatibles.
 * Como **comprador cuyo auto no aparece**, quiero consultar por WhatsApp sin volver a explicar mi auto.
-* Como **Juan**, quiero cargar y corregir qué medida lleva cada auto.
+* Como **Mateo**, quiero cargar y corregir qué medida lleva cada auto.
 
 ## Requisitos
 

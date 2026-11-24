@@ -1,4 +1,5 @@
 import { Buscador } from '@/components/portada/Buscador';
+import { Franja } from '@/components/portada/Franja';
 import { Hero } from '@/components/portada/Hero';
 import {
   Beneficios,
@@ -18,16 +19,21 @@ export default async function Portada() {
   return (
     <>
       <Hero whatsappUrl={whatsappUrl} />
-      <section aria-label="Buscador por auto" className="bg-gris-100 px-4 py-12 md:px-12 md:py-16">
+      {/* El buscador se monta sobre el borde del hero: la acción se ve desde el primer vistazo. */}
+      <section
+        aria-label="Buscador por auto"
+        className="relative z-10 -mt-24 px-4 md:-mt-28 md:px-12"
+      >
         <Buscador marcas={marcas} whatsapp={datos.whatsapp} />
       </section>
       <Beneficios />
       <Marcas />
       <Pasos />
+      <Franja />
       <Gamas whatsappUrl={whatsappUrl} />
       <Historia />
       <Pagos descuentoPct={datos.descuentoPct} />
-      <Cierre whatsappUrl={whatsappUrl} />
+      <Cierre whatsappUrl={whatsappUrl} domicilio={datos.domicilio} horarios={datos.horarios} />
     </>
   );
 }

@@ -234,7 +234,7 @@ cerrado y se refina en ese momento.
 - [X] T113 [US5] Implementar la fuente Sermat/Volta desde el catálogo oficial en PDF que pasó el cliente (fichas técnicas y batería estándar/opcional por auto) en `tools/scraper/src/fuentes/sermat-pdf.ts`, con la lista pública de un distribuidor como respaldo en `tools/scraper/src/fuentes/sermat-volta.ts`
 - [X] T114 [US5] Crear la planilla manual de Edna con el formato de importación en `tools/scraper/manual/edna.csv` y unificar las tres fuentes en `data/import/productos.csv` y `data/import/compatibilidades.csv`
 
-**Checkpoint**: validaciones 9 y 10 de [quickstart.md](quickstart.md) pasan; planillas iniciales listas para que Juan las revise
+**Checkpoint**: validaciones 9 y 10 de [quickstart.md](quickstart.md) pasan; planillas iniciales listas para que Mateo las revise
 
 ---
 
@@ -424,9 +424,9 @@ Task: "Esquema de pagos en backend/src/modules/pagos/infrastructure/schema.ts"
 ### Entrega incremental
 
 1. + US3 (panel de pedidos) → el admin confirma transferencias.
-2. + US5 (catálogo, importación y scraper) → Juan revisa las planillas.
+2. + US5 (catálogo, importación y scraper) → Mateo revisa las planillas.
 3. + US4 y US7 → mails completos y legales.
-4. + US8 → staging en el VPS; demo a Juan.
+4. + US8 → staging en el VPS; demo a Mateo.
 5. + US6 backend → datos para SEO y GEO.
 6. Frontend cuando el diseño esté cerrado; después, salida a producción.
 

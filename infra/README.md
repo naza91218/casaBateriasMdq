@@ -7,14 +7,14 @@ y el despliegue en el VPS.
 
 En desarrollo los mails van a **Mailpit** (http://localhost:8025) y no salen a internet. En
 staging y producción salen por **Resend**, desde una dirección del dominio del negocio, por ejemplo
-`pedidos@lacasadelasbaterias.com.ar`. Para que Gmail y Hotmail no los manden a spam, el dominio
+`pedidos@casadelasbaterias.com.ar`. Para que Gmail y Hotmail no los manden a spam, el dominio
 tiene que demostrar que Resend puede enviar en su nombre. Eso se hace con tres registros DNS.
 
 ### 1. Alta del dominio en Resend
 
 1. Crear la cuenta en [resend.com](https://resend.com) con un mail del negocio, no con uno personal.
 2. **Domains → Add domain.** Conviene usar un subdominio solo para los mails, como
-   `mail.lacasadelasbaterias.com.ar`: si algún día hay un problema de reputación, no afecta al
+   `mail.casadelasbaterias.com.ar`: si algún día hay un problema de reputación, no afecta al
    mail del local. Región: **São Paulo (sa-east-1)**, la más cercana.
 3. Resend muestra los registros que hay que cargar. Se copian **tal cual** en el panel DNS de
    donde está registrado el dominio (NIC Argentina delega en el proveedor: HostGator, Cloudflare,
@@ -26,7 +26,7 @@ tiene que demostrar que Resend puede enviar en su nombre. Eso se hace con tres r
 | :- | :- | :- |
 | **SPF** | `TXT` en `send.mail…` con `v=spf1 include:amazonses.com ~all` (y un `MX` que da Resend) | Dice qué servidores pueden mandar mails del dominio |
 | **DKIM** | `TXT` en `resend._domainkey.mail…` con la clave pública que da Resend | Firma cada mail; el receptor comprueba que nadie lo modificó |
-| **DMARC** | `TXT` en `_dmarc.lacasadelasbaterias.com.ar` | Dice qué hacer con los mails que fallan SPF o DKIM y a dónde mandar los reportes |
+| **DMARC** | `TXT` en `_dmarc.casadelasbaterias.com.ar` | Dice qué hacer con los mails que fallan SPF o DKIM y a dónde mandar los reportes |
 
 Si el dominio ya tiene un SPF (por ejemplo, del mail de HostGator), **no se crea un segundo
 registro**: se agrega el `include:` al existente. Dos registros SPF hacen fallar a los dos.
@@ -34,7 +34,7 @@ registro**: se agrega el `include:` al existente. Dos registros SPF hacen fallar
 DMARC, para arrancar:
 
 ```
-v=DMARC1; p=none; rua=mailto:dmarc@lacasadelasbaterias.com.ar; adkim=r; aspf=r
+v=DMARC1; p=none; rua=mailto:dmarc@casadelasbaterias.com.ar; adkim=r; aspf=r
 ```
 
 Con `p=none` solo se reciben reportes. Después de 2 a 4 semanas sin fallas se pasa a
@@ -49,7 +49,7 @@ Con `p=none` solo se reciben reportes. Después de 2 a 4 semanas sin fallas se p
 
    ```
    RESEND_API_KEY=re_...
-   MAIL_FROM="La Casa de las Baterías <pedidos@mail.lacasadelasbaterias.com.ar>"
+   MAIL_FROM="La Casa de las Baterías <pedidos@mail.casadelasbaterias.com.ar>"
    MAIL_ADMIN=el-mail-del-administrador@...
    ```
 
@@ -82,7 +82,7 @@ Para ver cómo quedan los mails sin hacer pedidos: `pnpm --filter backend mails:
 
 ## Servidor (VPS): staging y producción (T131)
 
-Un solo VPS (Ubuntu 24.04; 2 GB de RAM alcanzan) corre los dos entornos con Docker. Nginx, en el
+Un solo VPS (Ubuntu 22.04 o 24.04; 2 GB de RAM alcanzan, el de HostGator tiene 4 GB y SSH en el puerto 22022) corre los dos entornos con Docker. Nginx, en el
 propio servidor, recibe el tráfico, pone el HTTPS y lo pasa a los contenedores, que solo
 escuchan en `127.0.0.1`.
 
@@ -125,20 +125,35 @@ mkdir -p /srv/casa/{scripts,staging,produccion} && chown -R deploy:deploy /srv/c
 
 ### 2. Nginx y HTTPS
 
+Los registros DNS `A` del dominio, de `www` y de `staging` tienen que apuntar ya a la IP del VPS.
+Los certificados se sacan primero, con el sitio por defecto de Nginx, porque las configuraciones
+de la tienda los necesitan para arrancar.
+
 ```bash
+apt install -y apache2-utils
 mkdir -p /etc/nginx/casa /var/www/certbot
-cp infra/nginx/comun.conf /etc/nginx/casa/
-cp infra/nginx/produccion.conf /etc/nginx/sites-available/casa-produccion
-cp infra/nginx/staging.conf /etc/nginx/sites-available/casa-staging
+
+# 1. Certificados (pide un mail para avisos de vencimiento y aceptar los términos)
+certbot certonly --webroot -w /var/www/html -d casadelasbaterias.com.ar -d www.casadelasbaterias.com.ar
+certbot certonly --webroot -w /var/www/html -d staging.casadelasbaterias.com.ar
+
+# 2. Configuración de la tienda (los .conf se copian antes desde la PC con scp)
+cp /tmp/comun.conf /etc/nginx/casa/
+cp /tmp/produccion.conf /etc/nginx/sites-available/casa-produccion
+cp /tmp/staging.conf /etc/nginx/sites-available/casa-staging
 ln -s /etc/nginx/sites-available/casa-produccion /etc/nginx/sites-enabled/
 ln -s /etc/nginx/sites-available/casa-staging /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
 htpasswd -c /etc/nginx/casa/staging.htpasswd cliente
-certbot certonly --nginx -d lacasadelasbaterias.com.ar -d www.lacasadelasbaterias.com.ar
-certbot certonly --nginx -d staging.lacasadelasbaterias.com.ar
 nginx -t && systemctl reload nginx
+
+# 3. Las renovaciones usan la carpeta que ahora sirve Nginx
+sed -i 's#/var/www/html#/var/www/certbot#' /etc/letsencrypt/renewal/*.conf
+certbot renew --dry-run
 ```
 
-Certbot renueva los certificados solo; para comprobarlo, `systemctl list-timers | grep certbot`. Los registros DNS `A` del dominio, de `www` y de `staging` apuntan a la IP del VPS.
+Nginx 1.18 (Ubuntu 22.04) no entiende `http2 on;`: por eso los `.conf` usan `listen 443 ssl http2`.
+Certbot renueva los certificados solo; para comprobarlo, `systemctl list-timers | grep certbot`.
 
 ### 3. Variables por entorno
 
@@ -148,7 +163,7 @@ Copiar `env.servidor.example` a `/srv/casa/<entorno>/.env`, completarlo y correr
 | :- | :- | :- |
 | `NODE_ENV` | `staging` | `production` |
 | `PUERTO_API` / `PUERTO_WEB` | 4001 / 3001 | 4000 / 3000 |
-| URLs | `https://staging.…` | `https://lacasadelasbaterias.com.ar` |
+| URLs | `https://staging.…` | `https://casadelasbaterias.com.ar` |
 | Mercado Pago | credenciales de prueba | credenciales reales |
 | `DNI_ENCRYPTION_KEY`, `REVALIDATE_SECRET`, `POSTGRES_PASSWORD` | propias | propias |
 
@@ -228,7 +243,7 @@ Hace falta la misma `DNI_ENCRYPTION_KEY`: guardarla en el gestor de contraseñas
 
 En [UptimeRobot](https://uptimerobot.com) (gratis), crear un monitor **HTTP(s)**:
 
-- dirección: `https://lacasadelasbaterias.com.ar/api/v1/salud`;
+- dirección: `https://casadelasbaterias.com.ar/api/v1/salud`;
 - frecuencia: cada **5 minutos**;
 - aviso al responsable por mail y por Telegram.
 

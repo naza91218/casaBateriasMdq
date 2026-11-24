@@ -73,14 +73,30 @@ export class ServicioAuth {
         )
         .returning({ usuarioId: enlacesIngreso.usuarioId });
       if (!enlace) return null;
-
-      const idSesion = tokenAleatorio();
-      const venceEn = new Date(ahora.getTime() + VIGENCIA_SESION);
-      await tx
-        .insert(sesiones)
-        .values({ idHash: hashToken(idSesion), usuarioId: enlace.usuarioId, venceEn });
-      return { idSesion, venceEn };
+      return this.abrirSesion(tx, enlace.usuarioId);
     });
+  }
+
+  /**
+   * Solo la demo (DEMO_INGRESO_DIRECTO): sesión sin enlace por mail, para un usuario activo.
+   * La configuración no deja activarlo en staging ni en producción.
+   */
+  async ingresoDirecto(email: string): Promise<{ idSesion: string; venceEn: Date } | null> {
+    const [usuario] = await this.db
+      .select({ id: usuariosPanel.id })
+      .from(usuariosPanel)
+      .where(and(eq(usuariosPanel.email, email.trim()), eq(usuariosPanel.activo, true)));
+    return usuario ? this.abrirSesion(this.db, usuario.id) : null;
+  }
+
+  private async abrirSesion(
+    db: Pick<BaseDeDatos, 'insert'>,
+    usuarioId: string,
+  ): Promise<{ idSesion: string; venceEn: Date }> {
+    const idSesion = tokenAleatorio();
+    const venceEn = new Date(this.reloj.ahora().getTime() + VIGENCIA_SESION);
+    await db.insert(sesiones).values({ idHash: hashToken(idSesion), usuarioId, venceEn });
+    return { idSesion, venceEn };
   }
 
   async usuarioDeSesion(idSesion: string): Promise<UsuarioPanel | null> {

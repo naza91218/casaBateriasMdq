@@ -19,10 +19,14 @@ type Carga<T> =
 export function Buscador({
   marcas,
   whatsapp,
+  variante = 'tarjeta',
 }: {
   marcas: OpcionVehiculo[] | null;
   whatsapp: string;
+  /** "etiqueta": va dentro de la etiqueta del hero, que ya tiene el titular. */
+  variante?: 'tarjeta' | 'etiqueta';
 }) {
+  const enEtiqueta = variante === 'etiqueta';
   const router = useRouter();
   const id = useId();
   const [marca, setMarca] = useState('');
@@ -113,16 +117,29 @@ export function Buscador({
       onSubmit={buscar}
       noValidate
       aria-labelledby={`${id}-titulo`}
-      className="relative mx-auto w-full max-w-[1104px] rounded-md border-2 border-negro bg-blanco px-4 py-6 md:px-8 md:py-8"
+      className={
+        enEtiqueta
+          ? 'relative mt-6 w-full'
+          : 'etiqueta relative mx-auto w-full max-w-[1104px] px-4 pb-6 md:px-8 md:pb-8'
+      }
     >
-      <h2 id={`${id}-titulo`} className="titular text-[38px] md:text-[52px]">
+      {!enEtiqueta && <p aria-hidden className="etiqueta-banda -mx-4 mb-6 h-3 md:-mx-8 md:mb-8" />}
+      <h2
+        id={`${id}-titulo`}
+        className={enEtiqueta ? 'sr-only' : 'titular text-[38px] md:text-[52px]'}
+      >
         Buscá la batería de tu auto
       </h2>
-      <p className="mt-2 max-w-[60ch] text-gris-600">
-        No hace falta saber la medida: elegí marca, modelo y año y te mostramos solo las que le
-        sirven.
-      </p>
-      <div className="mt-5 mb-5 flex items-center gap-4 border-t-2 border-gris-200 pt-5">
+      {!enEtiqueta && (
+        <p className="mt-2 max-w-[60ch] text-gris-600">
+          No hace falta saber la medida: elegí marca, modelo y año y te mostramos solo las que le
+          sirven.
+        </p>
+      )}
+      <div
+        className={`flex items-center gap-4 border-gris-300 ${enEtiqueta ? 'mb-4 border-y-2 border-dashed py-3' : 'mt-5 mb-5 border-t-2 pt-5'}`}
+      >
+        <span aria-hidden className="ojo" data-estado={completo ? 'ok' : 'espera'} />
         <div
           className="bateria"
           role="img"
@@ -162,7 +179,13 @@ export function Buscador({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-[repeat(3,minmax(0,1fr))_auto] md:items-end">
+      <div
+        className={
+          enEtiqueta
+            ? 'grid gap-3 md:grid-cols-3'
+            : 'grid gap-3 md:grid-cols-[repeat(3,minmax(0,1fr))_auto] md:items-end'
+        }
+      >
         <Campo
           id={`${id}-marca`}
           paso={1}
@@ -185,7 +208,9 @@ export function Buscador({
               setFalta(null);
             }}
           >
-            <option value="">{marcas === null ? 'No disponible' : 'Elegí la marca'}</option>
+            <option value="">
+              {marcas === null ? 'No disponible' : enEtiqueta ? 'Elegí' : 'Elegí la marca'}
+            </option>
             {marcas?.map((m) => (
               <option key={m.slug} value={m.slug}>
                 {m.nombre}
@@ -215,7 +240,11 @@ export function Buscador({
             }}
           >
             <option value="">
-              {modelos.estado === 'cargando' ? 'Cargando modelos…' : 'Elegí el modelo'}
+              {modelos.estado === 'cargando'
+                ? 'Cargando…'
+                : enEtiqueta
+                  ? 'Elegí'
+                  : 'Elegí el modelo'}
             </option>
             {modelos.estado === 'listo' &&
               modelos.datos.map((m) => (
@@ -246,10 +275,14 @@ export function Buscador({
           >
             <option value="">
               {sinAnios
-                ? 'Todos los años'
+                ? enEtiqueta
+                  ? 'Todos'
+                  : 'Todos los años'
                 : anios.estado === 'cargando'
-                  ? 'Cargando años…'
-                  : 'Elegí el año'}
+                  ? 'Cargando…'
+                  : enEtiqueta
+                    ? 'Elegí'
+                    : 'Elegí el año'}
             </option>
             {anios.estado === 'listo' &&
               anios.datos.map((a) => (
@@ -264,13 +297,17 @@ export function Buscador({
           // Sin buscador no hay callejón sin salida: la acción pasa a ser pedirla por WhatsApp.
           <a
             href={enlaceWhatsapp(whatsapp, mensaje)}
-            className="boton boton-negro mt-1 w-full md:mt-0 md:w-auto"
+            className={`boton boton-negro mt-1 w-full ${enEtiqueta ? 'md:col-span-3' : 'md:mt-0 md:w-auto'}`}
           >
             <MessageCircle aria-hidden size={24} strokeWidth={2} />
             Pedí tu batería por WhatsApp
           </a>
         ) : (
-          <button type="submit" className="boton boton-rojo mt-1 w-full md:mt-0 md:w-auto">
+          <button
+            type="submit"
+            data-listo={completo}
+            className={`boton boton-rojo mt-1 w-full ${enEtiqueta ? 'boton-carga md:col-span-3' : 'md:mt-0 md:w-auto'}`}
+          >
             <Zap aria-hidden size={24} strokeWidth={2} />
             Ver baterías
           </button>

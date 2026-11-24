@@ -1,3 +1,4 @@
+import type { FastifyReply } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { ErrorDeDominio } from '../../../shared-kernel/errores.js';
@@ -12,8 +13,19 @@ export function rutasAuth(deps: {
   auth: ServicioAuth;
   urlFrontend: string;
   cookieSegura: boolean;
+  /** Solo la demo: mail con el que /auth/demo entra directo. Sin valor, la ruta no existe. */
+  ingresoDirecto?: string;
 }): FastifyPluginAsyncZod {
   return async (app) => {
+    const guardarSesion = (reply: FastifyReply, idSesion: string) =>
+      reply.setCookie(COOKIE_SESION, idSesion, {
+        httpOnly: true,
+        secure: deps.cookieSegura,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: VIGENCIA_SESION / 1000,
+      });
+
     app.post(
       '/auth/enlace',
       {
@@ -41,16 +53,20 @@ export function rutasAuth(deps: {
         if (!sesion) {
           return reply.redirect(`${deps.urlFrontend}/panel/ingresar?error=enlace_vencido`);
         }
-        reply.setCookie(COOKIE_SESION, sesion.idSesion, {
-          httpOnly: true,
-          secure: deps.cookieSegura,
-          sameSite: 'lax',
-          path: '/',
-          maxAge: VIGENCIA_SESION / 1000,
-        });
+        guardarSesion(reply, sesion.idSesion);
         return reply.redirect(`${deps.urlFrontend}/panel`);
       },
     );
+
+    const email = deps.ingresoDirecto;
+    if (email) {
+      app.get('/auth/demo', { schema: { tags: ['auth'] } }, async (_req, reply) => {
+        const sesion = await deps.auth.ingresoDirecto(email);
+        if (!sesion) return reply.redirect(`${deps.urlFrontend}/panel/ingresar`);
+        guardarSesion(reply, sesion.idSesion);
+        return reply.redirect(`${deps.urlFrontend}/panel`);
+      });
+    }
 
     app.get(
       '/auth/sesion',

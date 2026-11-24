@@ -12,7 +12,7 @@ Principios que ninguna spec, tarea o atajo puede romper. Cambiar uno requiere un
 ## Datos y dinero
 
 5. **No se vende lo que no hay.** El stock se descuenta de forma atómica al crear el pedido y se devuelve al cancelarlo.
-6. **Un pedido está pagado solo cuando el pago está confirmado:** Mercado Pago lo aprueba (consultado a su API) o Juan confirma la transferencia o el efectivo.
+6. **Un pedido está pagado solo cuando el pago está confirmado:** Mercado Pago lo aprueba (consultado a su API) o Mateo confirma la transferencia o el efectivo.
 7. **Los importes se calculan en el servidor**, en centavos enteros. El navegador nunca envía precios.
 8. **Los datos personales son del comprador.** DNI cifrado, solo visible en el panel, nunca en URLs, logs, analytics ni mails al comprador.
 

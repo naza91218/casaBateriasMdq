@@ -306,6 +306,11 @@ describe('vehículos', () => {
       api('GET', `/vehiculos?medida=${m}`).then((r) => ListaVehiculosAdmin.parse(r.json()).items);
     expect((await porMedida('12x75')).map((x) => x.id)).toContain(v.id);
     expect((await porMedida('12x45')).map((x) => x.id)).not.toContain(v.id);
+    const porMarca = (m: string) =>
+      api('GET', `/vehiculos?marca=${m}`).then((r) => ListaVehiculosAdmin.parse(r.json()).items);
+    expect((await porMarca('peugeot')).map((x) => x.id)).toContain(v.id);
+    // La marca es exacta: "Peu" no trae Peugeot (para eso está la búsqueda).
+    expect((await porMarca('Peu')).map((x) => x.id)).not.toContain(v.id);
 
     expect(
       (

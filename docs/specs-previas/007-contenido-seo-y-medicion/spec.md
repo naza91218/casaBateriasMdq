@@ -6,7 +6,7 @@
 
 ## Objetivo
 
-Que la gente sepa a quién le compra (45 años, equipo, local), que la tienda aparezca cuando alguien busca "batería para mi auto en Mar del Plata", y que Juan sepa qué publicidad le trae ventas.
+Que la gente sepa a quién le compra (45 años, equipo, local), que la tienda aparezca cuando alguien busca "batería para mi auto en Mar del Plata", y que Mateo sepa qué publicidad le trae ventas.
 
 ## Requisitos — Contenido
 

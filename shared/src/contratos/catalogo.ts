@@ -28,6 +28,7 @@ export const ItemProducto = z.object({
   gama: Gama,
   amperajeAh: z.number().int(),
   cca: z.number().int().nullable(),
+  garantiaMeses: z.number().int(),
   precios: Precios,
   foto: z.string().nullable(),
   disponible: z.boolean(),
@@ -37,6 +38,16 @@ export type ItemProducto = z.infer<typeof ItemProducto>;
 export const ListadoProductos = paginado(ItemProducto);
 export type ListadoProductos = z.infer<typeof ListadoProductos>;
 
+/** Orden del catálogo. "relevantes" (por defecto): por medida y gama, como se busca en el local. */
+export const OrdenCatalogo = z.enum([
+  'relevantes',
+  'precio-asc',
+  'precio-desc',
+  'amperaje',
+  'nombre',
+]);
+export type OrdenCatalogo = z.infer<typeof OrdenCatalogo>;
+
 export const FiltrosCatalogo = Paginacion.extend({
   marca: z.string().optional(),
   medida: z
@@ -45,6 +56,7 @@ export const FiltrosCatalogo = Paginacion.extend({
     .pipe(z.string().regex(PATRON_MEDIDA, 'La medida tiene el formato 12x65 o 12x90 alta'))
     .optional(),
   gama: Gama.optional(),
+  orden: OrdenCatalogo.optional(),
 });
 
 export const FichaProducto = ItemProducto.extend({

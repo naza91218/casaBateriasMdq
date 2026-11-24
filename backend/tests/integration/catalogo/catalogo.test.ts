@@ -123,8 +123,9 @@ describe('catálogo (US1)', () => {
     expect(ficha.servicioIncluido).toEqual([
       'Colocación incluida',
       'Medición del alternador',
-      '12 meses de garantía',
+      '18 meses de garantía', // Sermat de 12x45 a 12x75
     ]);
+    expect(ficha.garantiaMeses).toBe(18);
     expect(ficha.autosCompatibles).toEqual([
       { marca: 'Volkswagen', modelo: 'Gol Trend', anioDesde: 2008, anioHasta: 2023 },
     ]);

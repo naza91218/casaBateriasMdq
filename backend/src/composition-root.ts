@@ -133,9 +133,12 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
   const mailer = reemplazos.mailer ?? elegirMailer(config);
   const revalidador =
     reemplazos.revalidador ??
-    (config.NODE_ENV === 'development' || config.NODE_ENV === 'test'
+    ((config.NODE_ENV === 'development' || config.NODE_ENV === 'test') && !config.REVALIDATE_URL
       ? revalidadorNulo
-      : new RevalidadorFrontend(config.FRONTEND_URL, config.REVALIDATE_SECRET));
+      : new RevalidadorFrontend(
+          config.REVALIDATE_URL ?? config.FRONTEND_URL,
+          config.REVALIDATE_SECRET,
+        ));
   if (
     !config.MP_ACCESS_TOKEN &&
     !reemplazos.pasarela &&

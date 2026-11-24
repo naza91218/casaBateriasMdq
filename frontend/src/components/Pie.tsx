@@ -33,7 +33,7 @@ export function Pie({ datos, whatsappUrl }: { datos: DatosTienda; whatsappUrl: s
             Buscar por auto
           </Link>
           <Link className={enlace} href="/baterias">
-            Todas las baterías
+            Catálogo
           </Link>
           <Link className={enlace} href="/quienes-somos">
             Quiénes somos
