@@ -20,13 +20,21 @@ describe('configuración de un servidor (T146)', () => {
     expect(cargarConfig({ ...BASE, NODE_ENV: 'staging' }).esProduccion).toBe(false);
   });
 
-  test('sin Mercado Pago o sin Resend no arranca: nunca la pasarela simulada en un servidor', () => {
+  test('producción sin Mercado Pago o sin Resend no arranca: nunca la pasarela simulada', () => {
     expect(() => cargarConfig({ ...BASE, NODE_ENV: 'production', MP_ACCESS_TOKEN: '' })).toThrow(
       'Faltan variables fuera de desarrollo: MP_ACCESS_TOKEN',
     );
     expect(() =>
-      cargarConfig({ ...BASE, NODE_ENV: 'staging', RESEND_API_KEY: '', MP_WEBHOOK_SECRET: '' }),
+      cargarConfig({ ...BASE, NODE_ENV: 'production', RESEND_API_KEY: '', MP_WEBHOOK_SECRET: '' }),
     ).toThrow('RESEND_API_KEY, MP_WEBHOOK_SECRET');
+  });
+
+  test('staging arranca sin Mercado Pago, pero no sin Resend', () => {
+    const sinMp = { ...BASE, NODE_ENV: 'staging', MP_ACCESS_TOKEN: '', MP_WEBHOOK_SECRET: '' };
+    expect(() => cargarConfig(sinMp)).not.toThrow();
+    expect(() => cargarConfig({ ...sinMp, RESEND_API_KEY: '' })).toThrow(
+      'Faltan variables fuera de desarrollo: RESEND_API_KEY',
+    );
   });
 
   test('con la clave de ejemplo del DNI o del frontend no arranca', () => {

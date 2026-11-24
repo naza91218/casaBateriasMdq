@@ -78,11 +78,15 @@ const VALORES_DE_EJEMPLO = new Set([
 /**
  * En staging y producción falta algo → no arranca (T146). Sin credenciales de Mercado Pago se
  * usaría la pasarela simulada de desarrollo, y con una clave de ejemplo el DNI no estaría protegido.
+ * Staging (con clave y fuera de Google) puede arrancar sin Mercado Pago mientras no estén las
+ * credenciales de prueba: el pago con Mercado Pago queda simulado y no lleva a ningún lado.
  */
 function exigirServidor(config: z.infer<typeof esquema>): void {
-  const faltan = (['RESEND_API_KEY', 'MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET'] as const).filter(
-    (clave) => !config[clave],
-  );
+  const requeridas =
+    config.NODE_ENV === 'production'
+      ? (['RESEND_API_KEY', 'MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET'] as const)
+      : (['RESEND_API_KEY'] as const);
+  const faltan = requeridas.filter((clave) => !config[clave]);
   if (faltan.length) throw new Error(`Faltan variables fuera de desarrollo: ${faltan.join(', ')}`);
   const deEjemplo = (['DNI_ENCRYPTION_KEY', 'REVALIDATE_SECRET'] as const).filter((clave) =>
     VALORES_DE_EJEMPLO.has(config[clave]),

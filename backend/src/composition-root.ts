@@ -139,14 +139,10 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
           config.REVALIDATE_URL ?? config.FRONTEND_URL,
           config.REVALIDATE_SECRET,
         ));
-  if (
-    !config.MP_ACCESS_TOKEN &&
-    !reemplazos.pasarela &&
-    (config.NODE_ENV === 'staging' || config.NODE_ENV === 'production')
-  ) {
-    throw new Error('Falta MP_ACCESS_TOKEN fuera de desarrollo');
+  if (!config.MP_ACCESS_TOKEN && !reemplazos.pasarela && config.NODE_ENV === 'production') {
+    throw new Error('Falta MP_ACCESS_TOKEN en producción');
   }
-  // Sin credenciales (desarrollo), los pagos se simulan en memoria.
+  // Sin credenciales (desarrollo, o staging hasta tener las de prueba), los pagos se simulan.
   const pasarela =
     reemplazos.pasarela ??
     (config.MP_ACCESS_TOKEN
