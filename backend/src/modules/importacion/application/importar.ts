@@ -497,11 +497,29 @@ interface Resultado {
   etiquetas: string[];
 }
 
+/**
+ * Excel en castellano guarda los CSV separados por ";" y, si no se elige "CSV UTF-8", en
+ * Windows-1252. Se aceptan los dos formatos para que el admin no tenga que saberlo.
+ */
+export function normalizarCsv(contenido: Buffer): { texto: string; separador: ',' | ';' } {
+  let texto: string;
+  try {
+    texto = new TextDecoder('utf-8', { fatal: true }).decode(contenido);
+  } catch {
+    texto = new TextDecoder('windows-1252').decode(contenido);
+  }
+  const encabezado = (texto.split(/\r?\n/, 1)[0] ?? '').replace(/"[^"]*"/g, '');
+  const cuenta = (c: string) => encabezado.split(c).length - 1;
+  return { texto, separador: cuenta(';') > cuenta(',') ? ';' : ',' };
+}
+
 /** Lee el CSV y controla encabezados y tamaño. Un archivo ilegible se rechaza entero. */
 function leerCsv(contenido: Buffer, tipo: TipoImportacion): FilaCsv[] {
   let registros: { record: Record<string, string>; info: { lines: number } }[];
+  const { texto, separador } = normalizarCsv(contenido);
   try {
-    registros = parse(contenido, {
+    registros = parse(texto, {
+      delimiter: separador,
       bom: true,
       columns: (encabezados: string[]) => encabezados.map((h) => h.trim().toLowerCase()),
       skip_empty_lines: true,
@@ -511,7 +529,7 @@ function leerCsv(contenido: Buffer, tipo: TipoImportacion): FilaCsv[] {
     });
   } catch (error) {
     throw validacion({
-      archivo: `No pudimos leer la planilla: ${motivoDeError(error)}. Guardala como CSV UTF-8 separado por comas`,
+      archivo: `No pudimos leer la planilla: ${motivoDeError(error)}. Guardala en Excel como "CSV UTF-8"`,
     });
   }
   if (registros.length === 0) throw validacion({ archivo: 'La planilla no tiene filas' });

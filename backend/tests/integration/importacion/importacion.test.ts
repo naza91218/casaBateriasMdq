@@ -186,6 +186,22 @@ describe('importación de productos (FR-046, FR-070)', () => {
     });
   });
 
+  test('acepta el CSV de Excel en castellano: separado por ";" y en Windows-1252', async () => {
+    const texto =
+      'sku;marca;nombre;medida;amperaje_ah;gama;descripcion;precio_lista;stock\r\n' +
+      'VO-1;Volta;Volta 75;12x75;75;Económica;"Caja chica; 11 placas";104000,50;3\r\n';
+    // Windows-1252: la "ó" es un solo byte (0xF3), no UTF-8.
+    const contenido = Buffer.from(texto, 'latin1');
+    const r = await importacion.importar('productos', 'excel.csv', contenido, null);
+    expect(r.errores).toEqual([]);
+    expect((await productosPorSku('VO-1'))[0]).toMatchObject({
+      gama: 'economica',
+      descripcion: 'Caja chica; 11 placas',
+      precioLista: 10_400_050n,
+      stock: 3,
+    });
+  });
+
   test('si falta una columna obligatoria se rechaza la planilla entera', async () => {
     await expect(
       importacion.importar('productos', 'x.csv', csv(['sku,marca,nombre', 'A,Herbo,Algo']), null),
