@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793309424766,
+      "tag": "0000_fundaciones",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793311233152,
+      "tag": "0001_catalogo_y_compatibilidad",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793311587770,
+      "tag": "0002_pedidos_y_pagos",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793328555241,
+      "tag": "0003_importaciones",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793330271593,
+      "tag": "0004_anios_opcionales",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793379301230,
+      "tag": "0005_legales",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793380283129,
+      "tag": "0006_vehiculos_actualizado",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793663597524,
+      "tag": "0007_efectivo_vence",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795440071767,
+      "tag": "0008_garantia_por_producto",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795560016794,
+      "tag": "0009_clave_panel",
+      "breakpoints": true
+    }
+  ]
+}

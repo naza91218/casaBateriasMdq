@@ -13,7 +13,7 @@ Producto final: Next.js + TypeScript + PostgreSQL (ver `PLAN_TECNICO.md`). Proto
 ## Users
 
 * **Comprador:** automovilista de Mar del Plata que necesita una batería, muchas veces con urgencia. Incluye gente grande que usa poco internet. No sabe qué medida lleva su auto. Compra desde el celular.
-* **Juan (administrador):** nieto del dueño; gestiona pedidos, precios, stock y fotos, y sale con la camioneta a colocar. Usa el panel desde el celular y la compu.
+* **Mateo (administrador):** nieto del dueño; gestiona pedidos, precios, stock y fotos, y sale con la camioneta a colocar. Usa el panel desde el celular y la compu.
 
 ## Product Purpose
 
@@ -21,7 +21,7 @@ Tienda online propia de La Casa de las Baterías: el cliente busca su auto (marc
 
 ## Positioning
 
-45 años en Mar del Plata y un servicio que la competencia cercana no da: **colocación a domicilio incluida en el precio**, medición del alternador y 12 meses de garantía, con buscador por auto para que nadie tenga que saber medidas.
+45 años en Mar del Plata y un servicio que la competencia cercana no da: **colocación a domicilio incluida en el precio**, medición del alternador y hasta 18 meses de garantía, con buscador por auto para que nadie tenga que saber medidas.
 
 ## Operating Context
 

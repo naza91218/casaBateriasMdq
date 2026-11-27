@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "types": ["node"],
+    "jsx": "react-jsx"
+  },
+  "include": ["src", "db", "scripts", "tests", "drizzle.config.ts", "vitest.config.ts"]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@casa/scraper",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Genera las planillas de importación desde fuentes públicas. Nunca escribe en la base.",
+  "scripts": {
+    "scrape": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "csv-parse": "^7.0.3",
+    "pdfjs-dist": "^6.4.299"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.12"
+  }
+}

@@ -6,13 +6,13 @@
 
 ## Objetivo
 
-Que el cliente vea todas las baterías con la información justa para entender qué compra y por qué una sale más que otra, y que Juan pueda cargar el catálogo desde una planilla.
+Que el cliente vea todas las baterías con la información justa para entender qué compra y por qué una sale más que otra, y que Mateo pueda cargar el catálogo desde una planilla.
 
 ## Historias de usuario
 
 * Como **comprador**, quiero ver las baterías con foto, marca, medida y gama para elegir sin saber de baterías.
 * Como **comprador**, quiero entender la diferencia entre económica y reforzada para decidir si vale la pena pagar más.
-* Como **Juan**, quiero cargar el catálogo desde una planilla para no cargar producto por producto.
+* Como **Mateo**, quiero cargar el catálogo desde una planilla para no cargar producto por producto.
 
 ## Requisitos
 
@@ -35,7 +35,7 @@ Que el cliente vea todas las baterías con la información justa para entender q
 | CA-CAT-01 | 10 productos de 3 marcas | el comprador filtra por "Sermat" y "reforzada" | ve solo productos Sermat reforzados y la URL contiene ambos filtros | R-CAT-05 |
 | CA-CAT-02 | un producto con stock 0 | el comprador abre la ficha | ve "Sin stock", no hay botón de compra y sí uno a WhatsApp con el nombre del producto | R-CAT-08 |
 | CA-CAT-03 | un producto pausado | el comprador entra a su URL | recibe 404 y el producto no figura en listados ni sitemap | R-CAT-08 |
-| CA-CAT-04 | una planilla con 20 filas, 2 con medida inválida | Juan la importa | se cargan 18 y el informe indica fila y motivo de las 2 restantes | R-CAT-09 |
+| CA-CAT-04 | una planilla con 20 filas, 2 con medida inválida | Mateo la importa | se cargan 18 y el informe indica fila y motivo de las 2 restantes | R-CAT-09 |
 | CA-CAT-05 | un SKU ya existente en la planilla | se importa con otro precio | se actualiza el precio, no se duplica el producto | R-CAT-09 |
 | CA-CAT-06 | descuento por transferencia del 10 % | el comprador ve una ficha de $100.000 | ve "$100.000" y "$90.000 por transferencia" | R-CAT-06 |
 

@@ -1,0 +1,21 @@
+# Contexto de las imágenes: la raíz del monorepo (backend/Dockerfile y frontend/Dockerfile).
+**/node_modules
+**/dist
+**/.next
+**/.env
+**/.env.*
+!**/.env.example
+**/*.tsbuildinfo
+**/uploads
+**/.previews
+.git
+.github
+.playwright-mcp
+.impeccable
+data
+specs
+infra
+tools
+**/tests
+**/coverage
+*.md

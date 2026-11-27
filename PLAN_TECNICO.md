@@ -4,6 +4,12 @@
 > * **Fecha:** 20/10/2026
 > * **Reemplaza a:** la arquitectura WordPress + WooCommerce de `PROCESO_DE_DESARROLLO.md` (§2–§6). Las preguntas de §10 de ese documento siguen vigentes.
 > * **Desarrollador:** Nazareno (1 persona)
+>
+> **Actualización 29/10/2026:** las secciones §2 a §8 quedaron reemplazadas por
+> [specs/001-tienda-online/plan.md](specs/001-tienda-online/plan.md) y sus anexos (research,
+> data-model, contracts, quickstart). Cambios principales: VPS de HostGator en lugar de Netlify,
+> PostgreSQL en el VPS en lugar de Neon, backend como API propia (Fastify) separado del frontend,
+> Docker y tres entornos. Este documento se conserva por la §1 y el registro de decisiones (§9).
 
 ---
 
@@ -38,7 +44,7 @@ Salen de lo que la propuesta promete por escrito:
 | Validación | **Zod** | Un esquema por formulario, compartido entre servidor y cliente |
 | Pagos | **Mercado Pago Checkout Pro** (SDK `mercadopago`) + webhooks | Tarjetas, dinero en cuenta y cuotas sin manejar datos de tarjeta |
 | Mails | **Resend** + **React Email** | Plan gratuito suficiente, plantillas en JSX, dominio propio verificado |
-| Login del panel | **Auth.js** con enlace por mail (Resend) | Juan no tiene que recordar contraseña; un solo usuario, preparado para sumar roles |
+| Login del panel | Propio en el backend: mail y contraseña, con enlace por mail para la primera vez y para recuperarla (D22, D24) | Un solo usuario, preparado para sumar roles |
 | Imágenes y backups | **Cloudflare R2** | Gratis hasta 10 GB y sin costo de salida; API S3 estándar |
 | Hosting | **Netlify** (plan gratuito, uso comercial permitido) | Deploy por push, previews, funciones programadas para el vencimiento de pedidos |
 | Tareas programadas | **Netlify Scheduled Functions** (cada hora) | Vencer pedidos a las 48 h |
@@ -124,7 +130,7 @@ Reglas:
 ### 4.1 Estados del pedido
 
 ```text
-pendiente_pago ──(MP aprueba / Juan confirma transferencia)──► pagado
+pendiente_pago ──(MP aprueba / Mateo confirma transferencia)──► pagado
 pendiente_pago ──(48 h sin pago)──► cancelado (devuelve stock)
 a_pagar_en_local ──(retira y paga)──► entregado
 pagado ──► en_camino ──► entregado        (colocación a domicilio)
@@ -194,8 +200,8 @@ Formato `T<semana>.<n>`, con **Hecho cuando** verificable. Coincide con las 4 se
 | T1.2 | DNS en Cloudflare apuntando a Netlify, HTTPS, dominio verificado en Resend (SPF, DKIM, DMARC) | El sitio abre por HTTPS en el dominio y un mail de prueba llega sin spam |
 | T1.3 | Esquema de base completo (§4) y primera migración en Neon (ramas `main` y `dev`) | Las tablas existen en ambas ramas |
 | T1.4 | Backup diario: Action con `pg_dump` → R2, y **prueba de restauración** | Un backup se restaura en una rama nueva de Neon |
-| T1.5 | Definir categorías, gamas, canje y zonas con Juan (§10 de la propuesta) | Respuestas anotadas en el registro de decisiones |
-| T1.6 | Diseño de portada y ficha de producto (identidad del logo elegido, Bricolage, negro/verde) | Juan aprueba el diseño por escrito |
+| T1.5 | Definir categorías, gamas, canje y zonas con Mateo (§10 de la propuesta) | Respuestas anotadas en el registro de decisiones |
+| T1.6 | Diseño de portada y ficha de producto (identidad del logo elegido, Bricolage, negro/verde) | Mateo aprueba el diseño por escrito |
 
 ### Semana 2 — Catálogo y buscador
 
@@ -217,21 +223,21 @@ Formato `T<semana>.<n>`, con **Hecho cuando** verificable. Coincide con las 4 se
 | T3.4 | Transferencia con descuento (datos bancarios en el mail y en `/pedido`) y efectivo solo con retiro | Efectivo no aparece si se elige colocación |
 | T3.5 | Vencimiento a las 48 h (función programada cada hora) | Un pedido vencido pasa a `cancelado` y el stock vuelve |
 | T3.6 | Mails con React Email: recibido, pagado, en camino / listo para retirar, entregado (comprador y comercio) | Cada cambio de estado envía su mail |
-| T3.7 | Panel: login por enlace, pedidos (detalle, mapa, confirmar transferencia, cambiar estado), productos (precio, stock, pausa, fotos), configuración | Juan hace todo el recorrido de §5 de la propuesta desde el celular |
+| T3.7 | Panel: login por enlace, pedidos (detalle, mapa, confirmar transferencia, cambiar estado), productos (precio, stock, pausa, fotos), configuración | Mateo hace todo el recorrido de §5 de la propuesta desde el celular |
 
 ### Semana 4 — Últimos detalles y salida
 
 | Tarea | Descripción | Hecho cuando |
 | :- | :- | :- |
-| T4.1 | Quiénes somos, contacto con mapa, botón de WhatsApp global | Las páginas tienen los textos y fotos de Juan |
+| T4.1 | Quiénes somos, contacto con mapa, botón de WhatsApp global | Las páginas tienen los textos y fotos de Mateo |
 | T4.2 | Legales: términos, privacidad, arrepentimiento, datos del comercio (razón social, CUIT) | Enlazados en el pie con datos reales |
 | T4.3 | GA4, Meta Pixel (eventos `ViewContent`, `AddToCart`, `Purchase`), Search Console, perfil de Google Business enlazado | Los eventos aparecen en las herramientas |
 | T4.4 | Sentry y monitor de disponibilidad con aviso por mail | Un error forzado llega a Sentry; el monitor avisa si el sitio cae |
 | T4.5 | Prueba de punta a punta con Playwright en sandbox + checklist manual (§7) | Todo pasa en celular y compu |
 | T4.6 | Mercado Pago a producción y **compra real** de bajo monto | Se acredita, cambia el estado, llegan los mails; se reintegra |
-| T4.7 | Guía con capturas + capacitación; entrega de accesos; cobro del 50 % restante | Juan gestiona un pedido y edita un producto sin ayuda; confirma la entrega por escrito |
+| T4.7 | Guía con capturas + capacitación; entrega de accesos; cobro del 50 % restante | Mateo gestiona un pedido y edita un producto sin ayuda; confirma la entrega por escrito |
 
-Al final de cada semana: demo a Juan en el deploy de preview.
+Al final de cada semana: demo a Mateo en el deploy de preview.
 
 ---
 
@@ -274,3 +280,18 @@ Al final de cada semana: demo a Juan en el deploy de preview.
 | D10 | 20/10/2026 | Compatibilidad por medida (auto → 12x65) | Menos datos que mantener; sumar marcas no rompe el buscador |
 | D11 | 20/10/2026 | Stock descontado al crear el pedido, devuelto al vencer | Promesa "no se vende lo que no hay" |
 | D12 | 20/10/2026 | Login del panel por enlace al mail | Un solo usuario, sin contraseñas que olvidar |
+| D13 | 28/10/2026 | Hosting en VPS de HostGator a cargo del cliente (reemplaza Netlify de D9) | Pedido del usuario y del cliente |
+| D14 | 28/10/2026 | Transferencia y efectivo se confirman a mano en el panel, con usuario y fecha | No hay forma de verificar una transferencia automáticamente |
+| D15 | 28/10/2026 | Una sola spec para todo el sistema con spec-kit | Pedido del usuario: visión completa y un solo `tasks.md` |
+| D16 | 29/10/2026 | PostgreSQL en el VPS (reemplaza Neon de D9) | El VPS ya se paga; un servicio menos |
+| D17 | 29/10/2026 | Repo con `frontend/`, `backend/` (API REST propia en Fastify) y `shared/` | Pedido del usuario; API reutilizable |
+| D18 | 29/10/2026 | Docker y tres entornos (dev, staging, prod) | Entornos iguales, aislados y con rollback |
+| D19 | 29/10/2026 | Catálogo inicial scrapeado de fuentes públicas, todo entra "a revisar" | Los proveedores no pasan catálogo |
+| D20 | 29/10/2026 | Canje solo por consulta (formulario + WhatsApp), valuado en el local | Definido en el clarify |
+| D21 | 29/10/2026 | Reserva: MP 30 min (solo medios instantáneos), transferencia 48 h, efectivo sin vencimiento | Definido en el clarify |
+| D22 | 29/10/2026 | Enlace mágico propio en el backend en lugar de Auth.js | Con la API separada, el login vive en el backend (constitución v1.4.0) |
+| D23 | 29/10/2026 | Backend primero; frontend cuando se cierre el diseño UX/UI | Pedido del usuario |
+| D24 | 24/11/2026 | Panel con mail y contraseña; el enlace por mail queda para la primera vez y para recuperarla | Entrar todos los días sin esperar un mail (FR-041) |
+| D25 | 24/11/2026 | El importador acepta el CSV de Excel en castellano (`;` y Windows-1252) y hay plantillas de Excel | Mateo carga desde Excel sin saber de formatos |
+| D26 | 24/11/2026 | Staging corre con Mercado Pago simulado hasta tener credenciales de prueba; producción las exige | No frenar las pruebas del cliente |
+| D27 | 26/11/2026 | Gamas: se muestra la vida útil (2–3 y 3–5 años) en lugar de la cantidad de placas; garantía "hasta 18 meses, según la marca y la medida" | Correcciones de Mateo y su abuelo |
