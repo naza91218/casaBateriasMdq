@@ -72,7 +72,7 @@ const MARCAS: { nombre: string; foto?: { src: string; ancho: number; alto: numbe
   { nombre: 'Sermat', foto: { src: '/baterias/sermat-12x65.webp', ancho: 656, alto: 621 } },
   { nombre: 'Edna', foto: { src: '/baterias/edna.webp', ancho: 777, alto: 732 } },
   { nombre: 'Herbo', foto: { src: '/baterias/herbo.webp', ancho: 396, alto: 347 } },
-  { nombre: 'Volta' },
+  { nombre: 'Volta', foto: { src: '/baterias/volta.webp', ancho: 559, alto: 501 } },
 ];
 
 /** Prueba: las marcas nacionales que trabaja el local, con las fotos que hay. */
