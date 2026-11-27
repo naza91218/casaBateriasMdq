@@ -76,7 +76,7 @@ export async function sembrarEjemplo(db: BaseDeDatos): Promise<void> {
         gama: p.gama,
         precioLista: BigInt(p.pesos * 100),
         stock: p.stock,
-        garantiaMeses: garantiaPorDefecto(p.marca, p.medida),
+        garantiaMeses: garantiaPorDefecto(p.marca),
         estado: p.estado,
         fuente: 'ejemplo',
       })

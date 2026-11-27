@@ -123,7 +123,7 @@ describe('catálogo (US1)', () => {
     expect(ficha.servicioIncluido).toEqual([
       'Colocación incluida',
       'Medición del alternador',
-      '18 meses de garantía', // Sermat de 12x45 a 12x75
+      '18 meses de garantía', // todas las Sermat
     ]);
     expect(ficha.garantiaMeses).toBe(18);
     expect(ficha.autosCompatibles).toEqual([

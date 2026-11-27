@@ -41,7 +41,7 @@ export async function crearProducto(
       amperajeAh: parseInt(datos.medida.split('x')[1] ?? '65', 10),
       cca: 400,
       gama: datos.gama,
-      garantiaMeses: garantiaPorDefecto(datos.marca, datos.medida),
+      garantiaMeses: garantiaPorDefecto(datos.marca),
       precioLista: BigInt(Math.round((datos.precio ?? 100_000) * 100)),
       stock: datos.stock ?? 5,
       estado: datos.estado ?? 'activo',

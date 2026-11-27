@@ -35,6 +35,9 @@ describe('12x90 y 12x110 en caja alta o baja', () => {
   test('desde 200 mm de alto es alta; las demás medidas no cambian', () => {
     expect(medida(12, 90, 227)).toBe('12x90 alta');
     expect(medida(12, 110, 194)).toBe('12x110 baja');
+    expect(medida(12, 95, 190)).toBe('12x95 baja');
+    expect(medida(12, 100, 230)).toBe('12x100 alta');
+    expect(medida(12, 75, 204)).toBe('12x75');
     expect(medida(12, 75, 230)).toBe('12x75');
     expect(medida(12, 90)).toBe('12x90');
   });

@@ -390,7 +390,7 @@ export class ServicioImportacion {
               estado: 'a_revisar',
               fuente: 'planilla',
               // Solo al crear: si el admin la cambió, reimportar no la pisa.
-              garantiaMeses: garantiaPorDefecto(d.marca, d.medida),
+              garantiaMeses: garantiaPorDefecto(d.marca),
               ...comunes,
               ...opcionales,
             })

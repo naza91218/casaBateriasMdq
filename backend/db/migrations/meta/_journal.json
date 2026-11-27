@@ -71,6 +71,13 @@
       "when": 1795560016794,
       "tag": "0009_clave_panel",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795794611647,
+      "tag": "0010_garantia_sermat",
+      "breakpoints": true
     }
   ]
 }

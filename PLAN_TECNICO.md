@@ -296,3 +296,4 @@ Al final de cada semana: demo a Mateo en el deploy de preview.
 | D26 | 24/11/2026 | Staging corre con Mercado Pago simulado hasta tener credenciales de prueba; producción las exige | No frenar las pruebas del cliente |
 | D27 | 26/11/2026 | Gamas: se muestra la vida útil (2–3 y 3–5 años) en lugar de la cantidad de placas; garantía "hasta 18 meses, según la marca y la medida" | Correcciones de Mateo y su abuelo |
 | D28 | 27/11/2026 | Producción puede salir sin credenciales de Mercado Pago: ese medio no se ofrece hasta cargarlas (token y clave del webhook, las dos o ninguna) | Salir a vender con transferencia y efectivo sin esperar a Mercado Pago; nunca la pasarela simulada en producción |
+| D29 | 27/11/2026 | Garantía: 18 meses todas las Sermat, 12 las demás marcas. De 12x90 a 12x110 (incluidas 12x95 y 12x100) van en caja alta y baja; la 12x75 es una sola | Correcciones de Mateo |

@@ -2,10 +2,10 @@ import { medidaDeCodigo } from './fuentes/sermat-pdf.js';
 import { altoDe, medida, type FilaCompatibilidad, type FilaProducto } from './planillas.js';
 
 /**
- * Para pasar planillas ya generadas a 12x90 y 12x110 alta o baja sin volver a bajar las fuentes
+ * Para pasar planillas ya generadas a alta o baja (de 12x90 a 12x110) sin volver a bajar las fuentes
  * (`--desde-planillas`). Hace lo mismo que el scraper con sus datos originales.
  */
-const SIN_ALTURA = /^12x(90|110)$/;
+const SIN_ALTURA = /^12x(90|95|100|110)$/;
 
 /** Por el alto de la caja en la descripción, o por la letra del código de Sermat (-A, -B, -C). */
 export function rehacerMedidaProducto(p: FilaProducto): FilaProducto {
@@ -20,7 +20,7 @@ export function rehacerMedidaProducto(p: FilaProducto): FilaProducto {
 
 /**
  * Los códigos de Sermat del texto original ("12-90 BD") dicen la altura. Las filas de Herbo no
- * traen código: sus 12x90 y 12x110 (Traction, Caterpillar) son de caja alta.
+ * traen código: sus medidas de 12x90 a 12x110 (Traction, Caterpillar) son de caja alta.
  */
 export function rehacerMedidasAuto(f: FilaCompatibilidad): FilaCompatibilidad {
   const actuales = f.medidas.split('|').filter(Boolean);
