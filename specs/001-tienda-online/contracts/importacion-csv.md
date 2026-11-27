@@ -5,7 +5,11 @@ FR-070. El scraper (`tools/scraper/`) genera exactamente estos formatos.
 
 ## Reglas comunes
 
-- CSV UTF-8, separador `,`, primera fila con los encabezados exactos (en cualquier orden).
+- CSV con la primera fila con los encabezados exactos (en cualquier orden). Se acepta el CSV
+  UTF-8 separado por `,` y también el que guarda Excel en castellano: separado por `;` y en
+  Windows-1252. El separador se detecta en la fila de encabezados.
+- Plantillas de Excel listas para completar, con listas desplegables y una hoja de ayuda:
+  [docs/plantillas/](../../../docs/plantillas).
 - Cada fila se valida sola; una fila con error no frena las demás (US5-01).
 - Respuesta: `{ importacionId, filasTotal, filasOk, filasError, errores: [{ fila, campo,
   motivo }] }`. `fila` cuenta desde 2 (la 1 son los encabezados).

@@ -164,7 +164,7 @@ Copiar `env.servidor.example` a `/srv/casa/<entorno>/.env`, completarlo y correr
 | `NODE_ENV` | `staging` | `production` |
 | `PUERTO_API` / `PUERTO_WEB` | 4001 / 3001 | 4000 / 3000 |
 | URLs | `https://staging.…` | `https://casadelasbaterias.com.ar` |
-| Mercado Pago | credenciales de prueba | credenciales reales |
+| Mercado Pago | vacío (pasarela simulada) o credenciales de prueba | credenciales reales (obligatorias) |
 | `DNI_ENCRYPTION_KEY`, `REVALIDATE_SECRET`, `POSTGRES_PASSWORD` | propias | propias |
 
 Si falta alguna variable obligatoria, la API no arranca y el deploy vuelve solo a la versión anterior.
@@ -174,6 +174,20 @@ En GitHub, en **Settings → Environments**, crear `staging` y `produccion` con:
 - **secretos:** `SSH_HOST`, `SSH_USER` (`deploy`), `SSH_KEY` y `SSH_KNOWN_HOSTS` (la salida de `ssh-keyscan -p 22022 <ip>`);
 - **variables:** `SSH_PORT` (22022), `SITIO_URL`, `GA4_ID` y `META_PIXEL_ID`, que quedan fijas en la imagen de la tienda;
 - **solo en `produccion`:** **Required reviewers**, con quien aprueba los pases.
+
+### Credenciales de Mercado Pago
+
+Las saca el dueño de la cuenta que cobra, en [mercadopago.com.ar/developers](https://www.mercadopago.com.ar/developers):
+
+1. **Tus integraciones → Crear aplicación**: tipo *Pagos online*, sin plataforma de e-commerce, producto *Checkout Pro*.
+2. **Credenciales de producción**: completar rubro y sitio si lo pide, y copiar el **Access Token** (`APP_USR-…`) en `MP_ACCESS_TOKEN`. La Public Key no se usa.
+3. **Webhooks → Configurar notificaciones**:
+   - modo productivo: `https://casadelasbaterias.com.ar/api/v1/webhooks/mercadopago`;
+   - evento: solo *Pagos*;
+   - copiar la **clave secreta** en `MP_WEBHOOK_SECRET`.
+4. Para probar en staging: **Cuentas de prueba** (vendedor y comprador), credenciales del vendedor de prueba y, en modo de prueba, la URL `https://staging.casadelasbaterias.com.ar/api/v1/webhooks/mercadopago`.
+
+Las claves van directo al `.env` del servidor, nunca por chat ni al repo. Después de cargarlas: `docker compose up -d backend worker` en la carpeta del entorno.
 
 ### 4. Desplegar
 
@@ -200,7 +214,7 @@ El deploy aplica también los datos mínimos:
 - las marcas;
 - las medidas.
 
-Para entrar al panel se pide el enlace de ingreso a ese mail.
+Para entrar al panel la primera vez se pide el enlace de ingreso a ese mail y desde el panel se pone la contraseña. Después se entra con mail y contraseña; el enlace queda para recuperarla.
 
 ### 5. Copias de seguridad (US8-01)
 

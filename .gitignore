@@ -45,3 +45,6 @@ next-env.d.ts
 # Demo para el cliente (infra/demo)
 .next-demo/
 infra/demo/.estado/
+
+# Notas y transcripciones de reuniones con el cliente (privadas, solo en local)
+reuniones/

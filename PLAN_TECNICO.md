@@ -44,7 +44,7 @@ Salen de lo que la propuesta promete por escrito:
 | Validación | **Zod** | Un esquema por formulario, compartido entre servidor y cliente |
 | Pagos | **Mercado Pago Checkout Pro** (SDK `mercadopago`) + webhooks | Tarjetas, dinero en cuenta y cuotas sin manejar datos de tarjeta |
 | Mails | **Resend** + **React Email** | Plan gratuito suficiente, plantillas en JSX, dominio propio verificado |
-| Login del panel | **Auth.js** con enlace por mail (Resend) | Mateo no tiene que recordar contraseña; un solo usuario, preparado para sumar roles |
+| Login del panel | Propio en el backend: mail y contraseña, con enlace por mail para la primera vez y para recuperarla (D22, D24) | Un solo usuario, preparado para sumar roles |
 | Imágenes y backups | **Cloudflare R2** | Gratis hasta 10 GB y sin costo de salida; API S3 estándar |
 | Hosting | **Netlify** (plan gratuito, uso comercial permitido) | Deploy por push, previews, funciones programadas para el vencimiento de pedidos |
 | Tareas programadas | **Netlify Scheduled Functions** (cada hora) | Vencer pedidos a las 48 h |
@@ -291,3 +291,7 @@ Al final de cada semana: demo a Mateo en el deploy de preview.
 | D21 | 29/10/2026 | Reserva: MP 30 min (solo medios instantáneos), transferencia 48 h, efectivo sin vencimiento | Definido en el clarify |
 | D22 | 29/10/2026 | Enlace mágico propio en el backend en lugar de Auth.js | Con la API separada, el login vive en el backend (constitución v1.4.0) |
 | D23 | 29/10/2026 | Backend primero; frontend cuando se cierre el diseño UX/UI | Pedido del usuario |
+| D24 | 24/11/2026 | Panel con mail y contraseña; el enlace por mail queda para la primera vez y para recuperarla | Entrar todos los días sin esperar un mail (FR-041) |
+| D25 | 24/11/2026 | El importador acepta el CSV de Excel en castellano (`;` y Windows-1252) y hay plantillas de Excel | Mateo carga desde Excel sin saber de formatos |
+| D26 | 24/11/2026 | Staging corre con Mercado Pago simulado hasta tener credenciales de prueba; producción las exige | No frenar las pruebas del cliente |
+| D27 | 26/11/2026 | Gamas: se muestra la vida útil (2–3 y 3–5 años) en lugar de la cantidad de placas; garantía "hasta 18 meses, según la marca y la medida" | Correcciones de Mateo y su abuelo |

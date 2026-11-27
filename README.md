@@ -16,8 +16,9 @@ Todo el sistema está descrito en una sola spec:
 | :- | :- |
 | Backend (API, pagos, mails, panel, catálogo, legales, SEO) | Completo y con tests |
 | Scraper de la carga inicial del catálogo | Completo |
-| Frontend (tienda y panel) | Pendiente: espera el diseño final |
-| Servidor (staging y producción en el VPS) | Pendiente |
+| Frontend (tienda y panel) | Completo; la portada usa el diseño nuevo (ver [DESIGN.md](DESIGN.md)) |
+| Staging (`staging.casadelasbaterias.com.ar`) | Andando: se despliega solo con cada push a `develop`. Precios y fotos de prueba, Mercado Pago simulado |
+| Producción (`casadelasbaterias.com.ar`) | Pendiente: faltan las credenciales de Mercado Pago, la clave nueva de Resend y R2 |
 
 ## Cómo levantarlo
 
@@ -43,7 +44,7 @@ pnpm --filter backend db:migrate
 pnpm --filter backend db:seed
 ```
 
-Después, en dos terminales, la API y el worker (mails y vencimientos):
+Después, en tres terminales, la API, el worker (mails y vencimientos) y la tienda:
 
 ```bash
 pnpm --filter backend dev
@@ -53,8 +54,13 @@ pnpm --filter backend dev
 pnpm --filter backend worker:dev
 ```
 
+```bash
+pnpm --filter frontend dev
+```
+
 | Qué | Dónde |
 | :- | :- |
+| Tienda y panel | http://localhost:3000 (panel en `/panel`) |
 | API | http://localhost:4000/api/v1 |
 | Documentación de la API | http://localhost:4000/api/v1/docs |
 | Mails de desarrollo (Mailpit) | http://localhost:8025 |
@@ -73,6 +79,7 @@ La guía completa, con las validaciones a mano, está en
 | `pnpm --filter backend db:generate` | Generar una migración después de cambiar un esquema |
 | `pnpm --filter backend mails:preview` | Ver todos los mails con datos de ejemplo en `backend/.previews/` |
 | `.\backend\scripts\probar-mails.ps1 -Limpiar` | Recorrer el ciclo de un pedido contra la API local y ver los mails en Mailpit (PowerShell) |
+| Plantillas de Excel para cargar productos y autos | [docs/plantillas/](docs/plantillas) (se guardan como CSV y se suben en Panel → Importar) |
 | `pnpm --filter @casa/scraper scrape` | Armar las planillas de catálogo y compatibilidades ([README](tools/scraper/README.md)) |
 
 ## Mapa de carpetas
@@ -94,12 +101,12 @@ backend/              API REST (Fastify) y worker
   db/seed/            Datos iniciales y de ejemplo
   tests/              unit, integration (contra la base de pruebas) y contract (HTTP)
 shared/               Contratos Zod compartidos entre backend y frontend
-frontend/             Next.js (todavía no existe: fase 11)
+frontend/             Next.js: tienda (app/(tienda)) y panel (app/panel)
 tools/scraper/        Carga inicial del catálogo desde fuentes públicas y el PDF de Sermat
-infra/                Docker de desarrollo y guía del dominio y del servidor
+infra/                Docker, Nginx, scripts de deploy y backup, y guía del dominio y del servidor
 specs/                Spec, plan, tareas y checklists (spec-kit)
 data/                 Planillas y fotos de importación (fuera de git)
-docs/, reuniones/     Specs anteriores y notas de reuniones con el cliente
+docs/                 Specs anteriores, entregables y plantillas de carga
 ```
 
 ## Cómo se trabaja
@@ -111,5 +118,7 @@ docs/, reuniones/     Specs anteriores y notas de reuniones con el cliente
   [cobertura-tests.md](specs/001-tienda-online/checklists/cobertura-tests.md).
 - La revisión de seguridad está en
   [seguridad.md](specs/001-tienda-online/checklists/seguridad.md).
-- Ramas: `main` publica en producción y `develop` en staging (se configura en la fase 9). Cada
-  trabajo va en su propia rama; hoy, todo el desarrollo está en `001-tienda-online`.
+- Ramas: `develop` se despliega solo en staging; producción se publica desde `main` con el
+  workflow "Deploy producción", que pide aprobación. El desarrollo va en `001-tienda-online` y se
+  pasa a `develop` para probarlo en staging. El paso a paso del servidor está en
+  [infra/README.md](infra/README.md).

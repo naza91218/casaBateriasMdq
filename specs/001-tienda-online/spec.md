@@ -157,8 +157,9 @@ la transferencia puede hacerse directamente sobre los datos mientras no exista e
 
 ### User Story 3 - Gestionar pedidos desde el panel (Priority: P2)
 
-El administrador entra al panel con un enlace que le llega al mail, sin contraseña, desde la
-compu o el celular. Ve primero los pedidos nuevos, abre el detalle con los datos del comprador
+El administrador entra al panel con su mail y su contraseña, desde la compu o el celular. La
+primera vez, o si se olvida la contraseña, entra con un enlace que le llega al mail y la pone
+desde el panel. Ve primero los pedidos nuevos, abre el detalle con los datos del comprador
 (incluido el DNI), abre la dirección en el mapa o le escribe por WhatsApp. Cuando ve la
 transferencia acreditada en la cuenta del banco, la confirma con un toque; cuando el cliente
 retira y paga en efectivo, lo registra. Después mueve el pedido a "en camino", "listo para
@@ -373,7 +374,8 @@ caída y un error y verificar los avisos, e intentar publicar una versión con u
   en la pantalla final y el administrador tiene el teléfono para contactarlo.
 - **Servicio de mails caído:** la operación sigue y los mails se reintentan (US4, escenario 4).
 - **Producto sin foto:** se muestra un marcador neutro, nunca una imagen rota.
-- **Enlace de ingreso al panel vencido o ya usado:** se pide uno nuevo con un mensaje claro.
+- **Enlace de ingreso al panel (primera vez o recuperar la contraseña) vencido o ya usado:** se
+  pide uno nuevo con un mensaje claro.
 - **Arrepentimiento sobre un pedido ya colocado:** se registra la solicitud y el administrador la
   gestiona fuera del sistema (retiro de la batería).
 

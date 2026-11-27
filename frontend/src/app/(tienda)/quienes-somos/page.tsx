@@ -49,7 +49,7 @@ export default async function QuienesSomos() {
             <ul className="mt-3 flex list-disc flex-col gap-2 pl-6">
               <li>La batería justa para tu auto, por marca, modelo y año.</li>
               <li>Colocación incluida en el local y en Mar del Plata.</li>
-              <li>Garantía en todas: 18 meses las Sermat de 12x45 a 12x75 y 12 meses el resto.</li>
+              <li>Garantía en todas: hasta 18 meses, según la marca y la medida.</li>
               <li>Retiramos la batería usada para reciclarla.</li>
             </ul>
           </section>

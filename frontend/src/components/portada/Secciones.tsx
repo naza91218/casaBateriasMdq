@@ -34,7 +34,8 @@ const BENEFICIOS = [
   {
     icono: ShieldCheck,
     titulo: 'Hasta 18 meses de garantía',
-    texto: '18 meses en las Sermat de 12x45 a 12x75 y 12 en el resto. Y sabés dónde encontrarnos.',
+    texto:
+      'Según la marca y la medida. Y si algo falla, nos encontrás en el mismo local de siempre.',
   },
   {
     icono: Wrench,
@@ -168,16 +169,16 @@ export function Pasos() {
   );
 }
 
-// Texto provisorio con los datos de la reunión del 17/11: el definitivo lo manda el abuelo de Mateo.
+// Datos del abuelo de Mateo (2026-11-26): placas por vaso, peso, resistencia y vida útil.
 const ECONOMICA = [
-  'Autos chicos y medianos que andan por la ciudad',
-  'Pocos accesorios eléctricos',
+  'Autos de uso normal en la ciudad',
+  'Arranca sin problemas en condiciones normales',
   'El mejor precio, con garantía y colocación',
 ];
 const REFORZADA = [
   'Frío, viajes y muchos arranques por día',
   'Autos con audio, GNC, alarma o muchos consumos',
-  'Camionetas y utilitarios',
+  'Aguanta mejor las descargas y las vibraciones',
 ];
 
 export function Gamas({ whatsappUrl }: { whatsappUrl: string }) {
@@ -188,8 +189,8 @@ export function Gamas({ whatsappUrl }: { whatsappUrl: string }) {
           <Palabras texto="¿Económica o reforzada?" />
         </h2>
         <p className="mt-3 max-w-[60ch] text-gris-600">
-          Las dos traen garantía y colocación. La diferencia está adentro: cuántas placas tiene cada
-          vaso, y eso define cuánto le vas a poder exigir.
+          Las dos traen garantía y colocación. La diferencia está adentro: la reforzada lleva más
+          placas por vaso, y eso define cuánto le vas a poder exigir y cuánto te va a durar.
         </p>
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           <article className="aparece etiqueta">
@@ -201,7 +202,7 @@ export function Gamas({ whatsappUrl }: { whatsappUrl: string }) {
                   Para el uso de todos los días
                 </span>
               </h3>
-              <PorDentro placas={11} detalle="Unos 2,5 kg más liviana" />
+              <PorDentro anios="2 a 3" detalle="Menos placas por vaso, más liviana" />
               <Lista items={ECONOMICA} />
             </div>
           </article>
@@ -212,14 +213,13 @@ export function Gamas({ whatsappUrl }: { whatsappUrl: string }) {
               </span>
               <span className="mt-1 block text-[21px] font-bold">Para exigirle más</span>
             </h3>
-            <PorDentro placas={13} detalle="Más corriente para arrancar" oscuro />
+            <PorDentro anios="3 a 5" detalle="Más placas por vaso, según el uso" oscuro />
             <Lista items={REFORZADA} />
           </article>
         </div>
         <p className="mt-6 max-w-[64ch] text-gris-600">
-          Por ejemplo, en una 12x75: la económica lleva 11 placas por vaso y pesa unos 2,5 kg menos;
-          la reforzada lleva 13. Más placas es más superficie para dar corriente en el arranque y
-          aguantar el uso exigente.
+          Más placas es más superficie para dar corriente en el arranque: por eso la reforzada es
+          más pesada, más resistente y dura más.
         </p>
         <p className="mt-6 font-semibold">
           ¿No sabés cuál te conviene?{' '}
@@ -232,13 +232,13 @@ export function Gamas({ whatsappUrl }: { whatsappUrl: string }) {
   );
 }
 
-/** El dato técnico de cada gama: las placas por vaso, que es lo que las diferencia por dentro. */
+/** El dato que más pesa al elegir: cuántos años dura cada gama. */
 function PorDentro({
-  placas,
+  anios,
   detalle,
   oscuro = false,
 }: {
-  placas: number;
+  anios: string;
   detalle: string;
   oscuro?: boolean;
 }) {
@@ -246,9 +246,11 @@ function PorDentro({
     <p
       className={`mt-6 flex items-baseline gap-3 border-y py-4 ${oscuro ? 'border-white/15' : 'border-gris-300'}`}
     >
-      <span className="titular text-[48px] leading-none md:text-[56px]">{placas}</span>
+      <span className="titular text-[48px] leading-none whitespace-nowrap md:text-[56px]">
+        {anios}
+      </span>
       <span className="leading-snug">
-        <span className="block font-bold">placas por vaso</span>
+        <span className="block font-bold">años de vida útil</span>
         <span className={oscuro ? 'text-gris-300' : 'text-gris-600'}>{detalle}</span>
       </span>
     </p>

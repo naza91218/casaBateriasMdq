@@ -21,9 +21,9 @@ export function calcularPrecios(lista: Dinero, descuentoPct: number): PreciosPro
 /** Explicación simple de cada gama, para quien no sabe de baterías (FR-007). */
 export const EXPLICACION_GAMA: Record<Gama, string> = {
   economica:
-    'Para el uso de todos los días en la ciudad. Lleva menos placas por vaso (11 en una 12x75) y es más liviana: arranca sin problemas y cuida tu bolsillo.',
+    'Para el uso de todos los días en la ciudad. Lleva menos placas por vaso y es más liviana: arranca sin problemas en condiciones normales y cuida tu bolsillo. Dura entre 2 y 3 años.',
   reforzada:
-    'Para autos con más consumo eléctrico, mucho uso o arranques en frío. Lleva más placas por vaso (13 en una 12x75): da más corriente para arrancar y aguanta más exigencia.',
+    'Para autos exigidos: mucho uso, más consumo eléctrico o arranques en frío. Lleva más placas por vaso, es más pesada y aguanta mejor las descargas y las vibraciones. Según el uso, dura entre 3 y 5 años.',
 };
 
 /**

@@ -29,4 +29,4 @@ El ojo mágico que se pone verde cuando elegís tu auto. Movimiento propio del m
 
 ## Sin resolver
 
-Texto técnico de económica/reforzada (lo manda el abuelo de Mateo), garantía de 18 meses en Sermat 12x45–12x75 (pendiente de implementar por producto), horarios y WhatsApp reales.
+WhatsApp real, historia del local y fotos reales de Sermat, Edna y Volta. Resuelto el 26/11: la comparación de gamas muestra la vida útil (2 a 3 años la económica, 3 a 5 la reforzada) y "más placas por vaso" sin números; la garantía dice "hasta 18 meses, según la marca y la medida".

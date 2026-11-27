@@ -165,7 +165,7 @@ describe('GET /vehiculos/:marca/:modelo (FR-072)', () => {
     );
     expect(textos).toContain('incluida en Mar del Plata y también vamos a Batán.');
     expect(textos).not.toContain('Miramar');
-    expect(textos).toContain('18 meses las Sermat de 12x45 a 12x75 y 12 meses el resto');
+    expect(textos).toContain('garantía de hasta 18 meses, según la marca y la medida');
     expect(p.whatsapp.mensaje).toBe('Hola, busco batería para un Volkswagen Gol Trend');
   });
 

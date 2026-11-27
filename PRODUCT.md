@@ -21,7 +21,7 @@ Tienda online propia de La Casa de las Baterías: el cliente busca su auto (marc
 
 ## Positioning
 
-45 años en Mar del Plata y un servicio que la competencia cercana no da: **colocación a domicilio incluida en el precio**, medición del alternador y 12 meses de garantía, con buscador por auto para que nadie tenga que saber medidas.
+45 años en Mar del Plata y un servicio que la competencia cercana no da: **colocación a domicilio incluida en el precio**, medición del alternador y hasta 18 meses de garantía, con buscador por auto para que nadie tenga que saber medidas.
 
 ## Operating Context
 
