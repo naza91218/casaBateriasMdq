@@ -164,7 +164,7 @@ Copiar `env.servidor.example` a `/srv/casa/<entorno>/.env`, completarlo y correr
 | `NODE_ENV` | `staging` | `production` |
 | `PUERTO_API` / `PUERTO_WEB` | 4001 / 3001 | 4000 / 3000 |
 | URLs | `https://staging.…` | `https://casadelasbaterias.com.ar` |
-| Mercado Pago | vacío (pasarela simulada) o credenciales de prueba | credenciales reales (obligatorias) |
+| Mercado Pago | vacío (pasarela simulada) o credenciales de prueba | credenciales reales; vacío = el checkout no ofrece Mercado Pago, solo transferencia y efectivo |
 | `DNI_ENCRYPTION_KEY`, `REVALIDATE_SECRET`, `POSTGRES_PASSWORD` | propias | propias |
 
 Si falta alguna variable obligatoria, la API no arranca y el deploy vuelve solo a la versión anterior.

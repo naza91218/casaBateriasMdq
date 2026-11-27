@@ -53,7 +53,11 @@ const esquema = z.object({
   MAX_PEDIDOS_SIN_PAGAR: z.coerce.number().int().positive().default(3),
 });
 
-export type Config = z.infer<typeof esquema> & { esProduccion: boolean };
+export type Config = z.infer<typeof esquema> & {
+  esProduccion: boolean;
+  /** Producción sin credenciales: el checkout no ofrece Mercado Pago (D28). */
+  mercadoPagoActivo: boolean;
+};
 
 /** Lee y valida las variables de entorno. Si falta algo, el proceso no arranca. */
 export function cargarConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -66,7 +70,8 @@ export function cargarConfig(env: NodeJS.ProcessEnv = process.env): Config {
   }
   const config = resultado.data;
   if (config.NODE_ENV === 'production' || config.NODE_ENV === 'staging') exigirServidor(config);
-  return { ...config, esProduccion: config.NODE_ENV === 'production' };
+  const esProduccion = config.NODE_ENV === 'production';
+  return { ...config, esProduccion, mercadoPagoActivo: !esProduccion || !!config.MP_ACCESS_TOKEN };
 }
 
 /** Valores de `.env.example`: sirven para desarrollo y nunca para un servidor. */
@@ -76,16 +81,18 @@ const VALORES_DE_EJEMPLO = new Set([
 ]);
 
 /**
- * En staging y producción falta algo → no arranca (T146). Sin credenciales de Mercado Pago se
- * usaría la pasarela simulada de desarrollo, y con una clave de ejemplo el DNI no estaría protegido.
- * Staging (con clave y fuera de Google) puede arrancar sin Mercado Pago mientras no estén las
- * credenciales de prueba: el pago con Mercado Pago queda simulado y no lleva a ningún lado.
+ * En staging y producción falta algo → no arranca (T146). Con una clave de ejemplo el DNI no
+ * estaría protegido. Mercado Pago va completo (token y clave del webhook) o no va: sin
+ * credenciales, producción arranca con Mercado Pago apagado (solo transferencia y efectivo) y
+ * staging con la pasarela simulada, mientras no estén las credenciales (D28).
  */
 function exigirServidor(config: z.infer<typeof esquema>): void {
-  const requeridas =
-    config.NODE_ENV === 'production'
-      ? (['RESEND_API_KEY', 'MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET'] as const)
-      : (['RESEND_API_KEY'] as const);
+  const requeridas: ('RESEND_API_KEY' | 'MP_ACCESS_TOKEN' | 'MP_WEBHOOK_SECRET')[] = [
+    'RESEND_API_KEY',
+  ];
+  if (config.MP_ACCESS_TOKEN || config.MP_WEBHOOK_SECRET) {
+    requeridas.push('MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET');
+  }
   const faltan = requeridas.filter((clave) => !config[clave]);
   if (faltan.length) throw new Error(`Faltan variables fuera de desarrollo: ${faltan.join(', ')}`);
   const deEjemplo = (['DNI_ENCRYPTION_KEY', 'REVALIDATE_SECRET'] as const).filter((clave) =>

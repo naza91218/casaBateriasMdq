@@ -58,6 +58,7 @@ describe('medios de pago (FR-022, clarify)', () => {
   test('US2-05: sin efectivo cuando hay colocación', () => {
     expect(mediosDisponibles('colocacion')).toEqual(['mercadopago', 'transferencia']);
     expect(mediosDisponibles('retiro')).toEqual(['mercadopago', 'transferencia', 'efectivo']);
+    expect(mediosDisponibles('retiro', false)).toEqual(['transferencia', 'efectivo']);
   });
 
   test('vencimientos: MP 30 min, transferencia 48 h, efectivo 7 días', () => {

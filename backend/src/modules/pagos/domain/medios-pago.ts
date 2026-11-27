@@ -49,8 +49,9 @@ export const MEDIOS_PAGO: Record<IdMedioPago, MedioPago> = {
   },
 };
 
-export function mediosDisponibles(entrega: Entrega): IdMedioPago[] {
+/** Sin credenciales de Mercado Pago en producción, ese medio no se ofrece (D28). */
+export function mediosDisponibles(entrega: Entrega, mercadoPagoActivo = true): IdMedioPago[] {
   return Object.values(MEDIOS_PAGO)
-    .filter((m) => m.disponiblePara(entrega))
+    .filter((m) => m.disponiblePara(entrega) && (mercadoPagoActivo || m.id !== 'mercadopago'))
     .map((m) => m.id);
 }

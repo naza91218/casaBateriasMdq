@@ -32,6 +32,8 @@ export interface DependenciasPedidos {
   urlApi: string;
   /** Pedidos sin pagar que puede tener abiertos un mismo comprador (mail o teléfono). */
   maxPedidosSinPagar: number;
+  /** Falso en producción mientras no estén las credenciales de Mercado Pago (D28). */
+  mercadoPagoActivo?: boolean;
 }
 
 /** Compra como invitado (US2): cotizar y crear el pedido con reserva atómica de stock. */
@@ -40,6 +42,13 @@ export class ServicioPedidos {
 
   private medio(s: SolicitudCotizacion): MedioPago {
     const medio = MEDIOS_PAGO[s.medioPago];
+    if (medio.id === 'mercadopago' && this.d.mercadoPagoActivo === false) {
+      throw new ErrorDeDominio(
+        'regla_de_negocio',
+        'MEDIO_NO_DISPONIBLE',
+        'Por ahora no se puede pagar con Mercado Pago: elegí transferencia o efectivo',
+      );
+    }
     if (!medio.disponiblePara(s.entrega)) {
       throw new ErrorDeDominio(
         'regla_de_negocio',
@@ -98,7 +107,7 @@ export class ServicioPedidos {
       costoZona: importes.costoZona.aNumero(),
       total: importes.total.aNumero(),
       descuentoPct,
-      mediosDisponibles: mediosDisponibles(s.entrega),
+      mediosDisponibles: mediosDisponibles(s.entrega, this.d.mercadoPagoActivo ?? true),
     };
   }
 

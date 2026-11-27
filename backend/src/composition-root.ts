@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { AlmacenamientoDisco, AlmacenamientoR2 } from './adapters/almacenamiento.js';
 import { MailerDev, MailerResend } from './adapters/mailer.js';
 import { PasarelaFalsa, PasarelaMercadoPago } from './adapters/mercadopago.js';
@@ -139,15 +140,18 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
           config.REVALIDATE_URL ?? config.FRONTEND_URL,
           config.REVALIDATE_SECRET,
         ));
-  if (!config.MP_ACCESS_TOKEN && !reemplazos.pasarela && config.NODE_ENV === 'production') {
-    throw new Error('Falta MP_ACCESS_TOKEN en producción');
-  }
   // Sin credenciales (desarrollo, o staging hasta tener las de prueba), los pagos se simulan.
+  // En producción sin credenciales Mercado Pago queda apagado (D28): la pasarela simulada lleva
+  // una clave al azar, así nadie puede firmar un webhook falso.
   const pasarela =
     reemplazos.pasarela ??
     (config.MP_ACCESS_TOKEN
       ? new PasarelaMercadoPago(config.MP_ACCESS_TOKEN, config.MP_WEBHOOK_SECRET ?? '')
-      : new PasarelaFalsa(config.MP_WEBHOOK_SECRET ?? 'secreto-webhook-de-prueba'));
+      : new PasarelaFalsa(
+          config.esProduccion
+            ? randomBytes(32).toString('hex')
+            : (config.MP_WEBHOOK_SECRET ?? 'secreto-webhook-de-prueba'),
+        ));
   const almacenamiento = reemplazos.almacenamiento ?? elegirAlmacenamiento(config);
   const outbox = new Outbox(db, reloj);
   const panel = enlacesPanel(config.FRONTEND_URL);
@@ -182,6 +186,7 @@ export function crearContexto(config: Config, reemplazos: Reemplazos = {}): Cont
     logger,
     urlApi: config.API_PUBLIC_URL,
     maxPedidosSinPagar: config.MAX_PEDIDOS_SIN_PAGAR,
+    mercadoPagoActivo: config.mercadoPagoActivo,
   });
   const alertas = new ServicioAlertas(db, reloj);
   const arrepentimientos = new ServicioArrepentimientos(

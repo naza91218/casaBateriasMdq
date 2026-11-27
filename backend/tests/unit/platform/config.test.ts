@@ -20,13 +20,20 @@ describe('configuración de un servidor (T146)', () => {
     expect(cargarConfig({ ...BASE, NODE_ENV: 'staging' }).esProduccion).toBe(false);
   });
 
-  test('producción sin Mercado Pago o sin Resend no arranca: nunca la pasarela simulada', () => {
+  test('Mercado Pago va completo o no va; sin Resend no arranca', () => {
     expect(() => cargarConfig({ ...BASE, NODE_ENV: 'production', MP_ACCESS_TOKEN: '' })).toThrow(
       'Faltan variables fuera de desarrollo: MP_ACCESS_TOKEN',
     );
     expect(() =>
       cargarConfig({ ...BASE, NODE_ENV: 'production', RESEND_API_KEY: '', MP_WEBHOOK_SECRET: '' }),
     ).toThrow('RESEND_API_KEY, MP_WEBHOOK_SECRET');
+    expect(cargarConfig({ ...BASE, NODE_ENV: 'production' }).mercadoPagoActivo).toBe(true);
+  });
+
+  test('producción sin credenciales de Mercado Pago arranca con ese medio apagado (D28)', () => {
+    const sinMp = { ...BASE, NODE_ENV: 'production', MP_ACCESS_TOKEN: '', MP_WEBHOOK_SECRET: '' };
+    expect(cargarConfig(sinMp).mercadoPagoActivo).toBe(false);
+    expect(cargarConfig({ ...sinMp, NODE_ENV: 'staging' }).mercadoPagoActivo).toBe(true);
   });
 
   test('staging arranca sin Mercado Pago, pero no sin Resend', () => {

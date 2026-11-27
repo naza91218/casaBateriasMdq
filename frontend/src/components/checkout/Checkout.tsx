@@ -50,8 +50,12 @@ export function Checkout({ datos }: { datos: DatosCheckout }) {
 
   const zonaId = entrega === 'colocacion' ? comprador.zonaId || undefined : undefined;
   // El efectivo es solo para retirar en el local: si se pasa a colocación, se vuelve a transferencia.
+  // Mercado Pago puede estar apagado mientras no estén las credenciales (D28): lo dice la cotización.
+  const hayMercadoPago = cotizacion?.mediosDisponibles.includes('mercadopago') ?? true;
   const medioValido: MedioPago =
-    entrega === 'colocacion' && medio === 'efectivo' ? 'transferencia' : medio;
+    (entrega === 'colocacion' && medio === 'efectivo') || (medio === 'mercadopago' && !hayMercadoPago)
+      ? 'transferencia'
+      : medio;
   const clave = JSON.stringify({ items, entrega, zonaId, medioValido });
 
   // El total siempre lo calcula el servidor (FR-019): acá solo se muestra.
@@ -327,13 +331,15 @@ export function Checkout({ datos }: { datos: DatosCheckout }) {
                   titulo={`Transferencia${datos.descuentoPct ? ` · ahorrás ${datos.descuentoPct} %` : ''}`}
                   detalle="Te mostramos los datos bancarios al confirmar. Tenés 48 horas para transferir."
                 />
-                <Opcion
-                  nombre="medio"
-                  marcada={medioValido === 'mercadopago'}
-                  elegir={() => setMedio('mercadopago')}
-                  titulo="Mercado Pago"
-                  detalle="Tarjeta de crédito, débito o dinero en cuenta."
-                />
+                {hayMercadoPago && (
+                  <Opcion
+                    nombre="medio"
+                    marcada={medioValido === 'mercadopago'}
+                    elegir={() => setMedio('mercadopago')}
+                    titulo="Mercado Pago"
+                    detalle="Tarjeta de crédito, débito o dinero en cuenta."
+                  />
+                )}
                 <Opcion
                   nombre="medio"
                   marcada={medioValido === 'efectivo'}
