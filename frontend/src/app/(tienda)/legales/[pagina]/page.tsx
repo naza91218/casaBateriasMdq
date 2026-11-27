@@ -81,12 +81,13 @@ const PAGINAS: Record<string, Pagina> = {
   },
   garantia: {
     titulo: 'Cambios y garantía',
-    descripcion: 'Garantía de 12 o 18 meses según la batería y cómo hacer un cambio o un reclamo.',
+    descripcion:
+      'Garantía de 18 meses en Sermat y 12 en las demás marcas, y cómo hacer un cambio o un reclamo.',
     secciones: () => [
       {
         titulo: 'Garantía de 12 o 18 meses',
         parrafos: [
-          'Las Sermat de 12x45 a 12x75 tienen 18 meses de garantía y todas las demás, 12 meses, contados desde la colocación. La ficha de cada batería dice cuántos meses tiene la suya. Si falla, traela al local o escribinos: la probamos con el equipo y, si es una falla de fábrica, te la cambiamos.',
+          'Las baterías Sermat tienen 18 meses de garantía y las de las demás marcas, 12 meses, contados desde la colocación. La ficha de cada batería indica el plazo que le corresponde. Si falla, traela al local o escribinos: la probamos con el equipo y, si es una falla de fábrica, te la cambiamos.',
           'La garantía no cubre golpes, bornes dañados ni fallas por un problema del auto (alternador, consumos). [Condiciones de cada fabricante a confirmar.]',
         ],
       },

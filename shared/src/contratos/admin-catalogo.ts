@@ -73,7 +73,7 @@ export const NuevoProducto = z.object({
   descripcion: z.string().trim().max(3000).optional(),
   precioLista: Importe.optional(),
   stock: z.number().int().min(0, 'El stock no puede ser negativo').optional(),
-  /** Si no viene, se calcula: 18 meses las Sermat de 12x45 a 12x75, 12 el resto. */
+  /** Si no viene, se calcula: 18 meses las Sermat, 12 el resto. */
   garantiaMeses: z
     .number()
     .int('La garantía va en meses enteros')

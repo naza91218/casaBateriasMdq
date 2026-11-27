@@ -27,12 +27,11 @@ export const EXPLICACION_GAMA: Record<Gama, string> = {
 };
 
 /**
- * Garantía con la que entra cada batería (reunión con Mateo, 2026-11-17): las Sermat de 12x45 a
- * 12x75 tienen 18 meses; todas las demás, 12. Después el admin la puede cambiar por producto.
+ * Garantía con la que entra cada batería (Mateo, 2026-11-27): todas las Sermat tienen 18 meses;
+ * las demás marcas, 12. Después el admin la puede cambiar por producto.
  */
-export function garantiaPorDefecto(marca: string, medida: string): number {
-  const ah = Number(/^12x(\d+)/.exec(medida)?.[1]);
-  return marca.trim().toLowerCase() === 'sermat' && ah >= 45 && ah <= 75 ? 18 : 12;
+export function garantiaPorDefecto(marca: string): number {
+  return marca.trim().toLowerCase() === 'sermat' ? 18 : 12;
 }
 
 /** El diferencial del negocio, visible en cada ficha (constitución II). */

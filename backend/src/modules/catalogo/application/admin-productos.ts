@@ -131,7 +131,7 @@ export class ServicioAdminProductos {
           descripcion: d.descripcion ?? '',
           precioLista: BigInt(d.precioLista ?? 0),
           stock: d.stock ?? 0,
-          garantiaMeses: d.garantiaMeses ?? garantiaPorDefecto(d.marca, d.medida),
+          garantiaMeses: d.garantiaMeses ?? garantiaPorDefecto(d.marca),
           estado: 'pausado',
           fuente: 'manual',
         })

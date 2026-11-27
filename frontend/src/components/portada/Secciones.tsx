@@ -33,9 +33,9 @@ const BENEFICIOS = [
   },
   {
     icono: ShieldCheck,
-    titulo: 'Hasta 18 meses de garantía',
+    titulo: 'Garantía de hasta 18 meses',
     texto:
-      'Según la marca y la medida. Y si algo falla, nos encontrás en el mismo local de siempre.',
+      '18 meses en baterías Sermat y 12 en las demás marcas. Ante cualquier inconveniente, te atendemos en nuestro local.',
   },
   {
     icono: Wrench,

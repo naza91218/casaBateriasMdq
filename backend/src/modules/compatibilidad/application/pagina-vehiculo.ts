@@ -138,7 +138,7 @@ export class ServicioPaginaVehiculo {
         {
           pregunta: '¿Tiene garantía?',
           respuesta:
-            'Sí, todas tienen garantía de hasta 18 meses, según la marca y la medida. Al colocarla te medimos el alternador sin cargo.',
+            'Sí. Las baterías Sermat tienen 18 meses de garantía y las de las demás marcas, 12 meses, contados desde la colocación. Además, al instalarla controlamos el alternador sin cargo.',
         },
         {
           pregunta: '¿Puedo entregar mi batería usada?',

@@ -65,7 +65,7 @@ export function FormProducto({ producto }: { producto?: ProductoAdmin }) {
       descripcion: v.descripcion,
       ...(precio !== null ? { precioLista: precio } : {}),
       stock: Number(v.stock) || 0,
-      // Vacío al crear: el servidor pone 18 meses a las Sermat de 12x45 a 12x75 y 12 al resto.
+      // Vacío al crear: el servidor pone 18 meses a las Sermat y 12 al resto.
       ...(v.garantia.trim() ? { garantiaMeses: Number(v.garantia) } : {}),
     };
     setEnviando(true);
@@ -214,7 +214,7 @@ export function FormProducto({ producto }: { producto?: ProductoAdmin }) {
           ayuda={
             producto
               ? 'Se muestra en la tarjeta y en la ficha.'
-              : 'Si lo dejás vacío: 18 las Sermat de 12x45 a 12x75 y 12 el resto.'
+              : 'Si lo dejás vacío: 18 las Sermat y 12 el resto.'
           }
           inputMode="numeric"
           value={v.garantia}

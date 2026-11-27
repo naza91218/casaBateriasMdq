@@ -23,8 +23,8 @@ export default async function QuienesSomos() {
             <Palabras texto="en el mercado" desde={2} className="text-blanco" />
           </h1>
           <p className="mt-5 max-w-[52ch] text-[20px] leading-relaxed">
-            Vendemos y colocamos baterías en Mar del Plata, en {d.domicilio}. Todas con garantía, de
-            12 o 18 meses, y la colocación incluida.
+            Vendemos y colocamos baterías en Mar del Plata, en {d.domicilio}. Todas cuentan con
+            garantía y colocación incluida.
           </p>
         </div>
       </section>
@@ -49,7 +49,7 @@ export default async function QuienesSomos() {
             <ul className="mt-3 flex list-disc flex-col gap-2 pl-6">
               <li>La batería justa para tu auto, por marca, modelo y año.</li>
               <li>Colocación incluida en el local y en Mar del Plata.</li>
-              <li>Garantía en todas: hasta 18 meses, según la marca y la medida.</li>
+              <li>Garantía de 18 meses en Sermat y de 12 meses en las demás marcas.</li>
               <li>Retiramos la batería usada para reciclarla.</li>
             </ul>
           </section>
